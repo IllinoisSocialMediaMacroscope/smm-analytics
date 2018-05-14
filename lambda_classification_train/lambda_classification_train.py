@@ -13,6 +13,7 @@ from sklearn.metrics import roc_curve, auc
 from sklearn.preprocessing import label_binarize
 from sklearn.model_selection import cross_val_predict
 from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import KFold
 from scipy import interp
 from itertools import cycle
 import pickle
@@ -71,7 +72,6 @@ class Classification:
             self.predicted = cross_val_predict(text_clf, self.data, self.target, cv=10)
             # fit the model
             text_clf.fit(self.data, self.target)
-            y_score = text_clf.predict_proba(self.data)
         elif model == 'Perceptron':
             text_clf = Pipeline([('vect', CountVectorizer(stop_words='english')),
                                  ('tfidf', TfidfTransformer()),
@@ -80,7 +80,6 @@ class Classification:
             self.predicted = cross_val_predict(text_clf, self.data, self.target, cv=10)
             # fit the model
             text_clf.fit(self.data, self.target)
-            y_score = text_clf.decision_function(self.data)
         elif model == 'SGD':
             text_clf = Pipeline([('vect', CountVectorizer(stop_words='english')),
                                  ('tfidf', TfidfTransformer()),
@@ -89,7 +88,6 @@ class Classification:
             self.predicted = cross_val_predict(text_clf, self.data, self.target, cv=10)
             # fit the model
             text_clf.fit(self.data, self.target)
-            y_score = text_clf.decision_function(self.data)
         elif model == 'RandomForest':
             text_clf = Pipeline([('vect', CountVectorizer(stop_words='english')),
                                  ('tfidf', TfidfTransformer()),
@@ -98,7 +96,6 @@ class Classification:
             self.predicted = cross_val_predict(text_clf, self.data, self.target, cv=10)
             # fit the model
             text_clf.fit(self.data, self.target)
-            y_score = text_clf.predict_proba(self.data)
         elif model == 'KNN':
             text_clf = Pipeline([('vect', CountVectorizer(stop_words='english')),
                                  ('tfidf', TfidfTransformer()),
@@ -107,7 +104,6 @@ class Classification:
             self.predicted = cross_val_predict(text_clf, self.data, self.target, cv=10)
             # fit the model
             text_clf.fit(self.data, self.target)
-            y_score = text_clf.predict_proba(self.data)
         elif model == 'passiveAggressive':
             text_clf = Pipeline([('vect', CountVectorizer(stop_words='english')),
                                  ('tfidf', TfidfTransformer()),
@@ -116,8 +112,10 @@ class Classification:
             self.predicted = cross_val_predict(text_clf, self.data, self.target, cv=10)
             # fit the model
             text_clf.fit(self.data, self.target)
-            y_score = text_clf.decision_function(self.data)           
-            
+
+        # get labels
+        self.labels = text_clf.classes_
+
         # get 10 fold cross validation accuracy score
         fold_scores = cross_val_score(text_clf, self.data, self.target, cv=10)
         fname_folds = 'accuracy_score.csv'
@@ -136,113 +134,24 @@ class Classification:
         s3.upload(self.localSavePath, self.awsPath, fname_pickle)
         pickle_url = s3.generate_downloads(self.awsPath, fname_pickle)
 
-        # plotting the roc curve
-        self.labels = text_clf.classes_       
-        y = label_binarize(self.target,classes = self.labels)
-
-        
-        # binary class
-        if len(self.labels) <= 2:
-            if model == 'Perceptron' or model == 'SGD' or model == 'passiveAggressive':
-                fpr, tpr, _ = roc_curve(y[:, 0], y_score)
-            else:
-                y = []
-                for label in self.target:
-                    item = []
-                    for i in range(len(text_clf.classes_)):
-                        if label == text_clf.classes_[i]:
-                            item.append(1)
-                        else:
-                            item.append(0)
-                    y.append(item)
-                y = np.array(y)
-                fpr, tpr, _ = roc_curve(y.ravel(), y_score.ravel())
-            
-            roc_auc = auc(fpr, tpr)
-            trace = go.Scatter(
-                x = fpr,
-                y = tpr,
-                name = 'ROC curve (area =' + str(roc_auc) + ' )',
-                line = dict(color=('deeppink'), width = 4)
-            )
-            data = [trace]
-
-        # multiclasses  
-        else:
-            fpr = {}
-            tpr = {}
-            roc_auc = {}
-            for i in range(len(self.labels)):
-                fpr[self.labels[i]], tpr[self.labels[i]], _ = roc_curve(y[:, i], y_score[:, i])
-                roc_auc[self.labels[i]] = auc(fpr[self.labels[i]], tpr[self.labels[i]])
-            
-            # Compute micro-average ROC curve and ROC area
-            fpr["micro"], tpr["micro"], _ = roc_curve(y.ravel(), y_score.ravel())
-            roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
-
-            # First aggregate all false positive rates
-            all_fpr = np.unique(np.concatenate([fpr[self.labels[i]] for i in range(len(self.labels))]))
-
-            # Then interpolate all ROC curves at this points
-            mean_tpr = np.zeros_like(all_fpr)
-            for i in range(len(self.labels)):
-                mean_tpr += interp(all_fpr, fpr[self.labels[i]], tpr[self.labels[i]])
-
-            # Finally average it and compute AUC
-            mean_tpr /= len(self.labels)
-
-            fpr["macro"] = all_fpr
-            tpr["macro"] = mean_tpr
-            roc_auc["macro"] = auc(fpr["macro"], tpr["macro"])
-
-            # plotting
-            trace0 = go.Scatter(
-                x = fpr['micro'],
-                y = tpr['micro'],
-                name = 'micro-average ROC curve (area =' + str(roc_auc["micro"]) + ' )',
-                line = dict(color=('deeppink'), width = 4)
-            )
-            trace1 = go.Scatter(
-                x = fpr['macro'],
-                y = tpr['macro'],
-                 name = 'macro-average ROC curve (area =' + str(roc_auc["macro"]) + ' )',
-                line = dict(
-                    color = ('navy'),
-                    width = 4,)
-            )
-            data = [trace0, trace1]
-            colors = cycle(['aqua', 'darkorange', 'cornflowerblue'])
-            for i, color in zip(range(len(self.labels)), colors):
-                trace = go.Scatter(
-                    x = fpr[self.labels[i]], 
-                    y = tpr[self.labels[i]],
-                    name = 'ROC curve of class {0} (area = {1:0.2f})'.format(self.labels[i], roc_auc[self.labels[i]]),
-                    line = dict(
-                        color = (color),
-                        width = 4, 
-                        dash = 'dash')
-                )
-                data.append(trace)
-
-                
-        layout = dict(title = model + ' model ROC curve',
-              xaxis = dict(title = 'False Positive Rate'),
-              yaxis = dict(title = 'True Positive Rate'),
-              )
-
+        # plot accuracy score
+        data = [go.Bar(x=['fold 1','fold 2','fold 3','fold 4','fold 5',
+                             'fold 6','fold 7','fold 8','fold 9','fold 10'],
+                       y=fold_scores,
+                       marker = dict(color='rgb(234, 73, 55)'))]
+        layout = go.Layout(title='10 fold cross validation Accuracy Score',
+                           yaxis=dict(range=[0,1]))
         fig = dict(data=data, layout=layout)
-        div = plot(fig, output_type='div',image='png',auto_open=False, image_filename='plot_img')
-        
-        # print the graph file
-        fname_div ='div.html'
-        with open(self.localSavePath + fname_div,'w') as f:
+        div = plot(fig, output_type='div', image='png', auto_open=False,
+                   image_filename='plot_img')
+        fname_div = 'div.html'
+        with open(self.localSavePath + fname_div, 'w') as f:
             f.write(div)
         s3.upload(self.localSavePath, self.awsPath, fname_div)
         div_url = s3.generate_downloads(self.awsPath, fname_div)
 
-        return {'accuracy':accuracy_url, 'pickle':pickle_url, 'div':div_url }
+        return {'accuracy':accuracy_url, 'pickle':pickle_url, 'div':div_url}
 
-    
 
     def metrics(self):
         report = np.array(metrics.precision_recall_fscore_support(self.target,self.predicted,labels=self.labels)).T
