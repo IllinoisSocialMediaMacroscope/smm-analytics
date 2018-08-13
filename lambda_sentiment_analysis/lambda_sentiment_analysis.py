@@ -13,7 +13,6 @@ import nltk
 nltk.data.path.append('./nltk_data/')
 from nltk.sentiment.vader import SentimentIntensityAnalyzer, allcap_differential, negated
 import plotly.graph_objs as go
-from plotly import tools
 from plotly.offline import plot
 import pandas as pd
 
@@ -67,7 +66,8 @@ class Sentiment:
             df = pd.DataFrame(Array[1:], columns=Array[0])
             
             # user specify which column to; each row is a sentence, get a list of sentences
-            self.sent = df[column].dropna().astype('str').tolist()
+            self.sent = df[df[column]!=''][column].dropna().astype('str').tolist()
+
             # combine sentences into a document
             self.text = ''.join(self.sent)
     

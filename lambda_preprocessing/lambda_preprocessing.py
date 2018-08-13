@@ -7,6 +7,7 @@ sys.modules["sqlite3.dbapi2"] = imp.new_module("sqlite.dbapi2")
 import nltk
 nltk.data.path.append('./nltk_data/')
 from nltk.tokenize import TweetTokenizer
+from tokenizer import tokenizer
 from nltk.corpus import stopwords
 from nltk import WordNetLemmatizer, FreqDist, pos_tag_sents, PorterStemmer
 import csv
@@ -93,9 +94,9 @@ class Preprocess:
 
     def get_words(self, source):
             # tokenize the word
-            if source == 'twitter':
+            if source == 'twitter-Tweet' or source == 'twitter-Stream' or source == 'crimson-Hexagon':
                 tknz = TweetTokenizer()
-            elif source == 'reddit':
+            else:
                 tknz = tokenizer.RedditTokenizer()
             self.tokens = [tknz.tokenize(t) for t in self.sentences]
                 
@@ -110,11 +111,11 @@ class Preprocess:
             for token in self.tokens:
                 self.filtered_tokens.append([word for word in token if (word.lower() not in stopwords.words('english')) #nltk stopwords
                                              and (word.lower() not in stopwords2) # third party stopwors:https://sites.google.com/site/kevinbouge/stopwords-lists
-                                             and (word.isalnum() == True or word[0] == '#' or word[0] == '$')      # only english characters
+                                             and (word.isalpha() == True or word[0] == '#' or word[0] == '$')      # only english characters
                                              and (word.lower() not in stopwords3) ])  # twitter specific stopwordshttps://sites.google.com/site/iamgongwei/home/sw
                 self.filtered_tokens_lower.append([word.lower() for word in token if (word.lower() not in stopwords.words('english'))
                                              and (word.lower() not in stopwords2)
-                                             and (word.isalnum() == True or word[0] == '#' or word[0] == '$')
+                                             and (word.isalpha() == True or word[0] == '#' or word[0] == '$')
                                              and (word.lower() not in stopwords3) ])
 
             fname_filtered = 'tokenized.csv'
@@ -419,7 +420,10 @@ def lambda_handler(event,context):
     
     preprocessing = Preprocess(awsPath, localSavePath, localReadPath, event['remoteReadPath'], event['column'])
     output['phrases'] = preprocessing.get_phrases()
-    output['filtered'] = preprocessing.get_words(event['source'])
+
+    # parse the path to get the source
+    source = event['remoteReadPath'].split('/')[2]
+    output['filtered'] = preprocessing.get_words(source)
     output['processed'] = preprocessing.stem_lematize(event['process'])
     
     plot = preprocessing.plotFreq()
@@ -429,9 +433,4 @@ def lambda_handler(event,context):
     output['tagged'] = preprocessing.tagging(event['tagger'])
 
     return output
-
-
-#lambda_handler({'s3FolderName':'local', 'remoteReadPath':'local/GraphQL/twitter-Stream/trump/',
-#                'column':'_source.text', 'source':'twitter', 'process':'stemming',
-#                'tagger':'posTag'},None)
 
