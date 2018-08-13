@@ -6,18 +6,17 @@ sys.modules["sqlite3.dbapi2"] = imp.new_module("sqlite.dbapi2")
 
 import nltk
 nltk.data.path.append('./nltk_data/')
-from nltk.tokenize import sent_tokenize, wordpunct_tokenize,TweetTokenizer
+from nltk.tokenize import TweetTokenizer
 from nltk.corpus import stopwords
-from nltk import WordNetLemmatizer, Text, FreqDist, pos_tag_sents,pos_tag, PorterStemmer
+from nltk import WordNetLemmatizer, FreqDist, pos_tag_sents, PorterStemmer
 import csv
 import plotly.graph_objs as go
 from plotly import tools
 from plotly.offline import plot
 import pandas as pd
-import re, string
+import re
 import json
 import os
-from os.path import dirname
 import writeToS3 as s3
 
 class Preprocess:
@@ -52,7 +51,7 @@ class Preprocess:
                         pass
                     
             df = pd.DataFrame(Array[1:],columns=Array[0])
-            sentences = df[column].dropna().astype('str').tolist()
+            sentences = df[df[column] != ''][column].dropna().astype('str').tolist()
             sentences = [ re.sub(r"http\S+","",tweet) for tweet in sentences]
             self.sentences = sentences
 
