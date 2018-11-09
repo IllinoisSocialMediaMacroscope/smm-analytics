@@ -1,0 +1,11 @@
+python3.6 /scripts/batch_classification_train.py --remoteReadPath local/ML/classification/265d2154-dd7a-4e90-8ce6-c652573b4ef0/ --labeledFilename "LABELED_labeld-TRAINING_trump (1).csv" --s3FolderName local --model passiveAggressive --uuid 265d2154-dd7a-4e90-8ce6-c652573b4ef0
+
+python3.6 /scripts/batch_network_analysis.py --remoteReadPath local/GraphQL/twitter-Stream/trump/ --layout random --relations retweet_from --s3FolderName local
+
+python3.6 /scripts/batch_sentiment_analysis.py --remoteReadPath local/GraphQL/twitter-Stream/trump/ --column _source.text --s3FolderName local
+
+python3.6 /scripts/batch_classification_split.py --remoteReadPath local/GraphQL/twitter-Stream/trump/ --ratio 30 --s3FolderName local
+
+python3.6 /scripts/batch_classification_predict.py --remoteReadPath local/GraphQL/twitter-Stream/trump/ --uuid 265d2154-dd7a-4e90-8ce6-c652573b4ef0 --s3FolderName local
+
+python3.6 /scripts/RedditComment.py --email ***REMOVED*** --remoteReadPath local/GraphQL/reddit-Post/aww/ --s3FolderName local
