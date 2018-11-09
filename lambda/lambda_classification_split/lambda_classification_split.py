@@ -162,4 +162,3 @@ def lambda_handler(event,context):
     output.update(classification.split(int(event['ratio'])))
 
     return output
-           

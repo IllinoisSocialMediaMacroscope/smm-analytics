@@ -433,4 +433,3 @@ def lambda_handler(event,context):
     output['tagged'] = preprocessing.tagging(event['tagger'])
 
     return output
-

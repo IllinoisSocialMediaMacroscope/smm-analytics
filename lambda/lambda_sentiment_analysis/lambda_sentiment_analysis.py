@@ -332,4 +332,3 @@ def lambda_handler(event, context):
     output['div'] = sentiment.plot()
 
     # return a dictionary of {name:corresponding url}
-    return output
