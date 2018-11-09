@@ -8,4 +8,4 @@ python3.6 /scripts/batch_classification_split.py --remoteReadPath local/GraphQL/
 
 python3.6 /scripts/batch_classification_predict.py --remoteReadPath local/GraphQL/twitter-Stream/trump/ --uuid 265d2154-dd7a-4e90-8ce6-c652573b4ef0 --s3FolderName local
 
-python3.6 /scripts/RedditComment.py --email ***REMOVED*** --remoteReadPath local/GraphQL/reddit-Post/aww/ --s3FolderName local
+python3.6 /scripts/RedditComment.py --email cwang138@illinois.edu --remoteReadPath local/GraphQL/reddit-Post/aww/ --s3FolderName local

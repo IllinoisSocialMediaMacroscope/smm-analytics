@@ -7,9 +7,9 @@ def notification(toaddr,case,filename,links,sessionURL):
     # toaddr -- email address to send to
     # text content to send
     # subject
-    host = '***REMOVED***'
+    host = 'smtp.mail.us-east-1.awsapps.com'
     port = '465'
-    fromaddr = '***REMOVED***'
+    fromaddr = 'smile@socialmediamacroscope.awsapps.com'
     
 
     # map the fpath component to History panel names
@@ -168,5 +168,5 @@ def notification(toaddr,case,filename,links,sessionURL):
 
 '''if __name__ == '__main__':
     output = {}
-    notification('***REMOVED***',case=3,filename='local/NLP/sentiment/b10984e0-a716-4913-a9dc-af970d07507e/',output)
+    notification('cwang138@illinois.edu',case=3,filename='local/NLP/sentiment/b10984e0-a716-4913-a9dc-af970d07507e/',output)
 '''
