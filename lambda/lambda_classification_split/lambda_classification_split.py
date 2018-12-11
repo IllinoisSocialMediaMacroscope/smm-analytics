@@ -11,7 +11,11 @@ import writeToS3 as s3
 
 class Classification:
 
+<<<<<<< HEAD:lambda/lambda_classification_split/lambda_classification_split.py
     def __init__(self,awsPath, localSavePath, localReadPath, remoteReadPath, column):
+=======
+    def __init__(self,awsPath, localSavePath, localReadPath, remoteReadPath):
+>>>>>>> 6e7945c8172aecd621036b560d98b7e2a0b55055:lambda/lambda_classification_split/lambda_classification_split.py
 
         self.localSavePath = localSavePath
         self.awsPath = awsPath
@@ -45,7 +49,7 @@ class Classification:
         # remoteReadPath always follows format of sessionID/folderID/datasetName/
         # example: local/GraphQL/twitter-Tweet/trump/ => ['local','GraphQL', 'twitter-Tweet','trump','']
         source = remoteReadPath.split('/')[2]
-        
+
         # find the unique text in a corpus
         self.corpus = list(set(df[df[column] != ''][column].dropna().astype('str').tolist()))
 
@@ -137,7 +141,11 @@ def lambda_handler(event,context):
     output['config'] = s3.generate_downloads(awsPath, fname)
     output['uuid'] = event['uid']    
 
+<<<<<<< HEAD:lambda/lambda_classification_split/lambda_classification_split.py
     classification = Classification(awsPath, localSavePath, localReadPath, event['remoteReadPath'], event['column'])
+=======
+    classification = Classification(awsPath, localSavePath, localReadPath, event['remoteReadPath'])
+>>>>>>> 6e7945c8172aecd621036b560d98b7e2a0b55055:lambda/lambda_classification_split/lambda_classification_split.py
     output.update(classification.split(int(event['ratio'])))
 
     return output
