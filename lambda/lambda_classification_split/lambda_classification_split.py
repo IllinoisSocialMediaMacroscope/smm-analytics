@@ -11,7 +11,7 @@ import writeToS3 as s3
 
 class Classification:
 
-    def __init__(self,awsPath, localSavePath, localReadPath, remoteReadPath):
+    def __init__(self,awsPath, localSavePath, localReadPath, remoteReadPath, column):
 
         self.localSavePath = localSavePath
         self.awsPath = awsPath
@@ -46,29 +46,8 @@ class Classification:
         # example: local/GraphQL/twitter-Tweet/trump/ => ['local','GraphQL', 'twitter-Tweet','trump','']
         source = remoteReadPath.split('/')[2]
         
-        # find the unique tweet in a corpus
-        if (source == 'twitter-Tweet') and ('text' in Array[0]):
-            self.corpus = list(set(df[df['text']!='']['text'].dropna().astype('str').tolist()))
-        elif (source == 'twitter-Stream') and ('_source.text' in Array[0]):
-            self.corpus = list(set(df[df['_source.text']!='']['_source.text'].dropna().astype('str').tolist()))
-
-        # find the unique content in crimson hexagon
-        elif (source=='crimson-Hexagon') and ('contents' in Array[0]):
-            self.corpus = list(set(df[df['contents'] != '']['contents'].dropna().astype('str').tolist()))
-
-        # find the unique title in reddit posts
-        elif (source=='reddit-Search' or source=='reddit-Post') and 'title' in Array[0]:
-            self.corpus = list(set(df[df['title']!='']['title'].dropna().astype('str').tolist()))
-        elif source =='reddit-Historical-Post' and '_source.title' in Array[0]:
-            self.corpus = list(set(df[df['_source.title']!='']['_source.title'].dropna().astype('str').tolist()))
-
-        # find the unique body in reddit comments
-        elif (source == 'reddit-Comment' or source == 'reddit-Historical-Comment') and 'body' in Array[0]:
-            self.corpus = list(set(df[df['body']!='']['body'].dropna().astype('str').tolist()))
-
-        # TODO: switch reddit comment to elasticsearch endpoint
-        # elif source == 'reddit-Historical-Comment' and '_source.body' in Array[0]:
-        #     self.corpus = list(set(df[df['_source.body']!='']['_source.body'].dropna().astype('str').tolist()))
+        # find the unique text in a corpus
+        self.corpus = list(set(df[df[column] != ''][column].dropna().astype('str').tolist()))
 
         # strip http in the corpus
         self.corpus = [ re.sub(r"http\S+","",text) for text in self.corpus]
@@ -158,7 +137,7 @@ def lambda_handler(event,context):
     output['config'] = s3.generate_downloads(awsPath, fname)
     output['uuid'] = event['uid']    
 
-    classification = Classification(awsPath, localSavePath, localReadPath, event['remoteReadPath'])
+    classification = Classification(awsPath, localSavePath, localReadPath, event['remoteReadPath'], event['column'])
     output.update(classification.split(int(event['ratio'])))
 
     return output
