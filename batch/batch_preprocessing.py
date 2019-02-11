@@ -401,7 +401,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="processing...")
     parser.add_argument('--remoteReadPath', required=True)
     parser.add_argument('--column',required=True)
-    parser.add_argument('--source',required=True)
+    parser.add_argument('--source',required=False)
     parser.add_argument('--process',required=True)
     parser.add_argument('--tagger',required=True)
     parser.add_argument('--s3FolderName',required=True)
