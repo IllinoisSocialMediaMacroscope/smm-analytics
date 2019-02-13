@@ -27,14 +27,14 @@ import writeToS3 as s3
 
 class Classification:
 
-    def __init__(self, awsPath, localSavePath, localReadPath, remoteReadPath,filename):
+    def __init__(self, awsPath, localSavePath, localReadPath, filename):
 
         self.localSavePath = localSavePath
         self.awsPath = awsPath
 
-        # download remote socialmedia data into a temp folder
+        # download labeled training data
         # load it into csv
-        s3.downloadToDisk(filename, localReadPath, remoteReadPath)
+        s3.downloadToDisk(filename, localReadPath, awsPath)
         
         Array = []
         try:
@@ -213,7 +213,7 @@ def lambda_handler(event,context):
         
    
     # download the labeled data from s3 to tmp
-    classification = Classification(awsPath, localSavePath, localReadPath, event['remoteReadPath'],event['labeledFilename'])
+    classification = Classification(awsPath, localSavePath, localReadPath, event['labeledFilename'])
     
     output.update(classification.classify(event['model']))
     output.update(classification.metrics())
