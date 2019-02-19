@@ -21,7 +21,7 @@ def lambda_handler(event, context):
                    'Accept': 'application/json'}
         body = personality_text.read().encode('utf-8', 'ignore')
         r = requests.post('https://gateway.watsonplatform.net/personality-insights/api/v3/profile?version=2017-10-13&consumption_preferences=true&raw_scores=true',
-            headers=headers, data=body, auth=(event['username'], event['password']), timeout=300)
+            headers=headers, data=body, auth=('apikey', event['apikey']), timeout=300)
 
         if r.status_code == 200:
             data = { 'screen_name': screen_name,
