@@ -1,0 +1,5 @@
+nltk
+pandas
+plotly
+networkx
+boto3

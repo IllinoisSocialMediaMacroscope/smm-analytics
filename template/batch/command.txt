@@ -1,0 +1,3 @@
+docker run -it [IMAGE_ID] python3.6 [SCRIPT_PATH] --remoteReadPath [REMOTE_READ_PATH] \
+--column [COLUMN] --s3FolderName [S3_FOLDER_NAME] --uid [UUID] --resultPath [RESULT_PATH] --email [EMAIL] \
+--sessionURL [SESSION_URL] --custom_parameters [CUSTOM_PARAMETERS] --custom_parameters [CUSTOM_PARAMETERS]

@@ -1,4 +1,9 @@
+example_dataset.csv
 .DS_Store
 config.json
 .gitignore
 .idea
+email_password.txt
+*.csv
+__pycache__
+glove.twitter.27B.*
