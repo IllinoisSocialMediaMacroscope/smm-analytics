@@ -141,7 +141,9 @@ def plot_bar_chart(index, counts, title):
             showline=True,
             showticklabels=True,
             linecolor='rgba(102, 102, 102, 0.8)',
-            linewidth=2
+            linewidth=2,
+            # 10 fold cross validation
+            range=[0, 1]
         ),
         margin=dict(
             l=70,

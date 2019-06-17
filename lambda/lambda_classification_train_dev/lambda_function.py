@@ -65,3 +65,19 @@ def lambda_handler(params, context):
             urls[key] = value
 
     return urls
+
+if __name__ == "__main__":
+    import csv
+
+    Array = []
+    with open('reddit-ml-multiclass.csv', 'r',encoding='ISO-8859-1') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            Array.append(row)
+
+    # RandomForest
+    params = {
+        "uid":"11111111111111",
+        "model":"AdaBoost"
+    }
+    output = algorithm(array=Array, params=params)
