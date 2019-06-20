@@ -31,7 +31,8 @@ class Classification:
         # load text set
         data = []
         try:
-            with open(self.localSavePath + 'testing.csv','r',encoding='utf-8') as f:
+            with open(self.localSavePath + 'testing.csv','r',encoding='utf-8',
+                      errors="ignore") as f:
                 reader = list(csv.reader(f))
                 for row in reader[1:]:
                     try:
@@ -39,7 +40,8 @@ class Classification:
                     except Exception as e:
                         pass
         except:
-            with open(self.localSavePath + 'testing.csv','r',encoding='ISO-8859-1') as f:
+            with open(self.localSavePath + 'testing.csv','r',encoding='ISO-8859-1',
+                      errors="ignore") as f:
                 reader = list(csv.reader(f))
                 for row in reader[1:]:
                     try:
@@ -53,7 +55,8 @@ class Classification:
         # save result
         fname = 'predicting.csv'
         try:
-            with open(self.localSavePath + fname,'w',newline="",encoding='utf-8') as f:
+            with open(self.localSavePath + fname,'w',newline="",encoding='utf-8',
+                      errors="ignore") as f:
                 writer = csv.writer(f)
                 writer.writerow(['text','category'])
                 for i in range(len(data)):
@@ -62,7 +65,8 @@ class Classification:
                     except:
                         pass
         except:
-            with open(self.localSavePath + fname,'w',newline="",encoding='ISO-8859-1') as f:
+            with open(self.localSavePath + fname,'w',newline="",encoding='ISO-8859-1',
+                      errors="ignore") as f:
                 writer = csv.writer(f)
                 writer.writerow(['text','category'])
                 for i in range(len(data)):

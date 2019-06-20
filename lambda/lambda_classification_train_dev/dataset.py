@@ -58,7 +58,7 @@ def get_remote_input(remoteReadPath, filename, localReadPath):
     Array = []
     try:
         with open(os.path.join(localReadPath, filename), 'r',
-                  encoding='utf-8') as f:
+                  encoding='utf-8', errors="ignore") as f:
             reader = csv.reader(f)
             try:
                 for row in reader:
@@ -67,18 +67,13 @@ def get_remote_input(remoteReadPath, filename, localReadPath):
                 print(e)
     except Exception:
         with open(os.path.join(localReadPath, filename), 'r',
-                  encoding='ISO-8859-1') as f:
+                  encoding='ISO-8859-1', errors="ignore") as f:
             reader = csv.reader(f)
             try:
                 for row in reader:
                     Array.append(row)
             except Exception as e:
                 print(e)
-
-    # # load to pandas dataframe
-    # df = pd.DataFrame(Array[1:], columns=Array[0])
-    #
-    # return df
 
     return Array
 
