@@ -66,6 +66,7 @@ def lambda_handler(params, context):
 
     return urls
 
+
 if __name__ == "__main__":
     import csv
 

@@ -2,6 +2,7 @@ import dataset
 import argparse
 from notification import notification
 from algorithm import algorithm
+from algorithm import StemmedCountVectorizer
 
 if __name__ == '__main__':
 

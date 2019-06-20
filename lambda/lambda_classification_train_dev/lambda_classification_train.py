@@ -35,7 +35,6 @@ class Classification:
         return text_clf
 
     def classify(self, model):
-
         if model == 'NaiveBayes':
             text_clf = self.pipeline(MultinomialNB())
         elif model == 'Perceptron':
