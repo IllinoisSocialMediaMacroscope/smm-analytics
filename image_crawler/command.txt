@@ -1,0 +1,2 @@
+docker run -it smile-image-crawler python3.6 /scripts/batch_function.py --remoteReadPath cwang138/GraphQL/reddit-Search/G20/ \
+--email cwang138@illinois.edu --sessionURL http://localhost:8001/networkx/

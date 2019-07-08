@@ -3,7 +3,7 @@ import os
 import mimetypes
 
 client = boto3.client('s3')
-bucket_name = 'macroscope-smile-images'
+bucket_name = 'macroscope-smile'
 
 def upload(localpath, remotepath, filename):
     content_type = mimetypes.guess_type(os.path.join(localpath,filename))[0]

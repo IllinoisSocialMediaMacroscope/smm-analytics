@@ -18,12 +18,16 @@ class image_crawler:
 
     @staticmethod
     def is_image(url):
-        head = requests.head(url)
-        content_type = head.headers.get('content-type')
+        try:
+            head = requests.head(url)
+            content_type = head.headers.get('content-type')
 
-        if content_type is not None and content_type.lower().startswith('image'):
-            return True
-        else:
+            if content_type is not None and content_type.lower().startswith('image'):
+                return True
+            else:
+                return False
+        # can't retrieve header
+        except:
             return False
 
 

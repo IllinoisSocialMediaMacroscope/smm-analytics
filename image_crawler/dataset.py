@@ -1,6 +1,7 @@
 import csv
 import os
 import pandas as pd
+import zipfile
 import writeToS3 as s3
 
 
@@ -11,21 +12,15 @@ def organize_path_lambda(event):
     :return: path dictionary
     """
     # arranging the paths
-    localReadPath = os.path.join('/tmp', event['s3FolderName'], event['uid'])
-    localSavePath = os.path.join('/tmp',
-                                 event['s3FolderName'] + event['resultPath'],
-                                 event['uid'])
-    remoteSavePath = os.path.join(event['s3FolderName'] + event['resultPath'],
-                                  event['uid'])
-    if 'remoteReadPath' not in event.keys() or event['remoteReadPath'] == 'undefined':
-        remoteReadPath = remoteSavePath
-        filename = event['labeledFilename']
-    else:
-        remoteReadPath = event['remoteReadPath']
-        filename = remoteReadPath.split('/')[-2] + '.csv'
+    remoteReadPath = event['remoteReadPath']
+    localReadPath = os.path.join('/tmp', remoteReadPath)
+    localSavePath = os.path.join('/tmp', remoteReadPath)
+    remoteSavePath = os.path.join(remoteReadPath)
+    filename = remoteReadPath.split('/')[-2] + '.csv'
 
     if not os.path.exists(localSavePath):
         os.makedirs(localSavePath)
+        os.makedirs(os.path.join(localSavePath, 'img'))
     if not os.path.exists(localReadPath):
         os.makedirs(localReadPath)
 
@@ -78,7 +73,20 @@ def get_remote_input(remoteReadPath, filename, localReadPath):
     return df
 
 
-def save_remote_output(localSavePath, remoteSavePath, fname, output_data):
+def save_local_output(localSavePath, fname, output_data):
+    with open(os.path.join(localSavePath, 'img', fname), 'wb') as f:
+        f.write(output_data)
+
+
+def zipdir(path, ziph):
+    # ziph is zipfile handle
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            print(file)
+            ziph.write(os.path.join(root, file), file)
+
+
+def save_remote_output(localSavePath, remoteSavePath, fname):
     """
 
     :param localSavePath:
@@ -87,9 +95,11 @@ def save_remote_output(localSavePath, remoteSavePath, fname, output_data):
     :param output_data:
     :return:
     """
+    zipf = zipfile.ZipFile(os.path.join(localSavePath, fname), 'w',
+                           zipfile.ZIP_DEFLATED)
+    zipdir(os.path.join(localSavePath,'img'), zipf)
+    zipf.close()
 
-    with open(os.path.join(localSavePath, fname), 'wb') as f:
-        f.write(output_data)
     s3.upload(localSavePath, remoteSavePath, fname)
     url = s3.generate_downloads(remoteSavePath, fname)
 
