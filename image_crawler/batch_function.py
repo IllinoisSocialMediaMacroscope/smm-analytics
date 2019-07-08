@@ -26,16 +26,20 @@ if __name__ == '__main__':
     img_urls = []
     source = path['remoteReadPath'].split('/')[-3]
     if source == "reddit-Search" or source == "reddit-Post" \
-            or source == "crimson-Hexagon":
-        img_urls = df['url'].tolist()
-    elif source == "twitter-Tweet" or source == "twitter-Timeline":
-        pass
-    elif source == "twitter-Stream":
-        pass
-    elif source == "reddit-Historical-Post":
-        img_urls = df['_source.url'].tolist()
+            or source == "crimson-Hexagon" \
+            and 'url' in list(df.columns):
+        img_urls = df['url'].dropna().tolist()
+
+    elif source == "twitter-Tweet" or source == "twitter-Timeline" \
+            and 'entities.media.media_url' in list(df.columns):
+        img_urls = df['entities.media.media_url'].dropna().tolist()
+
+    elif source == "reddit-Historical-Post" \
+            and '_source.url' in list(df.columns):
+        img_urls = df['_source.url'].dropna().tolist()
+
     else:
-        raise ValueError("This data source does not support image!")
+        raise ValueError("This data source does not support image collection!")
 
     urls = {}
     for img_url in img_urls:
