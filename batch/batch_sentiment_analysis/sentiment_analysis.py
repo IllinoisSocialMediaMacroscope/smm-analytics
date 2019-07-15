@@ -1,8 +1,11 @@
+import pickle
 from nltk import pos_tag, WordNetLemmatizer
 from nltk.sentiment.vader import SentimentIntensityAnalyzer, \
     allcap_differential, negated
 from nltk.tokenize import word_tokenize
 from nltk.corpus import sentiwordnet as swn, stopwords
+import sentiment_analysis_debias as SA_debias
+
 
 class Sentiment:
 
@@ -20,13 +23,13 @@ class Sentiment:
         and store the list of scores in sentiment.csv
         '''
 
-        sid = SentimentIntensityAnalyzer()
-
-        sentiment_sentence = [
-            ['sentence', 'negative', 'neutral', 'positive', 'compound']]
-
         if algorithm == 'vader':
+
+            sid = SentimentIntensityAnalyzer()
+
             # sentence level
+            sentiment_sentence = [
+                ['sentence', 'negative', 'neutral', 'positive', 'compound']]
             for item in self.sentences:
                 sent_scores = sid.polarity_scores(item)
                 sentiment_sentence.append([item.encode('utf-8', 'ignore'),
@@ -44,14 +47,14 @@ class Sentiment:
             doc_obj_score = []
 
             # sentence level
+            sentiment_sentence = [
+                ['sentence', 'negative', 'neutral', 'positive']]
             for sent in self.sentences:
                 tokens = word_tokenize(sent)
-
                 filtered_tokens = [word.lower() for word in tokens
                                    if (word.isalpha() == True
                                        and word.lower()
                                        not in stopwords.words('english'))]
-
                 wnl = WordNetLemmatizer()
                 processed_tokens = [wnl.lemmatize(word) for word in
                                     filtered_tokens]
@@ -82,13 +85,41 @@ class Sentiment:
                     sentiment_sentence.append([sent.encode('utf-8', 'ignore'),
                                                self.average(neg_score),
                                                self.average(obj_score),
-                                               self.average(pos_score),
-                                               'NA'])
+                                               self.average(pos_score)])
 
             # document level
             sentiment_doc = {'neg': self.average(doc_neg_score),
                              'neu': self.average(doc_obj_score),
                              'pos': self.average(doc_pos_score)}
+
+        elif algorithm == 'debias':
+
+            # load embeddings and model
+            with open("sentiment_analysis_debias.pickle", "rb") as f:
+                model = pickle.load(f)
+            embeddings = SA_debias.load_embeddings('numberbatch-en-17.04b.txt')
+
+            # sentence level
+            sentiment_sentence = [['sentence', 'score']]
+            doc_score = []
+            for sent in self.sentences:
+
+                # if valid
+                score = SA_debias.text_to_sentiment(sent, embeddings, model)
+                if score:
+                    doc_score.append(score)
+                    sentiment_sentence.append(
+                        [sent.encode('utf-8', 'ignore'), score])
+                else:
+                    sentiment_sentence.append(
+                        [sent.encode('utf-8', 'ignore'), 'NA'])
+
+            # document level
+            sentiment_doc = {'doc': self.average(doc_score)}
+
+        else:
+            sentiment_sentence = [[]]
+            sentiment_doc = {}
 
         return sentiment_sentence, sentiment_doc
 
