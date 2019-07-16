@@ -109,7 +109,7 @@ class Sentiment:
                 if score:
                     doc_score.append(score)
                     sentiment_sentence.append(
-                        [sent.encode('utf-8', 'ignore'), score])
+                        [sent.encode('utf-8', 'ignore'), round(score, 4)])
                 else:
                     sentiment_sentence.append(
                         [sent.encode('utf-8', 'ignore'), 'NA'])
