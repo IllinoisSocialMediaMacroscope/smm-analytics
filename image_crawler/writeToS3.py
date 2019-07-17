@@ -12,7 +12,8 @@ def upload(localpath, remotepath, filename):
         extra_args = {'ContentType':'application/octet-stream'}
     else:
         extra_args = {'ContentType':content_type}
-    
+
+    extra_args['StorageClass'] = 'STANDARD_IA'
     client.upload_file(os.path.join(localpath, filename),
                        bucket_name,
                        os.path.join(remotepath, filename),
