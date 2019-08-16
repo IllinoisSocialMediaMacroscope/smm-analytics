@@ -7,3 +7,4 @@ email_password.txt
 *.csv
 __pycache__
 glove.twitter.27B.*
+numberbatch-en-17.04b.*

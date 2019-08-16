@@ -26,11 +26,14 @@ def algorithm(df, params):
         output['allcap'] = SA.allcap()
 
     # plot
-    labels = ['negative', 'neutral', 'positive']
-    values = [sentiment_doc['neg'], sentiment_doc['neu'],
-              sentiment_doc['pos']]
-    output['div'] = plot.plot_pie_chart(labels, values,
-                                        title='Sentiment of the dataset')
+    if 'neg' in sentiment_doc.keys() \
+            and 'neu' in sentiment_doc.keys() \
+            and 'pos' in sentiment_doc.keys():
+        labels = ['negative', 'neutral', 'positive']
+        values = [sentiment_doc['neg'], sentiment_doc['neu'],
+                  sentiment_doc['pos']]
+        output['div'] = plot.plot_pie_chart(labels, values,
+                                            title='Sentiment of the dataset')
 
     return output
 
@@ -48,7 +51,7 @@ if __name__ == '__main__':
     # add your parameters needed by the analysis
     params = {
         "column": "text",
-        "algorithm": "vader"
+        "algorithm": "debias"
     }
 
     # execute your algorithm
@@ -58,6 +61,6 @@ if __name__ == '__main__':
     print(output.keys())
     print(output['sentiment'][:5])
     print(output['doc'])
-    print(output['negation'][:5])
-    print(output['allcap'][:5])
-    print(output['div'][:100])
+    # print(output['negation'][:5])
+    # print(output['allcap'][:5])
+    # print(output['div'][:100])
