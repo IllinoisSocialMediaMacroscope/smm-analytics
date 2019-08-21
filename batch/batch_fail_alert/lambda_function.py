@@ -3,6 +3,8 @@ import os
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from base64 import b64decode
+import boto3
 
 
 def lambda_handler(event, context):
@@ -17,7 +19,11 @@ def lambda_handler(event, context):
     else:
         toaddr = "srti-lab@illinois.edu"
 
-    password = os.environ['password']
+    ENCRYPTED = os.environ['password']
+    password = \
+    boto3.client('kms').decrypt(CiphertextBlob=b64decode(ENCRYPTED))[
+        'Plaintext'].decode('utf-8')
+
     subject = "SMM batch job failed"
     job_name = event['detail']['jobName']
     job_id = event['id']
