@@ -1,5 +1,6 @@
 import imp
 import sys
+import itertools
 
 # work around to solve the issue that aws lambda doesn't have sqlite compiled
 sys.modules['sqlite'] = imp.new_module('sqlite')
@@ -19,8 +20,36 @@ class Sentiment:
 
     def __init__(self, df, column):
         # user specify which column to; each row is a sentence, get a list of sentences
-        self.sentences = df[df[column] != ''][column].dropna().astype(
-            'str').tolist()
+        self.id_column = "id"
+        if 'id_str' in df.columns:
+            self.id_column = 'id_str'
+            df_new = df[df[column] != ''][[self.id_column, column]].dropna()
+            self.sentences = df_new[column].astype('str').tolist()
+            self.id = df_new[self.id_column].astype('str').tolist()
+        elif 'id' in df.columns:
+            self.id_column = 'id'
+            df_new = df[df[column] != ''][[self.id_column, column]].dropna()
+            self.sentences = df_new[column].astype('str').tolist()
+            self.id = df_new[self.id_column].astype('str').tolist()
+        elif 'comment_id' in df.columns:
+            self.id_column = 'comment_id'
+            df_new = df[df[column] != ''][[self.id_column, column]].dropna()
+            self.sentences = df_new[column].astype('str').tolist()
+            self.id = df_new[self.id_column].astype('str').tolist()
+        elif '_source.id_str':
+            self.id_column = '_source.id_str'
+            df_new = df[df[column] != ''][[self.id_column, column]].dropna()
+            self.sentences = df_new[column].astype('str').tolist()
+            self.id = df_new[self.id_column].astype('str').tolist()
+        elif '_source.id':
+            self.id_column = '_source.id_str'
+            df_new = df[df[column] != ''][[self.id_column, column]].dropna()
+            self.sentences = df_new[column].astype('str').tolist()
+            self.id = df_new[self.id_column].astype('str').tolist()
+        else:
+            self.sentences = df[df[column] != ''][column].dropna().astype(
+                'str').tolist()
+            self.id = []
 
         # combine sentences into a document
         self.text = ''.join(self.sentences)
@@ -34,13 +63,15 @@ class Sentiment:
         sid = SentimentIntensityAnalyzer()
 
         sentiment_sentence = [
-            ['sentence', 'negative', 'neutral', 'positive', 'compound']]
+            [self.id_column, 'sentence', 'negative', 'neutral', 'positive', 'compound']]
+        sentiment_doc = {}
 
         if algorithm == 'vader':
             # sentence level
-            for item in self.sentences:
-                sent_scores = sid.polarity_scores(item)
-                sentiment_sentence.append([item.encode('utf-8', 'ignore'),
+            for sent_id, sent in itertools.zip_longest(self.id, self.sentences):
+                sent_scores = sid.polarity_scores(sent)
+                sentiment_sentence.append([sent_id,
+                                           sent.encode('utf-8', 'ignore'),
                                            sent_scores['neg'],
                                            sent_scores['neu'],
                                            sent_scores['pos'],
@@ -55,7 +86,7 @@ class Sentiment:
             doc_obj_score = []
 
             # sentence level
-            for sent in self.sentences:
+            for sent_id, sent in itertools.zip_longest(self.id, self.sentences):
                 tokens = word_tokenize(sent)
 
                 filtered_tokens = [word.lower() for word in tokens
@@ -90,7 +121,8 @@ class Sentiment:
                     doc_neg_score.append(self.average(neg_score))
                     doc_obj_score.append(self.average(obj_score))
 
-                    sentiment_sentence.append([sent.encode('utf-8', 'ignore'),
+                    sentiment_sentence.append([sent_id,
+                                               sent.encode('utf-8', 'ignore'),
                                                self.average(neg_score),
                                                self.average(obj_score),
                                                self.average(pos_score),
@@ -108,10 +140,10 @@ class Sentiment:
         find if a sentence has negation word
         store the True/false per sentence to negation.csv
         '''
-        negation_result = [['sentence', 'hasNegation']]
-        for item in self.sentences:
+        negation_result = [[self.id_column, 'sentence', 'hasNegation']]
+        for sent_id, sent in itertools.zip_longest(self.id, self.sentences):
             negation_result.append(
-                [item.encode('utf-8', 'ignore'), negated(item)])
+                [sent_id, sent.encode('utf-8', 'ignore'), negated(sent)])
 
         return negation_result
 
@@ -120,10 +152,10 @@ class Sentiment:
         find if a sentence is composed of all capital letter
         store the True/False per sentence to allcap.csv
         '''
-        allcap_result = [['sentence', 'ALL CAPITAL']]
-        for item in self.sentences:
-            allcap_result.append([item.encode('utf-8', 'ignore'),
-                                  allcap_differential(item)])
+        allcap_result = [[self.id_column,'sentence', 'ALL CAPITAL']]
+        for sent_id, sent in itertools.zip_longest(self.id, self.sentences):
+            allcap_result.append([sent_id, sent.encode('utf-8', 'ignore'),
+                                  allcap_differential(sent)])
 
         return allcap_result
 

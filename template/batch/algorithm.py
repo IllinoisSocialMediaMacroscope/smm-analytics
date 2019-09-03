@@ -28,8 +28,10 @@ if __name__ == '__main__':
     df = pd.read_csv('example_dataset.csv')
 
     # add your parameters needed by the analysis
+    # for example:
     params = {
-
+        "column": "text",
+        "algorithm": "certain algorithm"
     }
 
     # execute your algorithm

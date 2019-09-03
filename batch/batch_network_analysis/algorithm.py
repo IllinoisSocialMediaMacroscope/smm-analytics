@@ -35,25 +35,3 @@ def algorithm(df, params):
 
     return output
 
-
-if __name__ == '__main__':
-    """ 
-    help user with no access to AWS test their model
-    to test just run algorithm.py:
-    python3 algorithm.py
-    """
-
-    # download our example dataset and place it under the same directory of this script
-    df = pd.read_csv('example_dataset.csv')
-
-    # add your parameters needed by the analysis
-    params = {
-        'relations':'retweet_from',
-        'layout':'fruchterman'
-    }
-
-    # execute your algorithm
-    output = algorithm(df, params)
-
-    # see if the outputs are what you desired
-    print(output.keys())

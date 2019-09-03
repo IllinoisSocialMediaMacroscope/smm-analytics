@@ -3,6 +3,85 @@ from networkx.readwrite import json_graph
 import pandas
 
 
+def extract_relation_graph(df, relation, text_field, username_field, id_column=None):
+    if id_column:
+        df = df[[id_column, text_field, username_field]].dropna()
+        if relation == 'retweet_from':
+            df[relation] = df[text_field].str.extract(
+                'RT @([A-Za-z0-9-_]+):', expand=True)
+            new_df = df[
+                [id_column, relation, username_field, text_field]].dropna()
+        elif relation == 'reply_to':
+            df[relation] = df[relation] = df[text_field].str.extract(
+                '^@([A-Za-z0-9-_]+)', expand=True)
+            new_df = df[[id_column, relation, username_field, text_field]].dropna()
+        elif relation == 'mentions':
+            df[relation] = df[text_field].str.findall('@([A-Za-z0-9-_]+)')
+            tmp = []
+
+            def __backend(r):
+                x = r[username_field]
+                y = r[text_field]
+                i = r[id_column]
+                zz = r[relation]
+                for z in zz:
+                    tmp.append({username_field: x,
+                                text_field: y,
+                                id_column: i,
+                                relation: z})
+
+            df.apply(__backend, axis=1)
+            new_df = pandas.DataFrame(tmp).dropna()
+        else:
+            raise ValueError(
+                'The relation you select is not implemented in this analysis yet.')
+
+        graph = nx.DiGraph()
+        for row in new_df.iterrows():
+            graph.add_edge(row[1][username_field],
+                           row[1][relation],
+                           text=row[1][text_field],
+                           id = row[1][id_column])
+        return graph
+
+    else:
+        df = df[[text_field, username_field]].dropna()
+        if relation == 'retweet_from':
+            df[relation] = df[text_field].str.extract(
+                'RT @([A-Za-z0-9-_]+):', expand=True)
+            new_df = df[
+                [relation, username_field, text_field]].dropna()
+        elif relation == 'reply_to':
+            df[relation] = df[relation] = df[text_field].str.extract(
+                '^@([A-Za-z0-9-_]+)', expand=True)
+            new_df = df[[relation, username_field, text_field]].dropna()
+        elif relation == 'mentions':
+            df[relation] = df[text_field].str.findall('@([A-Za-z0-9-_]+)')
+            tmp = []
+
+            def __backend(r):
+                x = r[username_field]
+                y = r[text_field]
+                zz = r[relation]
+                for z in zz:
+                    tmp.append({username_field: x,
+                                text_field: y,
+                                relation: z})
+
+            df.apply(__backend, axis=1)
+            new_df = pandas.DataFrame(tmp).dropna()
+        else:
+            raise ValueError(
+                'The relation you select is not implemented in this analysis yet.')
+
+        graph = nx.DiGraph()
+        for row in new_df.iterrows():
+            graph.add_edge(row[1][username_field],
+                           row[1][relation],
+                           text=row[1][text_field])
+        return graph
+
+
 class Network:
 
     def __init__(self, df, relationships):
@@ -11,124 +90,29 @@ class Network:
         # 2 datasources with different field: twitter-Tweet & twitter-Stream
 
         columns = df.columns.values.tolist()
-
-        if relationships == 'reply_to':
-            if 'text' in columns and 'user.screen_name' in columns:
-                df = df[['text', 'user.screen_name']].dropna()
-                # extract tweet starting with @XXX
-                df['reply_to'] = df['text'].str.extract('^@([A-Za-z0-9-_]+)',
-                                                        expand=True)
-                new_df = df[['reply_to', 'user.screen_name', 'text']].dropna()
-
-                self.graph = nx.DiGraph()
-                for row in new_df.iterrows():
-                    self.graph.add_edge(row[1]['user.screen_name'],
-                                        row[1]['reply_to'],
-                                        text=row[1]['text'])
-            elif '_source.text' in columns and '_source.user.screen_name' in columns:
-                df = df[['_source.text', '_source.user.screen_name']].dropna()
-                df['reply_to'] = df['_source.text'].str.extract(
-                    '^@([A-Za-z0-9-_]+)',
-                    expand=True)
-                new_df = df[['reply_to', '_source.user.screen_name',
-                             '_source.text']].dropna()
-
-                self.graph = nx.DiGraph()
-                for row in new_df.iterrows():
-                    self.graph.add_edge(row[1]['_source.user.screen_name'],
-                                        row[1]['reply_to'],
-                                        text=row[1]['_source.text'])
+        if 'text' in columns and 'user.screen_name' in columns:
+            if 'id_str' in columns:
+                self.graph = extract_relation_graph(df, relationships, 'text',
+                                                'user.screen_name',
+                                                id_column='id_str')
             else:
-                raise ValueError(
-                    'The File you selected does not have complete '
-                    'information to construct a network. You must '
-                    'have the full tweet as well as the author information.')
-
-        elif relationships == 'retweet_from':
-            if 'text' in columns and 'user.screen_name' in columns:
-                df = df[['text', 'user.screen_name']].dropna()
-                # extract tweets has RT @XXX
-                df['retweet_from'] = df['text'] \
-                    .str.extract('RT @([A-Za-z0-9-_]+):', expand=True)
-                new_df = df[['retweet_from', 'user.screen_name',
-                             'text']].dropna()
-
-                self.graph = nx.DiGraph()
-                for row in new_df.iterrows():
-                    self.graph.add_edge(row[1]['user.screen_name'],
-                                        row[1]['retweet_from'],
-                                        text=row[1]['text'])
-            elif '_source.text' in columns and '_source.user.screen_name' in columns:
-                df = df[['_source.text', '_source.user.screen_name']].dropna()
-                df['retweet_from'] = df['_source.text'] \
-                    .str.extract('RT @([A-Za-z0-9-_]+):', expand=True)
-                new_df = df[['retweet_from',
-                             '_source.user.screen_name',
-                             '_source.text']].dropna()
-
-                self.graph = nx.DiGraph()
-                for row in new_df.iterrows():
-                    self.graph.add_edge(row[1]['_source.user.screen_name'],
-                                        row[1]['retweet_from'],
-                                        text=row[1]['_source.text'])
+                self.graph = extract_relation_graph(df, relationships, 'text',
+                                                    'user.screen_name')
+        elif '_source.text' in columns and '_source.user.screen_name' in columns:
+            if '_source.id_str' in columns:
+                self.graph = extract_relation_graph(df, relationships,
+                                                    '_source.text',
+                                                    '_source.user.screen_name',
+                                                    id_column='_source.id_str')
             else:
-                raise ValueError(
-                    'The File you selected does not have complete '
-                    'information to construct a network. You must '
-                    'have the full tweet as well as the author information.')
-
-        elif relationships == 'mentions':
-            if 'text' in columns and 'user.screen_name' in columns:
-                df = df[['text', 'user.screen_name']].dropna()
-                # extract tweets contains any @
-                df['mentions'] = df['text'].str.findall('@([A-Za-z0-9-_]+)')
-                tmp = []
-
-                def __backend(r):
-                    x = r['user.screen_name']
-                    y = r['text']
-                    zz = r['mentions']
-                    for z in zz:
-                        tmp.append({'screen_name': x,
-                                    'tweet': y,
-                                    'mention': z})
-
-                df.apply(__backend, axis=1)
-                new_df = pandas.DataFrame(tmp).dropna()
-
-                self.graph = nx.DiGraph()
-                for row in new_df.iterrows():
-                    self.graph.add_edge(row[1]['screen_name'],
-                                        row[1]['mention'],
-                                        text=row[1]['tweet'])
-            elif '_source.text' in columns and '_source.user.screen_name' in columns:
-                df = df[['_source.text', '_source.user.screen_name']].dropna()
-                df['mentions'] = df['_source.text'].str.findall(
-                    '@([A-Za-z0-9-_]+)')
-                tmp = []
-
-                def __backend(r):
-                    x = r['_source.user.screen_name']
-                    y = r['_source.text']
-                    zz = r['mentions']
-                    for z in zz:
-                        tmp.append({'screen_name': x,
-                                    'tweet': y,
-                                    'mention': z})
-
-                df.apply(__backend, axis=1)
-                new_df = pandas.DataFrame(tmp).dropna()
-
-                self.graph = nx.DiGraph()
-                for row in new_df.iterrows():
-                    self.graph.add_edge(row[1]['screen_name'],
-                                        row[1]['mention'],
-                                        text=row[1]['tweet'])
-            else:
-                raise ValueError(
-                    'The File you selected does not have complete '
-                    'information to construct a network. You must '
-                    'have the full tweet as well as the author information.')
+                self.graph = extract_relation_graph(df, relationships,
+                                                '_source.text',
+                                                '_source.user.screen_name')
+        else:
+            raise ValueError(
+                'The File you selected does not have complete '
+                'information to construct a network. You must '
+                'have the full tweet as well as the author information.')
 
     def prune_network(self):
         d = nx.degree_centrality(self.graph)

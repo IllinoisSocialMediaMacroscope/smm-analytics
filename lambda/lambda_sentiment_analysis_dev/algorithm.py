@@ -25,13 +25,10 @@ def algorithm(df, params):
         output['allcap'] = SA.allcap()
 
     # plot
-    if 'neg' in sentiment_doc.keys() \
-            and 'neu' in sentiment_doc.keys() \
-            and 'pos' in sentiment_doc.keys():
-        labels = ['negative', 'neutral', 'positive']
-        values = [sentiment_doc['neg'], sentiment_doc['neu'],
-                  sentiment_doc['pos']]
-        output['div'] = plot.plot_pie_chart(labels, values,
-                                            title='Sentiment of the dataset')
+    labels = ['negative', 'neutral', 'positive']
+    values = [sentiment_doc['neg'], sentiment_doc['neu'],
+              sentiment_doc['pos']]
+    output['div'] = plot.plot_pie_chart(labels, values,
+                                        title='Sentiment of the dataset')
 
     return output
