@@ -1,10 +1,11 @@
 import csv
 import os
+
 import pandas as pd
 import plotly.graph_objs as go
-from plotly import tools
-from plotly.offline import plot
 import writeToS3 as s3
+from plotly.offline import plot
+
 
 def plot_freq(index, counts, interval, localPath, remotePath):
     if interval == '1T':
@@ -69,14 +70,13 @@ def plot_freq(index, counts, interval, localPath, remotePath):
     return div_url
 
 
-def count_freq(df, time_col_name, content_col_name, time_freq ,time_unit):
+def count_freq(df, time_col_name, time_freq, time_unit):
     # convert time column to datetime
     df[time_col_name] = pd.to_datetime(df[time_col_name],unit=time_unit)
     # set index to datetime
     df.set_index(df[time_col_name],inplace=True)
 
-    return df[content_col_name].resample(time_freq).count()
-
+    return df[time_col_name].resample(time_freq).count()
 
 
 def lambda_handler(event, context):    
@@ -101,7 +101,7 @@ def lambda_handler(event, context):
             except Exception as e:
                 pass
     except:
-        with open(localReadPath + filename,'r',encoding="ISO-8859-1") as f:
+        with open(localPath + filename, 'r', encoding="ISO-8859-1") as f:
             reader = csv.reader(f)
             try:
                 for row in reader:
@@ -118,7 +118,7 @@ def lambda_handler(event, context):
             interval = event['interval']
         else:
             interval = '1H'
-        freq = count_freq(df, 'created_at', 'created_at', interval, 'ns')
+        freq = count_freq(df, 'created_at', interval, 'ns')
 
     # twitter user
     elif 'author_created_at' in df.columns:
@@ -127,7 +127,7 @@ def lambda_handler(event, context):
             interval = event['interval']
         else:
             interval = '1M'
-        freq = count_freq(df, 'author_created_at', 'author_created_at', interval, 'ns')
+        freq = count_freq(df, 'author_created_at', interval, 'ns')
 
     # stream twitter
     elif '_source.created_at' in df.columns:
@@ -136,7 +136,7 @@ def lambda_handler(event, context):
             interval = event['interval']
         else:
             interval = '1D'
-        freq = count_freq(df, '_source.created_at', '_source.created_at', interval, 'ns')
+        freq = count_freq(df, '_source.created_at', interval, 'ns')
        
     # reddit, reddit post, reddit comment
     elif 'created_utc' in df.columns:
@@ -145,7 +145,7 @@ def lambda_handler(event, context):
             interval = event['interval']
         else:
             interval = '1M'
-        freq = count_freq(df, 'created_utc', 'created_utc', interval, 's')
+        freq = count_freq(df, 'created_utc', interval, 's')
 
     # historical reddit post
     elif '_source.created_utc' in df.columns:
@@ -154,7 +154,7 @@ def lambda_handler(event, context):
             interval = event['interval']
         else:
             interval = '1M'
-        freq = count_freq(df, '_source.created_utc', '_source.created_utc', interval, 's')
+        freq = count_freq(df, '_source.created_utc', interval, 's')
 
     # historical reddit comment
     elif 'comment_created' in df.columns:
@@ -163,7 +163,17 @@ def lambda_handler(event, context):
             interval = event['interval']
         else:
             interval = '1M'
-        freq = count_freq(df, 'comment_created', 'comment_created', interval, 's')   
+        freq = count_freq(df, 'comment_created', interval, 's')
+
+    # flickr photos
+    elif 'info.dateuploaded' in df.columns:
+        # default at 1 month
+        if 'interval' in event:
+            interval = event['interval']
+        else:
+            interval = '1M'
+        freq = count_freq(df, 'info.dateuploaded', interval, 's')
+
     else:
         return {'url':'null'}
 
@@ -171,7 +181,6 @@ def lambda_handler(event, context):
     counts = freq.tolist()
     
     url = plot_freq(index, counts, interval, localPath, remotePath)
-    print(url)
 
     return {'url': url}
         

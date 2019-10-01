@@ -34,6 +34,9 @@ if __name__ == '__main__':
             and 'entities.media.media_url' in list(df.columns):
         img_urls = df['entities.media.media_url'].dropna().tolist()
 
+    elif source == 'flickr-Photo' and 'size.source' in list(df.columns):
+        img_urls = df['size.source'].dropna().tolist()
+
     else:
         raise ValueError("This data source does not support image collection!")
 
