@@ -24,7 +24,7 @@ def check_screen_name_handler(ch, method, properties, body):
     return msg
 
 
-connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+connection = pika.BlockingConnection(pika.ConnectionParameters(host='host.docker.internal'))
 channel = connection.channel()
 queue = "bae_check_screen_name"
 channel.queue_declare(queue=queue)
