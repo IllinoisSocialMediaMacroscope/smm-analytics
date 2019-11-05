@@ -26,7 +26,7 @@ def botometer_check_bot_handler(ch, method, properties, body):
     return result
 
 
-connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+connection = pika.BlockingConnection(pika.ConnectionParameters(host='host.docker.internal'))
 channel = connection.channel()
 queue = "bae_botometer"
 channel.queue_declare(queue=queue)

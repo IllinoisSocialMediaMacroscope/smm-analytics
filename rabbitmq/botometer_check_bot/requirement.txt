@@ -1,0 +1,2 @@
+pika>=1.1.0
+botometer>=1.4
