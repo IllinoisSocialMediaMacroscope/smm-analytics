@@ -1,0 +1,36 @@
+import json
+
+import botometer
+import pika
+
+
+def botometer_check_bot_handler(ch, method, properties, body):
+    event = json.loads(body)
+    mashape_key = event['mashape_key']
+    twitter_app_auth = {
+        'consumer_key': event['consumer_key'],
+        'consumer_secret': event['consumer_secret'],
+        'access_token': event['access_token'],
+        'access_token_secret': event['access_token_secret'],
+    }
+    bom = botometer.Botometer(wait_on_ratelimit=False,
+                              mashape_key=mashape_key,
+                              **twitter_app_auth)
+    result = bom.check_account(event['screen_name'])
+
+    # reply to the sender
+    ch.basic_publish(exchange="",
+                     routing_key=properties.reply_to,
+                     properties=pika.BasicProperties(correlation_id=properties.correlation_id),
+                     body=json.dumps(result))
+
+    return result
+
+
+connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+channel = connection.channel()
+queue = "bae_botometer"
+channel.queue_declare(queue=queue)
+channel.basic_qos(prefetch_count=1)
+channel.basic_consume(queue=queue, on_message_callback=botometer_check_bot_handler, auto_ack=True)
+channel.start_consuming()
