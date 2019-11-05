@@ -41,7 +41,7 @@ def collect_timeline_handler(ch, method, properties, body):
             'This user\'s timeline (screen_name: ' + event['screen_name'] + ') is empty. There is nothing to analyze!')
 
 
-connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+connection = pika.BlockingConnection(pika.ConnectionParameters(host='host.docker.internal'))
 channel = connection.channel()
 queue = "bae_collect_timeline"
 channel.queue_declare(queue=queue)
