@@ -109,3 +109,12 @@ def bulk_comparison_handler(ch, method, properties, body):
                      body=json.dumps(data))
 
     return data
+
+
+connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+channel = connection.channel()
+queue = "bae_bulk_comparison"
+channel.queue_declare(queue=queue)
+channel.basic_qos(prefetch_count=1)
+channel.basic_consume(queue=queue, on_message_callback=bulk_comparison_handler, auto_ack=True)
+channel.start_consuming()

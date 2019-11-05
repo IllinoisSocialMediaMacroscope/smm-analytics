@@ -1,9 +1,15 @@
 import boto3
 import os
-import requests
 import mimetypes
+import json
 
-client = boto3.client('s3')
+with open('config.json', 'r') as f:
+    cred = json.load(f)
+
+client = boto3.client('s3',
+                      aws_access_key_id = cred['aws']['accessKey'],
+                      aws_secret_access_key = cred['aws']['accessKeySecret'])
+
 bucket_name = 'macroscope-bae'
 
 def upload(localpath, remotepath, filename):
