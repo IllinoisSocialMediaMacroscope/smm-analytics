@@ -47,7 +47,7 @@ def get_personality_handler(ch, method, properties, body):
             raise ValueError(r.text)
 
 
-connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+connection = pika.BlockingConnection(pika.ConnectionParameters(host='host.docker.internal'))
 channel = connection.channel()
 queue = "bae_get_personality"
 channel.queue_declare(queue=queue)

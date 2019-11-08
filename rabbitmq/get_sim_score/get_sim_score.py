@@ -92,7 +92,7 @@ def get_sim_score_handler(ch, method, properties, body):
             'cannot calculate the cosine similarity of these two vectors!')
 
 
-connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+connection = pika.BlockingConnection(pika.ConnectionParameters(host='host.docker.internal'))
 channel = connection.channel()
 queue = "bae_get_sim_score"
 channel.queue_declare(queue=queue)
