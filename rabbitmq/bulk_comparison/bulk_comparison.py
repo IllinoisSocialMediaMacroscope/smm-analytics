@@ -111,7 +111,7 @@ def bulk_comparison_handler(ch, method, properties, body):
     return data
 
 
-connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+connection = pika.BlockingConnection(pika.ConnectionParameters(host='host.docker.internal'))
 channel = connection.channel()
 queue = "bae_bulk_comparison"
 channel.queue_declare(queue=queue)
