@@ -15,7 +15,7 @@ services:
     image: botometer_check_bot:latest
     depends_on:
     - rabbitmq
-    command: python ./botometer_check_bot.py --port 5672 --host ${RABBIT_HOST_IP}
+    command: python ./botometer_check_bot.py
     restart: unless-stopped
 
   algorithm_bulk_comparison:
@@ -23,7 +23,7 @@ services:
     image: bulk_comparison:latest
     depends_on:
     - rabbitmq
-    command: python ./bulk_comparison.py --port 5672 --host ${RABBIT_HOST_IP}
+    command: python ./bulk_comparison.py
     restart: unless-stopped
 
   algorithm_check_screen_name:
@@ -31,7 +31,7 @@ services:
     image: check_screen_name:latest
     depends_on:
     - rabbitmq
-    command: python ./check_screen_name.py --port 5672 --host ${RABBIT_HOST_IP}
+    command: python ./check_screen_name.py
     restart: unless-stopped
 
   algorithm_collect_timeline:
@@ -39,7 +39,7 @@ services:
     image: collect_timeline:latest
     depends_on:
     - rabbitmq
-    command: python ./collect_timeline.py --port 5672 --host ${RABBIT_HOST_IP}
+    command: python ./collect_timeline.py
     restart: unless-stopped
 
   algorithm_get_personality:
@@ -47,7 +47,7 @@ services:
     image: get_personality:latest
     depends_on:
     - rabbitmq
-    command: python ./get_personality.py --port 5672 --host ${RABBIT_HOST_IP}
+    command: python ./get_personality.py
     restart: unless-stopped
 
   algorithm_get_sim_score:
@@ -55,7 +55,7 @@ services:
     image: get_sim_score:latest
     depends_on:
     - rabbitmq
-    command: python ./get_sim_score.py --port 5672 --host ${RABBIT_HOST_IP}
+    command: python ./get_sim_score.py
     restart: unless-stopped
 
   algorithm_screen_name_prompt:
@@ -63,7 +63,23 @@ services:
     image: screen_name_prompt:latest
     depends_on:
     - rabbitmq
-    command: python ./screen_name_prompt.py --port 5672 --host ${RABBIT_HOST_IP}
+    command: python ./screen_name_prompt.py
+    restart: unless-stopped
+
+  bae_server:
+    image: bae-server:latest
+    depends_on:
+    - rabbitmq
+    - algorithm_botometer_check_bot
+    - algorithm_bulk_comparison
+    - algorithm_check_screen_name
+    - algorithm_collect_timeline
+    - algorithm_get_personality
+    - algorithm_get_sim_score
+    - algorithm_screen_name_prompt
+    ports:
+    - "8001:8001"
+    command: npm start
     restart: unless-stopped
 
 #    networks:

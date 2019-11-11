@@ -3,7 +3,6 @@ import os
 import pika
 import requests
 import writeToS3 as s3
-from argparse import RawTextHelpFormatter, ArgumentParser
 
 
 def get_personality_handler(ch, method, properties, body):
@@ -50,20 +49,7 @@ def get_personality_handler(ch, method, properties, body):
 
 if __name__ == '__main__':
 
-    parser = ArgumentParser(formatter_class=RawTextHelpFormatter, description='Run consumer.py')
-    parser.add_argument('--port', action='store', dest='port', help='The port to listen on.')
-    parser.add_argument('--host', action='store', dest='host', help='The RabbitMQ host.')
-
-    args = parser.parse_args()
-    if not args.port:
-        args.port = 5672
-    if not args.host:
-        raise ValueError("Missing required argument:--host")
-
-    print(args.host)
-    print(args.port)
-
-    connection = pika.BlockingConnection(pika.ConnectionParameters(port=args.port, host=args.host))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(port=5672, host="rabbitmq"))
     channel = connection.channel()
     queue = "bae_get_personality"
     channel.queue_declare(queue=queue)
