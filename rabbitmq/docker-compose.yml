@@ -1,41 +1,69 @@
 version: "3.3"
 
 services:
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+    - "5672:5672"
+    - "15672:15672"
+    volumes:
+    - "rabbitmq_data:/data"
+
   algorithm_botometer_check_bot:
+    build: ./botometer_check_bot
     image: botometer_check_bot:latest
+    depends_on:
+    - rabbitmq
+    command: python ./botometer_check_bot.py --port 5672 --host ${RABBIT_HOST_IP}
+    restart: unless-stopped
+
+#  algorithm_bulk_comparison:
+#    build: ./bulk_comparison
+#    image: bulk_comparison:latest
 #    depends_on:
 #    - rabbitmq
-    restart: unless-stopped
-  algorithm_bulk_comparison:
-    image: bulk_comparison:latest
+#    command: python ./bulk_comparison.py -p 5672 -h ${RABBIT_HOST_IP}
+#    restart: unless-stopped
+#
+#  algorithm_check_screen_name:
+#    build: ./check_screen_name
+#    image: check_screen_name:latest
 #    depends_on:
 #    - rabbitmq
-    restart: unless-stopped
-  algorithm_check_screen_name:
-    image: check_screen_name:latest
+#    command: python ./check_screen_name.py -p 5672 -h ${RABBIT_HOST_IP}
+#    restart: unless-stopped
+#
+#  algorithm_collect_timeline:
+#    build: ./collect_timeline
+#    image: collect_timeline:latest
 #    depends_on:
 #    - rabbitmq
-    restart: unless-stopped
-  algorithm_collect_timeline:
-    image: collect_timeline:latest
+#    command: python ./collect_timeline.py -p 5672 -h ${RABBIT_HOST_IP}
+#    restart: unless-stopped
+#
+#  algorithm_get_personality:
+#    build: ./get_personality
+#    image: get_personality:latest
 #    depends_on:
 #    - rabbitmq
-    restart: unless-stopped
-  algorithm_get_personality:
-    image: get_personality:latest
+#    command: python ./get_personality.py -p 5672 -h ${RABBIT_HOST_IP}
+#    restart: unless-stopped
+#
+#  algorithm_get_sim_score:
+#    build: ./get_sim_score
+#    image: get_sim_score:latest
 #    depends_on:
 #    - rabbitmq
-    restart: unless-stopped
-  algorithm_get_sim_score:
-    image: get_sim_score:latest
+#    restart: unless-stopped
+#
+#  algorithm_screen_name_prompt:
+#    build: ./screen_name_prompt
+#    image: screen_name_prompt:latest
 #    depends_on:
 #    - rabbitmq
-    restart: unless-stopped
-  algorithm_screen_name_prompt:
-    image: screen_name_prompt:latest
-#    depends_on:
-#    - rabbitmq
-    restart: unless-stopped
+#    restart: unless-stopped
+
 #    networks:
 #    -
 #    ports:
@@ -52,3 +80,5 @@ services:
 #    volumes:
 #    - ${PWD}/conf/application.conf:/home/geostreams/conf/application.conf
 
+volumes:
+  rabbitmq_data:

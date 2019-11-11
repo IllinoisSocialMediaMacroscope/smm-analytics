@@ -26,7 +26,7 @@ def screen_name_prompt_handler(ch, method, properties, body):
     return users_list
 
 
-connection = pika.BlockingConnection(pika.ConnectionParameters(host='host.docker.internal'))
+connection = pika.BlockingConnection(pika.ConnectionParameters(port='5672'))
 channel = connection.channel()
 queue = "bae_screen_name_prompt"
 channel.queue_declare(queue=queue)
