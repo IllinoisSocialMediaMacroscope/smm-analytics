@@ -55,6 +55,7 @@ services:
     image: get_sim_score:latest
     depends_on:
     - rabbitmq
+    command: python ./get_sim_score.py --port 5672 --host ${RABBIT_HOST_IP}
     restart: unless-stopped
 
   algorithm_screen_name_prompt:
@@ -62,6 +63,7 @@ services:
     image: screen_name_prompt:latest
     depends_on:
     - rabbitmq
+    command: python ./screen_name_prompt.py --port 5672 --host ${RABBIT_HOST_IP}
     restart: unless-stopped
 
 #    networks:
