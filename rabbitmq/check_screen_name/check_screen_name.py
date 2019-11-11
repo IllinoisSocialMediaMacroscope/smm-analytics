@@ -1,6 +1,7 @@
 import json
 import pika
 import tweepy
+from argparse import RawTextHelpFormatter, ArgumentParser
 
 
 def check_screen_name_handler(ch, method, properties, body):
@@ -24,11 +25,25 @@ def check_screen_name_handler(ch, method, properties, body):
     return msg
 
 
-connection = pika.BlockingConnection(pika.ConnectionParameters(port='5672'))
-channel = connection.channel()
-queue = "bae_check_screen_name"
-channel.queue_declare(queue=queue)
-channel.basic_qos(prefetch_count=1)
-channel.basic_consume(queue=queue, on_message_callback=check_screen_name_handler, auto_ack=True)
-channel.start_consuming()
+if __name__ == '__main__':
 
+    parser = ArgumentParser(formatter_class=RawTextHelpFormatter, description='Run consumer.py')
+    parser.add_argument('--port', action='store', dest='port', help='The port to listen on.')
+    parser.add_argument('--host', action='store', dest='host', help='The RabbitMQ host.')
+
+    args = parser.parse_args()
+    if not args.port:
+        args.port = 5672
+    if not args.host:
+        raise ValueError("Missing required argument:--host")
+
+    print(args.host)
+    print(args.port)
+
+    connection = pika.BlockingConnection(pika.ConnectionParameters(port=args.port, host=args.host))
+    channel = connection.channel()
+    queue = "bae_check_screen_name"
+    channel.queue_declare(queue=queue)
+    channel.basic_qos(prefetch_count=1)
+    channel.basic_consume(queue=queue, on_message_callback=check_screen_name_handler, auto_ack=True)
+    channel.start_consuming()

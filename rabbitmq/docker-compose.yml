@@ -18,51 +18,51 @@ services:
     command: python ./botometer_check_bot.py --port 5672 --host ${RABBIT_HOST_IP}
     restart: unless-stopped
 
-#  algorithm_bulk_comparison:
-#    build: ./bulk_comparison
-#    image: bulk_comparison:latest
-#    depends_on:
-#    - rabbitmq
-#    command: python ./bulk_comparison.py -p 5672 -h ${RABBIT_HOST_IP}
-#    restart: unless-stopped
-#
-#  algorithm_check_screen_name:
-#    build: ./check_screen_name
-#    image: check_screen_name:latest
-#    depends_on:
-#    - rabbitmq
-#    command: python ./check_screen_name.py -p 5672 -h ${RABBIT_HOST_IP}
-#    restart: unless-stopped
-#
-#  algorithm_collect_timeline:
-#    build: ./collect_timeline
-#    image: collect_timeline:latest
-#    depends_on:
-#    - rabbitmq
-#    command: python ./collect_timeline.py -p 5672 -h ${RABBIT_HOST_IP}
-#    restart: unless-stopped
-#
-#  algorithm_get_personality:
-#    build: ./get_personality
-#    image: get_personality:latest
-#    depends_on:
-#    - rabbitmq
-#    command: python ./get_personality.py -p 5672 -h ${RABBIT_HOST_IP}
-#    restart: unless-stopped
-#
-#  algorithm_get_sim_score:
-#    build: ./get_sim_score
-#    image: get_sim_score:latest
-#    depends_on:
-#    - rabbitmq
-#    restart: unless-stopped
-#
-#  algorithm_screen_name_prompt:
-#    build: ./screen_name_prompt
-#    image: screen_name_prompt:latest
-#    depends_on:
-#    - rabbitmq
-#    restart: unless-stopped
+  algorithm_bulk_comparison:
+    build: ./bulk_comparison
+    image: bulk_comparison:latest
+    depends_on:
+    - rabbitmq
+    command: python ./bulk_comparison.py --port 5672 --host ${RABBIT_HOST_IP}
+    restart: unless-stopped
+
+  algorithm_check_screen_name:
+    build: ./check_screen_name
+    image: check_screen_name:latest
+    depends_on:
+    - rabbitmq
+    command: python ./check_screen_name.py --port 5672 --host ${RABBIT_HOST_IP}
+    restart: unless-stopped
+
+  algorithm_collect_timeline:
+    build: ./collect_timeline
+    image: collect_timeline:latest
+    depends_on:
+    - rabbitmq
+    command: python ./collect_timeline.py --port 5672 --host ${RABBIT_HOST_IP}
+    restart: unless-stopped
+
+  algorithm_get_personality:
+    build: ./get_personality
+    image: get_personality:latest
+    depends_on:
+    - rabbitmq
+    command: python ./get_personality.py --port 5672 --host ${RABBIT_HOST_IP}
+    restart: unless-stopped
+
+  algorithm_get_sim_score:
+    build: ./get_sim_score
+    image: get_sim_score:latest
+    depends_on:
+    - rabbitmq
+    restart: unless-stopped
+
+  algorithm_screen_name_prompt:
+    build: ./screen_name_prompt
+    image: screen_name_prompt:latest
+    depends_on:
+    - rabbitmq
+    restart: unless-stopped
 
 #    networks:
 #    -
