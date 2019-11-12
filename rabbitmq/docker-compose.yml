@@ -11,8 +11,7 @@ services:
     - "rabbitmq_data:/data"
 
   algorithm_botometer_check_bot:
-    build: ./botometer_check_bot
-    image: botometer_check_bot:latest
+    image: socialmediamacroscope/botometer_check_bot:latest
     depends_on:
     - rabbitmq
     command: python ./botometer_check_bot.py
@@ -22,8 +21,7 @@ services:
     restart: unless-stopped
 
   algorithm_bulk_comparison:
-    build: ./bulk_comparison
-    image: bulk_comparison:latest
+    image: socialmediamacroscope/bulk_comparison:latest
     depends_on:
     - rabbitmq
     command: python ./bulk_comparison.py
@@ -33,8 +31,7 @@ services:
     restart: unless-stopped
 
   algorithm_check_screen_name:
-    build: ./check_screen_name
-    image: check_screen_name:latest
+    image: socialmediamacroscope/check_screen_name:latest
     depends_on:
     - rabbitmq
     command: python ./check_screen_name.py
@@ -44,8 +41,7 @@ services:
     restart: unless-stopped
 
   algorithm_collect_timeline:
-    build: ./collect_timeline
-    image: collect_timeline:latest
+    image: socialmediamacroscope/collect_timeline:latest
     depends_on:
     - rabbitmq
     command: python ./collect_timeline.py
@@ -55,8 +51,7 @@ services:
     restart: unless-stopped
 
   algorithm_get_personality:
-    build: ./get_personality
-    image: get_personality:latest
+    image: socialmediamacroscope/get_personality:latest
     depends_on:
     - rabbitmq
     command: python ./get_personality.py
@@ -66,8 +61,7 @@ services:
     restart: unless-stopped
 
   algorithm_get_sim_score:
-    build: ./get_sim_score
-    image: get_sim_score:latest
+    image: socialmediamacroscope/get_sim_score:latest
     depends_on:
     - rabbitmq
     command: python ./get_sim_score.py
@@ -77,8 +71,7 @@ services:
     restart: unless-stopped
 
   algorithm_screen_name_prompt:
-    build: ./screen_name_prompt
-    image: screen_name_prompt:latest
+    image: socialmediamacroscope/screen_name_prompt:latest
     depends_on:
     - rabbitmq
     command: python ./screen_name_prompt.py
@@ -88,7 +81,7 @@ services:
     restart: unless-stopped
 
   bae_server:
-    image: bae-server:latest
+    image: socialmediamacroscope/bae-server:latest
     depends_on:
     - rabbitmq
     - algorithm_botometer_check_bot
