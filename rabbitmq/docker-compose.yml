@@ -16,6 +16,9 @@ services:
     depends_on:
     - rabbitmq
     command: python ./botometer_check_bot.py
+    environment:
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     restart: unless-stopped
 
   algorithm_bulk_comparison:
@@ -24,6 +27,9 @@ services:
     depends_on:
     - rabbitmq
     command: python ./bulk_comparison.py
+    environment:
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     restart: unless-stopped
 
   algorithm_check_screen_name:
@@ -32,6 +38,9 @@ services:
     depends_on:
     - rabbitmq
     command: python ./check_screen_name.py
+    environment:
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     restart: unless-stopped
 
   algorithm_collect_timeline:
@@ -40,6 +49,9 @@ services:
     depends_on:
     - rabbitmq
     command: python ./collect_timeline.py
+    environment:
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     restart: unless-stopped
 
   algorithm_get_personality:
@@ -48,6 +60,9 @@ services:
     depends_on:
     - rabbitmq
     command: python ./get_personality.py
+    environment:
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     restart: unless-stopped
 
   algorithm_get_sim_score:
@@ -56,6 +71,9 @@ services:
     depends_on:
     - rabbitmq
     command: python ./get_sim_score.py
+    environment:
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     restart: unless-stopped
 
   algorithm_screen_name_prompt:
@@ -64,6 +82,9 @@ services:
     depends_on:
     - rabbitmq
     command: python ./screen_name_prompt.py
+    environment:
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     restart: unless-stopped
 
   bae_server:
@@ -80,23 +101,13 @@ services:
     ports:
     - "8001:8001"
     command: npm start
+    environment:
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+    - TWITTER_CONSUMER_KEY=${TWITTER_CONSUMER_KEY}
+    - TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
+    - MASHAPE_APIKEY=${MASHAPE_APIKEY}
     restart: unless-stopped
-
-#    networks:
-#    -
-#    ports:
-#    - 9000:9000
-#    environment:
-#    - APPLICATION_SECRET=${APPLICATION_SECRET:-notasecret}
-# Configs for docker swarm deployment (WIP)
-#    configs:
-#    - source: api_config
-#      target: /home/geostreams/application.conf
-#      uid: '103'
-#      gid: '103'
-#      mode: 0440
-#    volumes:
-#    - ${PWD}/conf/application.conf:/home/geostreams/conf/application.conf
 
 volumes:
   rabbitmq_data:

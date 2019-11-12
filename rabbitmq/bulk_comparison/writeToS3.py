@@ -1,14 +1,10 @@
 import boto3
-import os
 import mimetypes
-import json
-
-with open('config.json', 'r') as f:
-    cred = json.load(f)
+import os
 
 client = boto3.client('s3',
-                      aws_access_key_id = cred['aws']['accessKey'],
-                      aws_secret_access_key = cred['aws']['accessKeySecret'])
+                      aws_access_key_id = os.environ['AWS_ACCESSKEY'],
+                      aws_secret_access_key = os.environ['AWS_ACCESSKEYSECRET'])
 
 bucket_name = 'macroscope-bae'
 
