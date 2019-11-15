@@ -7,8 +7,6 @@ services:
     ports:
     - "5672:5672"
     - "15672:15672"
-    volumes:
-    - "rabbitmq_data:/data"
 
   algorithm_botometer_check_bot:
     image: socialmediamacroscope/botometer_check_bot:latest
@@ -26,7 +24,7 @@ services:
     - rabbitmq
     command: python ./bulk_comparison.py
     volumes:
-    - "content_data:/data"
+    - "content_data:/tmp"
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
@@ -48,7 +46,7 @@ services:
     - rabbitmq
     command: python ./collect_timeline.py
     volumes:
-    - "content_data:/data"
+    - "content_data:/tmp"
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
@@ -60,7 +58,7 @@ services:
     - rabbitmq
     command: python ./get_personality.py
     volumes:
-    - "content_data:/data"
+    - "content_data:/tmp"
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
@@ -72,7 +70,7 @@ services:
     - rabbitmq
     command: python ./get_sim_score.py
     volumes:
-    - "content_data:/data"
+    - "content_data:/tmp"
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
@@ -111,5 +109,9 @@ services:
     restart: unless-stopped
 
 volumes:
-  rabbitmq_data:
   content_data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /Users/cwang138/Documents/Macroscope/bae_mounted_data
