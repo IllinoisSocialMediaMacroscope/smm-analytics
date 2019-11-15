@@ -25,6 +25,8 @@ services:
     depends_on:
     - rabbitmq
     command: python ./bulk_comparison.py
+    volumes:
+    - "content_data:/data"
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
@@ -45,6 +47,8 @@ services:
     depends_on:
     - rabbitmq
     command: python ./collect_timeline.py
+    volumes:
+    - "content_data:/data"
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
@@ -55,6 +59,8 @@ services:
     depends_on:
     - rabbitmq
     command: python ./get_personality.py
+    volumes:
+    - "content_data:/data"
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
@@ -65,6 +71,8 @@ services:
     depends_on:
     - rabbitmq
     command: python ./get_sim_score.py
+    volumes:
+    - "content_data:/data"
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
@@ -104,3 +112,4 @@ services:
 
 volumes:
   rabbitmq_data:
+  content_data:
