@@ -74,7 +74,7 @@ services:
 
   bae_server:
     build: /Users/cwang138/Documents/Macroscope/BAE/.
-    image: socialmediamacroscope/bae-server:latest
+#    image: socialmediamacroscope/bae-server:latest
     depends_on:
     - rabbitmq
     - algorithm_botometer_check_bot
@@ -88,11 +88,11 @@ services:
     - "8001:8001"
     command: npm start
     environment:
-    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
-    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - TWITTER_CONSUMER_KEY=${TWITTER_CONSUMER_KEY}
     - TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
     - MASHAPE_APIKEY=${MASHAPE_APIKEY}
+    volumes:
+    - "content_data:/tmp"
     restart: unless-stopped
 
 volumes:
