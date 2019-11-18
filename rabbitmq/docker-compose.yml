@@ -13,21 +13,19 @@ services:
     depends_on:
     - rabbitmq
     command: python ./botometer_check_bot.py
-    environment:
-    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
-    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     restart: unless-stopped
 
   algorithm_bulk_comparison:
-    image: socialmediamacroscope/bulk_comparison:latest
+    build: bulk_comparison/.
+#    image: socialmediamacroscope/bulk_comparison:latest
     depends_on:
     - rabbitmq
     command: python ./bulk_comparison.py
     volumes:
     - "content_data:/tmp"
-    environment:
-    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
-    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+#    environment:
+#    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+#    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     restart: unless-stopped
 
   algorithm_check_screen_name:
@@ -35,45 +33,45 @@ services:
     depends_on:
     - rabbitmq
     command: python ./check_screen_name.py
-    environment:
-    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
-    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     restart: unless-stopped
 
   algorithm_collect_timeline:
-    image: socialmediamacroscope/collect_timeline:latest
+    build: collect_timeline/.
+#    image: socialmediamacroscope/collect_timeline:latest
     depends_on:
     - rabbitmq
     command: python ./collect_timeline.py
     volumes:
     - "content_data:/tmp"
-    environment:
-    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
-    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+#    environment:
+#    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+#    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     restart: unless-stopped
 
   algorithm_get_personality:
-    image: socialmediamacroscope/get_personality:latest
+    build: get_personality/.
+#    image: socialmediamacroscope/get_personality:latest
     depends_on:
     - rabbitmq
     command: python ./get_personality.py
     volumes:
     - "content_data:/tmp"
-    environment:
-    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
-    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+#    environment:
+#    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+#    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     restart: unless-stopped
 
   algorithm_get_sim_score:
-    image: socialmediamacroscope/get_sim_score:latest
+    build: get_sim_score/.
+#    image: socialmediamacroscope/get_sim_score:latest
     depends_on:
     - rabbitmq
     command: python ./get_sim_score.py
     volumes:
     - "content_data:/tmp"
-    environment:
-    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
-    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+#    environment:
+#    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+#    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     restart: unless-stopped
 
   algorithm_screen_name_prompt:
@@ -81,12 +79,10 @@ services:
     depends_on:
     - rabbitmq
     command: python ./screen_name_prompt.py
-    environment:
-    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
-    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     restart: unless-stopped
 
   bae_server:
+    build: /Users/cwang138/Documents/Macroscope/BAE/.
     image: socialmediamacroscope/bae-server:latest
     depends_on:
     - rabbitmq
