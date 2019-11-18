@@ -23,9 +23,6 @@ services:
     command: python ./bulk_comparison.py
     volumes:
     - "content_data:/tmp"
-#    environment:
-#    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
-#    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     restart: unless-stopped
 
   algorithm_check_screen_name:
@@ -56,9 +53,6 @@ services:
     command: python ./get_personality.py
     volumes:
     - "content_data:/tmp"
-#    environment:
-#    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
-#    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     restart: unless-stopped
 
   algorithm_get_sim_score:
@@ -69,9 +63,6 @@ services:
     command: python ./get_sim_score.py
     volumes:
     - "content_data:/tmp"
-#    environment:
-#    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
-#    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     restart: unless-stopped
 
   algorithm_screen_name_prompt:

@@ -2,12 +2,10 @@ import json
 import os
 import pika
 import tweepy
-import writeToS3 as s3
 
 
 def collect_timeline_handler(ch, method, properties, body):
     event = json.loads(body)
-    awsPath = os.path.join(event['sessionID'], event['screen_name'])
     localSavePath = os.path.join('/tmp', event['sessionID'], event['screen_name'])
     if not os.path.exists(localSavePath):
         os.makedirs(localSavePath)
@@ -25,9 +23,7 @@ def collect_timeline_handler(ch, method, properties, body):
         with open(os.path.join(localSavePath, fname), 'w') as f:
             f.write('. '.join(tweets))
 
-        s3.upload(localSavePath, awsPath, fname)
-
-        data = {'url': s3.generate_downloads(awsPath, fname)}
+        data = {'url': os.path.join(localSavePath, fname)}
 
         # reply to the sender
         ch.basic_publish(exchange="",

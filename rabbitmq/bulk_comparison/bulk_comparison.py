@@ -2,7 +2,6 @@ import json
 import os
 import numpy as np
 import pika
-import writeToS3 as s3
 
 
 def cos_sim(a, b):
@@ -14,9 +13,9 @@ def cos_sim(a, b):
 
 def bulk_comparison_handler(ch, method, properties, body):
     event = json.loads(body)
-    localPath = os.path.join('/tmp', event['sessionID'])
-    if not os.path.exists(localPath):
-        os.makedirs(localPath)
+    localSavePath = os.path.join('/tmp', event['sessionID'])
+    if not os.path.exists(localSavePath):
+        raise ValueError('The current session doesn\'t exist!')
 
     # default algorithm to IBM-Watson to be compatible with old version
     if 'algorithm' not in event.keys():
@@ -42,43 +41,22 @@ def bulk_comparison_handler(ch, method, properties, body):
                              'Values_Self_Transcendence']]
 
         for screen_name in event['screen_names']:
-            awsPath = os.path.join(event['sessionID'], screen_name)
-            try:
-                s3.downloadToDisk(screen_name + '_personality.json', localPath, awsPath)
-            except:
+            personality = os.path.join(localSavePath, screen_name, "_personality.json")
+            if not os.path.exists(personality):
                 raise ValueError('Cannot find the personality in the remote storage!')
-
-            with open(os.path.join(localPath, screen_name + '_personality.json'), 'r') as f:
-                data = json.load(f)['personality']
-                user_info = [screen_name]
-                for p in data['personality']:
-                    user_info.append(p['percentile'])
-                for p in data['needs']:
-                    user_info.append(p['percentile'])
-                for p in data['values']:
-                    user_info.append(p['percentile'])
-                comparison_table.append(user_info)
-
-    elif event['algorithm'] == 'TwitPersonality':
-        comparison_table = [['screen_name', 'Personality_Openness',
-                             'Personality_Conscientiousness',
-                             'Personality_Extraversion',
-                             'Personality_Agreeableness',
-                             'Personality_Emotional_Range']]
-
-        for screen_name in event['screen_names']:
-            awsPath = os.path.join(event['sessionID'], screen_name)
-            try:
-                s3.downloadToDisk(screen_name + '_twitPersonality.json', localPath, awsPath)
-            except:
-                raise ValueError('Cannot find the personality in the remote storage!')
-
-            with open(os.path.join(localPath, screen_name + '_twitPersonality.json'), 'r') as f:
-                data = json.load(f)['personality']
-                user_info = [screen_name]
-                for p in data['personality']:
-                    user_info.append(p['percentile'])
-                comparison_table.append(user_info)
+            else:
+                with open(personality, 'r') as f:
+                    data = json.load(f)['personality']
+                    user_info = [screen_name]
+                    for p in data['personality']:
+                        user_info.append(p['percentile'])
+                    for p in data['needs']:
+                        user_info.append(p['percentile'])
+                    for p in data['values']:
+                        user_info.append(p['percentile'])
+                    comparison_table.append(user_info)
+    else:
+        raise ValueError('Algorithm ' + event['algorithm'] + ' does not exist!')
 
     # computer correlations
     event['screen_names'].insert(0, 'Correlation')

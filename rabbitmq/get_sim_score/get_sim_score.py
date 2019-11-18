@@ -2,7 +2,6 @@ import json
 import os
 import numpy as np
 import pika
-import writeToS3 as s3
 
 
 def cos_sim(a, b):
@@ -14,42 +13,30 @@ def cos_sim(a, b):
 
 def get_sim_score_handler(ch, method, properties, body):
     event = json.loads(body)
-    awsUserPath = os.path.join(event['sessionID'], event['user_screen_name'])
-    awsBrandPath = os.path.join(event['sessionID'], event['brand_screen_name'])
-    localPath = os.path.join('/tmp', event['sessionID'])
+    localSavePath = os.path.join('/tmp', event['sessionID'])
+    if not os.path.exists(localSavePath):
+        raise ValueError('The current session doesn\'t exist!')
 
-    if not os.path.exists(localPath):
-        os.makedirs(localPath)
+    user_personality = os.path.join(localSavePath, event['user_screen_name'], '_personality.json')
+    brand_personality = os.path.join(localSavePath, event['brand_screen_name'], '_personality.json')
 
     # default algorithm to IBM-Watson to be compatible with old version
     if 'algorithm' not in event.keys():
-        event['algorithm'] =  'IBM-Watson'
+        event['algorithm'] = 'IBM-Watson'
 
     # download and read personality scores
     if event['algorithm'] == 'IBM-Watson':
-        try:
-            s3.downloadToDisk(event['user_screen_name'] + '_personality.json', localPath, awsUserPath)
-            s3.downloadToDisk(event['brand_screen_name'] + '_personality.json', localPath, awsBrandPath)
 
+        if not os.path.exists(user_personality) or not os.path.exists(brand_personality):
+            raise ValueError('Cannot find the personalities in the storage!')
+        else:
             # open json and read in values
-            with open(os.path.join(localPath, event['user_screen_name'] + '_personality.json'), 'r') as f:
+            with open(user_personality, 'r') as f:
                 user_data = json.load(f)['personality']
-            with open(os.path.join(localPath, event['brand_screen_name'] + '_personality.json'),'r') as f:
+            with open(brand_personality, 'r') as f:
                 brand_data = json.load(f)['personality']
-        except:
-            raise ValueError('Cannot find the timeline in the remote storage!')
-    elif event['algorithm'] == 'TwitPersonality':
-        try:
-            s3.downloadToDisk(event['user_screen_name'] + '_twitPersonality.json', localPath, awsUserPath)
-            s3.downloadToDisk(event['brand_screen_name'] + '_twitPersonality.json', localPath, awsBrandPath)
-
-            # open json and read in values
-            with open(os.path.join(localPath, event['user_screen_name'] + '_twitPersonality.json'), 'r') as f:
-                user_data = json.load(f)['personality']
-            with open(os.path.join(localPath, event['brand_screen_name'] + '_twitPersonality.json'),'r') as f:
-                brand_data = json.load(f)['personality']
-        except:
-            raise ValueError('Cannot find the timeline in the remote storage!')
+    else:
+        raise ValueError('Algorithm ' + event['algorithm'] + ' does not exist!')
 
     # calculate similarity score
     vector_a = []
