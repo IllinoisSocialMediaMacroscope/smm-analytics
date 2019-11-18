@@ -17,8 +17,10 @@ def get_sim_score_handler(ch, method, properties, body):
     if not os.path.exists(localSavePath):
         raise ValueError('The current session doesn\'t exist!')
 
-    user_personality = os.path.join(localSavePath, event['user_screen_name'], '_personality.json')
-    brand_personality = os.path.join(localSavePath, event['brand_screen_name'], '_personality.json')
+    user_personality = os.path.join(localSavePath, event['user_screen_name'], event['user_screen_name'] +
+    '_personality.json')
+    brand_personality = os.path.join(localSavePath, event['brand_screen_name'], event['brand_screen_name'] +
+    '_personality.json')
 
     # default algorithm to IBM-Watson to be compatible with old version
     if 'algorithm' not in event.keys():

@@ -41,7 +41,7 @@ def bulk_comparison_handler(ch, method, properties, body):
                              'Values_Self_Transcendence']]
 
         for screen_name in event['screen_names']:
-            personality = os.path.join(localSavePath, screen_name, "_personality.json")
+            personality = os.path.join(localSavePath, screen_name + "_personality.json")
             if not os.path.exists(personality):
                 raise ValueError('Cannot find the personality in the remote storage!')
             else:
