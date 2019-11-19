@@ -14,7 +14,6 @@ def get_personality_handler(ch, method, properties, body):
 
     # check if timeline file already exists in such path
     timeline_file = os.path.join(localSavePath, screen_name + '_tweets.txt')
-    print(timeline_file)
     if not os.path.exists(timeline_file):
         raise ValueError('Cannot find the timeline in the remote storage!')
     else:
