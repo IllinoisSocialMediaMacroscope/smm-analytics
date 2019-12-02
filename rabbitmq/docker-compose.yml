@@ -7,8 +7,6 @@ services:
     ports:
     - "5672:5672"
     - "15672:15672"
-    volumes:
-    - "rabbitmq_data:/data"
 
   algorithm_botometer_check_bot:
     image: socialmediamacroscope/botometer_check_bot:latest
@@ -25,8 +23,6 @@ services:
     depends_on:
     - rabbitmq
     command: python ./bulk_comparison.py
-    volumes:
-    - "content_data:/data"
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
@@ -47,8 +43,6 @@ services:
     depends_on:
     - rabbitmq
     command: python ./collect_timeline.py
-    volumes:
-    - "content_data:/data"
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
@@ -59,8 +53,6 @@ services:
     depends_on:
     - rabbitmq
     command: python ./get_personality.py
-    volumes:
-    - "content_data:/data"
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
@@ -71,8 +63,6 @@ services:
     depends_on:
     - rabbitmq
     command: python ./get_sim_score.py
-    volumes:
-    - "content_data:/data"
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
@@ -109,7 +99,3 @@ services:
     - TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
     - MASHAPE_APIKEY=${MASHAPE_APIKEY}
     restart: unless-stopped
-
-volumes:
-  rabbitmq_data:
-  content_data:
