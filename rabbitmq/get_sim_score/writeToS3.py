@@ -1,10 +1,12 @@
 import boto3
 import mimetypes
 import os
+from botocore.client import Config
 
-client = boto3.client('s3',
+client = boto3.client('s3', endpoint_url='http://localhost:9000',
                       aws_access_key_id = os.environ['AWS_ACCESSKEY'],
-                      aws_secret_access_key = os.environ['AWS_ACCESSKEYSECRET'])
+                      aws_secret_access_key = os.environ['AWS_ACCESSKEYSECRET'],
+                      config=Config(signature_version='s3v4'))
 
 bucket_name = 'macroscope-bae'
 
