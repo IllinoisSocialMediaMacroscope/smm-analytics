@@ -8,10 +8,23 @@ services:
     - "5672:5672"
     - "15672:15672"
 
+  minio:
+    image: minio/minio
+    hostname: minio
+    ports:
+    - "9000:9000"
+    command: server /data
+    environment:
+    - MINIO_ACCESS_KEY=${AWS_ACCESSKEY}
+    - MINIO_SECRET_KEY=${AWS_ACCESSKEYSECRET}
+    restart: unless-stopped
+
   algorithm_botometer_check_bot:
+    build: ./botometer_check_bot
     image: socialmediamacroscope/botometer_check_bot:latest
     depends_on:
     - rabbitmq
+    - minio
     command: python ./botometer_check_bot.py
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
@@ -19,9 +32,11 @@ services:
     restart: unless-stopped
 
   algorithm_bulk_comparison:
+    build: ./bulk_comparison
     image: socialmediamacroscope/bulk_comparison:latest
     depends_on:
     - rabbitmq
+    - minio
     command: python ./bulk_comparison.py
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
@@ -29,9 +44,11 @@ services:
     restart: unless-stopped
 
   algorithm_check_screen_name:
+    build: ./check_screen_name
     image: socialmediamacroscope/check_screen_name:latest
     depends_on:
     - rabbitmq
+    - minio
     command: python ./check_screen_name.py
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
@@ -39,9 +56,11 @@ services:
     restart: unless-stopped
 
   algorithm_collect_timeline:
+    build: ./collect_timeline
     image: socialmediamacroscope/collect_timeline:latest
     depends_on:
     - rabbitmq
+    - minio
     command: python ./collect_timeline.py
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
@@ -49,9 +68,11 @@ services:
     restart: unless-stopped
 
   algorithm_get_personality:
+    build: ./get_personality
     image: socialmediamacroscope/get_personality:latest
     depends_on:
     - rabbitmq
+    - minio
     command: python ./get_personality.py
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
@@ -59,9 +80,11 @@ services:
     restart: unless-stopped
 
   algorithm_get_sim_score:
+    build: ./get_sim_score
     image: socialmediamacroscope/get_sim_score:latest
     depends_on:
     - rabbitmq
+    - minio
     command: python ./get_sim_score.py
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
@@ -69,9 +92,11 @@ services:
     restart: unless-stopped
 
   algorithm_screen_name_prompt:
+    build: ./screen_name_prompt
     image: socialmediamacroscope/screen_name_prompt:latest
     depends_on:
     - rabbitmq
+    - minio
     command: python ./screen_name_prompt.py
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
@@ -82,6 +107,7 @@ services:
     image: socialmediamacroscope/bae-server:latest
     depends_on:
     - rabbitmq
+    - minio
     - algorithm_botometer_check_bot
     - algorithm_bulk_comparison
     - algorithm_check_screen_name
