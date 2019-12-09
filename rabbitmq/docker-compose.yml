@@ -19,6 +19,18 @@ services:
     - MINIO_SECRET_KEY=${AWS_ACCESSKEYSECRET}
     restart: unless-stopped
 
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc config host add myminio http://minio:9000 ${AWS_ACCESSKEY} ${AWS_ACCESSKEYSECRET};
+      /usr/bin/mc rm -r --force myminio/macroscope-bae;
+      /usr/bin/mc mb myminio/macroscope-bae;
+      exit 0;
+      "
+
   algorithm_botometer_check_bot:
     build: ./botometer_check_bot
     image: socialmediamacroscope/botometer_check_bot:latest
