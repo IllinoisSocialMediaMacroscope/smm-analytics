@@ -8,7 +8,7 @@ client = boto3.client('s3', endpoint_url='http://minio:9000',
                       aws_secret_access_key = os.environ['AWS_ACCESSKEYSECRET'],
                       config=Config(signature_version='s3v4'))
 
-bucket_name = 'macroscope-bae'
+bucket_name = os.environ['BUCKET_NAME']
 
 def upload(localpath, remotepath, filename):
     content_type = mimetypes.guess_type(os.path.join(localpath,filename))[0]
