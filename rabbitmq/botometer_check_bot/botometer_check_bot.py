@@ -1,7 +1,7 @@
 import json
 import botometer
 import pika
-import sys, traceback
+import traceback
 
 
 def botometer_check_bot_handler(ch, method, properties, body):
