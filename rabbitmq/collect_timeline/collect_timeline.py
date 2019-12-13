@@ -3,42 +3,51 @@ import os
 import pika
 import tweepy
 import writeToS3 as s3
+import traceback
 
 
 def collect_timeline_handler(ch, method, properties, body):
-    event = json.loads(body)
-    awsPath = os.path.join(event['sessionID'], event['screen_name'])
-    localSavePath = os.path.join('/tmp', event['sessionID'], event['screen_name'])
-    if not os.path.exists(localSavePath):
-        os.makedirs(localSavePath)
+    try:
+        event = json.loads(body)
+        awsPath = os.path.join(event['sessionID'], event['screen_name'])
+        localSavePath = os.path.join('/tmp', event['sessionID'], event['screen_name'])
+        if not os.path.exists(localSavePath):
+            os.makedirs(localSavePath)
 
-    auth = tweepy.OAuthHandler(event['consumer_key'], event['consumer_secret'])
-    auth.set_access_token(event['access_token'], event['access_token_secret'])
-    api = tweepy.API(auth)
+        auth = tweepy.OAuthHandler(event['consumer_key'], event['consumer_secret'])
+        auth.set_access_token(event['access_token'], event['access_token_secret'])
+        api = tweepy.API(auth)
 
-    tweets = []
-    for status in tweepy.Cursor(api.user_timeline, screen_name=event['screen_name'], count=100).items():
-        tweets.append(status._json['text'].encode('utf-8', 'ignore').decode())
+        tweets = []
+        for status in tweepy.Cursor(api.user_timeline, screen_name=event['screen_name'], count=100).items():
+            tweets.append(status._json['text'].encode('utf-8', 'ignore').decode())
 
-    if len(tweets) > 0:
-        fname = event['screen_name'] + '_tweets.txt'
-        with open(os.path.join(localSavePath, fname), 'w') as f:
-            f.write('. '.join(tweets))
+        if len(tweets) > 0:
+            fname = event['screen_name'] + '_tweets.txt'
+            with open(os.path.join(localSavePath, fname), 'w') as f:
+                f.write('. '.join(tweets))
 
-        s3.upload(localSavePath, awsPath, fname)
+            s3.upload(localSavePath, awsPath, fname)
 
-        data = {'url': s3.generate_downloads(awsPath, fname)}
+            data = {'url': s3.generate_downloads(awsPath, fname)}
+        else:
+            raise ValueError('This user\'s timeline (screen_name: ' + event['screen_name'] + ') is empty. There is nothing to analyze!')
 
-        # reply to the sender
-        ch.basic_publish(exchange="",
-                         routing_key=properties.reply_to,
-                         properties=pika.BasicProperties(correlation_id=properties.correlation_id),
-                         body=json.dumps(data))
+    except BaseException as e:
+        data = {'ERROR':
+            {
+                'message': str(e),
+                'traceback': traceback.format_exc()
+            }
+        }
 
-        return data
-    else:
-        raise ValueError(
-            'This user\'s timeline (screen_name: ' + event['screen_name'] + ') is empty. There is nothing to analyze!')
+    # reply to the sender
+    ch.basic_publish(exchange="",
+                     routing_key=properties.reply_to,
+                     properties=pika.BasicProperties(correlation_id=properties.correlation_id),
+                     body=json.dumps(data))
+
+    return data
 
 
 if __name__ == '__main__':

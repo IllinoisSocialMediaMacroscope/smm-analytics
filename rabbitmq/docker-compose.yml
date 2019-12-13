@@ -100,29 +100,29 @@ services:
     command: python ./screen_name_prompt.py
     restart: unless-stopped
 
-#  bae_server:
-#    image: socialmediamacroscope/bae-server:latest
-#    depends_on:
-#    - rabbitmq
-#    - minio
-#    - algorithm_botometer_check_bot
-#    - algorithm_bulk_comparison
-#    - algorithm_check_screen_name
-#    - algorithm_collect_timeline
-#    - algorithm_get_personality
-#    - algorithm_get_sim_score
-#    - algorithm_screen_name_prompt
-#    ports:
-#    - "8001:8001"
-#    command: npm start
-#    environment:
-#    - DOCKERIZED=${DOCKERIZED}
-#    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
-#    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
-#    - TWITTER_CONSUMER_KEY=${TWITTER_CONSUMER_KEY}
-#    - TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
-#    - MASHAPE_APIKEY=${MASHAPE_APIKEY}
-#    restart: unless-stopped
+  bae_server:
+    image: socialmediamacroscope/bae-server:latest
+    depends_on:
+    - rabbitmq
+    - minio
+    - algorithm_botometer_check_bot
+    - algorithm_bulk_comparison
+    - algorithm_check_screen_name
+    - algorithm_collect_timeline
+    - algorithm_get_personality
+    - algorithm_get_sim_score
+    - algorithm_screen_name_prompt
+    ports:
+    - "8001:8001"
+    command: npm start
+    environment:
+    - DOCKERIZED=${DOCKERIZED}
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+    - TWITTER_CONSUMER_KEY=${TWITTER_CONSUMER_KEY}
+    - TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
+    - MASHAPE_APIKEY=${MASHAPE_APIKEY}
+    restart: unless-stopped
 
 volumes:
   content_data:

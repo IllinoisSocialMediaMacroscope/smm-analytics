@@ -1,19 +1,29 @@
 import json
 import pika
 import tweepy
+import traceback
 
 
 def check_screen_name_handler(ch, method, properties, body):
-    event = json.loads(body)
-    auth = tweepy.OAuthHandler(event['consumer_key'], event['consumer_secret'])
-    auth.set_access_token(event['access_token'], event['access_token_secret'])
-    api = tweepy.API(auth)
-
     try:
-        user = api.lookup_users(screen_names=[event['screen_name']])
-        msg = {'user_exist': True, 'profile_img': user[0]._json['profile_image_url_https']}
-    except tweepy.TweepError as error:
-        msg = {'user_exist': False, 'profile_img': None}
+        event = json.loads(body)
+        auth = tweepy.OAuthHandler(event['consumer_key'], event['consumer_secret'])
+        auth.set_access_token(event['access_token'], event['access_token_secret'])
+        api = tweepy.API(auth)
+
+        try:
+            user = api.lookup_users(screen_names=[event['screen_name']])
+            msg = {'user_exist': True, 'profile_img': user[0]._json['profile_image_url_https']}
+        except tweepy.TweepError as error:
+            msg = {'user_exist': False, 'profile_img': None}
+
+    except BaseException as e:
+        msg = {'ERROR':
+                      {
+                          'message': str(e),
+                          'traceback': traceback.format_exc()
+                       }
+                  }
 
     # reply to the sender
     ch.basic_publish(exchange="",
