@@ -1,0 +1,3 @@
+# command to build and run this container
+docker build -t screen_name_prompt:latest .
+docker run screen_name_prompt:latest

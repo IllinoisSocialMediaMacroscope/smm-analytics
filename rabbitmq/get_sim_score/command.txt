@@ -1,0 +1,3 @@
+# command to build and run this container
+docker build -t get_sim_score:latest .
+docker run get_sim_score:latest

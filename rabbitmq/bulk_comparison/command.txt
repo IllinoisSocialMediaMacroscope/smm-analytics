@@ -1,0 +1,3 @@
+# command to build and run this container
+docker build -t bulk_comparison:latest .
+docker run bulk_comparison:latest
