@@ -1,21 +1,29 @@
 import tweepy
 import json
 import pika
+import traceback
 
 
 def screen_name_prompt_handler(ch, method, properties, body):
+    try:
+        event = json.loads(body)
+        auth = tweepy.OAuthHandler(event['consumer_key'], event['consumer_secret'])
+        auth.set_access_token(event['access_token'], event['access_token_secret'])
+        api = tweepy.API(auth)
 
-    event = json.loads(body)
-    auth = tweepy.OAuthHandler(event['consumer_key'], event['consumer_secret'])
-    auth.set_access_token(event['access_token'], event['access_token_secret'])
-    api = tweepy.API(auth)
+        users = api.search_users(q=event['screen_name'], per_page=20)
 
-    users = api.search_users(q=event['screen_name'], per_page=20)
+        # serialize User object
+        users_list = []
+        for user in users:
+            users_list.append(user._json)
 
-    # serialize User object
-    users_list = []
-    for user in users:
-        users_list.append(user._json)
+    except BaseException as e:
+        users_list = {'ERROR':
+                    {'message': str(e),
+                     'traceback': traceback.format_exc()
+                     }
+                }
 
     # reply to the sender
     ch.basic_publish(exchange="",

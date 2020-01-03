@@ -57,6 +57,15 @@ def putObject(body, remoteKey):
                             Body=body, Key=remoteKey)
     print(obj['Body'].read())
 
+
+# def checkExist(remotepath, filename):
+#     results = client.list_objects(Bucket=bucket_name, Prefix=os.path.join(remotepath, filename))
+#     print(results)
+#     if 'Contents' in results:
+#         return True
+#     else:
+#         return False
+
 def listDir(remoteClass):
     objects = client.list_objects(Bucket=bucket_name,
                                   Prefix=remoteClass,
