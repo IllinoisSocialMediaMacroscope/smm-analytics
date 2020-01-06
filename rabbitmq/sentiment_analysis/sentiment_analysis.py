@@ -1,20 +1,11 @@
-import imp
-import sys
 import itertools
 
-# work around to solve the issue that aws lambda doesn't have sqlite compiled
-sys.modules['sqlite'] = imp.new_module('sqlite')
-sys.modules['sqlite3.dbapi2'] = imp.new_module('sqlite.dbapi2')
-
-# add local path that holds nltk data into search path
-import nltk
-nltk.data.path.append('./nltk_data/')
-
 from nltk import pos_tag, WordNetLemmatizer
+from nltk.corpus import sentiwordnet as swn, stopwords
 from nltk.sentiment.vader import SentimentIntensityAnalyzer, \
     allcap_differential, negated
 from nltk.tokenize import word_tokenize
-from nltk.corpus import sentiwordnet as swn, stopwords
+
 
 class Sentiment:
 
