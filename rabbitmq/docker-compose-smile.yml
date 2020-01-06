@@ -1,0 +1,178 @@
+version: "3.3"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+    - "5672:5672"
+    - "15672:15672"
+
+  minio:
+    image: minio/minio
+    hostname: minio
+    ports:
+    - "9000:9000"
+    volumes:
+    - "content_data:/tmp"
+    command: server /tmp
+    environment:
+    - MINIO_ACCESS_KEY=${AWS_ACCESSKEY}
+    - MINIO_SECRET_KEY=${AWS_ACCESSKEYSECRET}
+    restart: unless-stopped
+
+  algorithm_classification_predict:
+    build: ./classification_predict
+    image: socialmediamacroscope/classification_predict:latest
+    depends_on:
+    - rabbitmq
+    - minio
+    command: python ./rabbitmq_handler.py
+     environment:
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+    - BUCKET_NAME=${BUCKET_NAME}
+    - QUEUE_NAME=classification_predict
+    restart: unless-stopped
+
+  algorithm_classification_split:
+    build: ./classification_split
+    image: socialmediamacroscope/classification_split:latest
+    depends_on:
+    - rabbitmq
+    - minio
+    command: python ./rabbitmq_handler.py
+    environment:
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+    - BUCKET_NAME=${BUCKET_NAME}
+    - QUEUE_NAME=classification_split
+    restart: unless-stopped
+
+  algorithm_classification_train:
+    build: ./classification_train
+    image: socialmediamacroscope/classification_train:latest
+    depends_on:
+    - rabbitmq
+    - minio
+    command: python ./rabbitmq_handler.py
+    environment:
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+    - BUCKET_NAME=${BUCKET_NAME}
+    - QUEUE_NAME=classification_train
+    restart: unless-stopped
+
+  algorithm_histogram:
+    build: ./histogram
+    image: socialmediamacroscope/histogram:latest
+    depends_on:
+    - rabbitmq
+    - minio
+    command: python ./rabbitmq_handler.py
+    environment:
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+    - BUCKET_NAME=${BUCKET_NAME}
+    - QUEUE_NAME=histogram
+    restart: unless-stopped
+
+  algorithm_network_analysis:
+    build: ./network_analysis
+    image: socialmediamacroscope/network_analysis:latest
+    depends_on:
+    - rabbitmq
+    - minio
+    command: python ./rabbitmq_handler.py
+    environment:
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+    - BUCKET_NAME=${BUCKET_NAME}
+    - QUEUE_NAME=network_analysis
+    restart: unless-stopped
+
+  algorithm_pipeline:
+    build: ./pipeline
+    image: socialmediamacroscope/pipeline:latest
+    depends_on:
+    - rabbitmq
+    - minio
+    command: python ./rabbitmq_handler.py
+    environment:
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+    - BUCKET_NAME=${BUCKET_NAME}
+    - QUEUE_NAME=pipeline
+    restart: unless-stopped
+
+  algorithm_preprocessing:
+    build: ./preprocessing
+    image: socialmediamacroscope/preprocessing:latest
+    depends_on:
+    - rabbitmq
+    - minio
+    command: python ./rabbitmq_handler.py
+    environment:
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+    - BUCKET_NAME=${BUCKET_NAME}
+    - QUEUE_NAME=preprocessing
+    restart: unless-stopped
+
+  algorithm_sentiment_analysis:
+    build: ./sentiment_analysis
+    image: socialmediamacroscope/sentiment_analysis:latest
+    depends_on:
+    - rabbitmq
+    - minio
+    command: python ./rabbitmq_handler.py
+    environment:
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+    - BUCKET_NAME=${BUCKET_NAME}
+    - QUEUE_NAME=sentiment_analysis
+    restart: unless-stopped
+
+  smile_server:
+    image: socialmediamacroscope/smile-server:latest
+    depends_on:
+    - rabbitmq
+    - minio
+    - algorithm_classification_predict
+    - algorithm_classification_split
+    - algorithm_classification_train
+    - algorithm_histogram
+    - algorithm_network_analysis
+    - algorithm_pipeline
+    - algorithm_preprocessing
+    - algorithm_sentiment_analysis
+    ports:
+    - "8001:8001"
+    command: npm start
+    environment:
+    - DOCKERIZED=${DOCKERIZED}
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+    - TWITTER_CONSUMER_KEY=${TWITTER_CONSUMER_KEY}
+    - TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
+    - REDDIT_CLIENT_ID=${REDDIT_CLIENT_ID}
+    - REDDIT_CLIENT_SECRET=${REDDIT_CLIENT_SECRET}
+    - FLICKR_CONSUMER_KEY=${FLICKR_CONSUMER_KEY}
+    - FLICKR_CONSUMER_SECRET=${FLICKR_CONSUMER_SECRET}
+    - BOX_CLIENT_ID=${BOX_CLIENT_ID}
+    - BOX_CLIENT_SECRET=${BOX_CLIENT_SECRET}
+    - DROPBOX_CLIENT_ID=${DROPBOX_CLIENT_ID}
+    - DROPBOX_CLIENT_SECRET=${DROPBOX_CLIENT_SECRET}
+    - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+    - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+    volumes:
+    - "content_data:/tmp"
+    restart: unless-stopped
+
+volumes:
+  content_data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      # put your own local data path here
+      device: ${LOCAL_MOUNT_PATH}

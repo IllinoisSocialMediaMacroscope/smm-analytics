@@ -28,4 +28,4 @@ else
     mkdir ${LOCAL_MOUNT_PATH}/${BUCKET_NAME}
 fi
 
-docker-compose up
+docker-compose -f docker-compose-smile.yml up
