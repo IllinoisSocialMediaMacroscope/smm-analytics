@@ -1,2 +1,2 @@
 # command to build and run this container
-docker build -t sentiment_analysis:latest .
+docker build -t socialmediamacroscope/sentiment_analysis:latest .
