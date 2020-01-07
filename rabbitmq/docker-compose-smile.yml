@@ -133,7 +133,7 @@ services:
     restart: unless-stopped
 
   smile_server:
-    image: socialmediamacroscope/smile-server:latest
+    image: socialmediamacroscope/smile_server:latest
     depends_on:
     - rabbitmq
     - minio
@@ -147,7 +147,7 @@ services:
     - algorithm_sentiment_analysis
     ports:
     - "8001:8001"
-    command: npm start
+    command: npm run docker-start
     environment:
     - DOCKERIZED=${DOCKERIZED}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
@@ -166,6 +166,21 @@ services:
     - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
     volumes:
     - "content_data:/tmp"
+    restart: unless-stopped
+
+  smile_graphql:
+    image: socialmediamacroscope/smile_graphql:latest
+    depends_on:
+    - smile_server
+    ports:
+    - "5050:5050"
+    command: npm run docker-start
+    environment:
+    - DOCKERIZED=${DOCKERIZED}
+    - TWITTER_CONSUMER_KEY=${TWITTER_CONSUMER_KEY}
+    - TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
+    - FLICKR_CONSUMER_KEY=${FLICKR_CONSUMER_KEY}
+    - FLICKR_CONSUMER_SECRET=${FLICKR_CONSUMER_SECRET}
     restart: unless-stopped
 
 volumes:
