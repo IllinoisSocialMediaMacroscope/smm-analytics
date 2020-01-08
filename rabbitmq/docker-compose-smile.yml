@@ -31,7 +31,7 @@ services:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
-    - QUEUE_NAME=classification_predict
+    - QUEUE_NAME=lambda_classification_predict_dev
     restart: unless-stopped
 
   algorithm_classification_split:
@@ -45,7 +45,7 @@ services:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
-    - QUEUE_NAME=classification_split
+    - QUEUE_NAME=lambda_classification_split_dev
     restart: unless-stopped
 
   algorithm_classification_train:
@@ -59,7 +59,7 @@ services:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
-    - QUEUE_NAME=classification_train
+    - QUEUE_NAME=lambda_classification_train
     restart: unless-stopped
 
   algorithm_histogram:
@@ -87,21 +87,7 @@ services:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
-    - QUEUE_NAME=network_analysis
-    restart: unless-stopped
-
-  algorithm_pipeline:
-    build: ./pipeline
-    image: socialmediamacroscope/pipeline:latest
-    depends_on:
-    - rabbitmq
-    - minio
-    command: python ./rabbitmq_handler.py
-    environment:
-    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
-    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
-    - BUCKET_NAME=${BUCKET_NAME}
-    - QUEUE_NAME=pipeline
+    - QUEUE_NAME=lambda_network_analysis
     restart: unless-stopped
 
   algorithm_preprocessing:
@@ -115,7 +101,7 @@ services:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
-    - QUEUE_NAME=preprocessing
+    - QUEUE_NAME=lambda_preprocessing
     restart: unless-stopped
 
   algorithm_sentiment_analysis:
@@ -129,7 +115,7 @@ services:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
-    - QUEUE_NAME=sentiment_analysis
+    - QUEUE_NAME=lambda_sentiment_analysis
     restart: unless-stopped
 
   algorithm_screen_name_prompt:
@@ -143,7 +129,7 @@ services:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
-    - QUEUE_NAME=screen_name_prompt
+    - QUEUE_NAME=bae_screen_name_prompt
     restart: unless-stopped
 
   smile_server:
