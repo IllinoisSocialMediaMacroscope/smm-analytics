@@ -27,7 +27,7 @@ services:
     - rabbitmq
     - minio
     command: python ./rabbitmq_handler.py
-     environment:
+    environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -130,6 +130,20 @@ services:
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
     - QUEUE_NAME=sentiment_analysis
+    restart: unless-stopped
+
+  algorithm_screen_name_prompt:
+    build: ./screen_name_prompt
+    image: socialmediamacroscope/screen_name_prompt:latest
+    depends_on:
+    - rabbitmq
+    - minio
+    command: python ./screen_name_prompt.py
+    environment:
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+    - BUCKET_NAME=${BUCKET_NAME}
+    - QUEUE_NAME=screen_name_prompt
     restart: unless-stopped
 
   smile_server:
