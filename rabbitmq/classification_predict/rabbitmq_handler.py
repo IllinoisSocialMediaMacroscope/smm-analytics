@@ -11,7 +11,7 @@ def rabbitmq_handler(ch, method, properties, body):
     try:
         output = dict()
 
-        event = json.load(body)
+        event = json.loads(body)
 
         uid = event['uid']
         awsPath = event['s3FolderName'] + '/ML/classification/' + uid + '/'
