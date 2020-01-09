@@ -13,7 +13,7 @@ services:
     ports:
     - "9000:9000"
     volumes:
-    - "content_data:/tmp"
+    - "smile_content_data:/tmp"
     command: server /tmp
     environment:
     - MINIO_ACCESS_KEY=${AWS_ACCESSKEY}
@@ -164,7 +164,7 @@ services:
     - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
     - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
     volumes:
-    - "content_data:/tmp"
+    - "smile_content_data:/tmp"
     restart: unless-stopped
 
   smile_graphql:
@@ -183,7 +183,7 @@ services:
     restart: unless-stopped
 
 volumes:
-  content_data:
+  smile_content_data:
     driver: local
     driver_opts:
       o: bind

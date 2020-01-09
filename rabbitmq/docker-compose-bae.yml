@@ -13,7 +13,7 @@ services:
     ports:
     - "9000:9000"
     volumes:
-    - "content_data:/tmp"
+    - "bae_content_data:/tmp"
     command: server /tmp
     environment:
     - MINIO_ACCESS_KEY=${AWS_ACCESSKEY}
@@ -122,11 +122,11 @@ services:
     - TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
     - MASHAPE_APIKEY=${MASHAPE_APIKEY}
     volumes:
-    - "content_data:/tmp"
+    - "bae_content_data:/tmp"
     restart: unless-stopped
 
 volumes:
-  content_data:
+  bae_content_data:
     driver: local
     driver_opts:
       o: bind

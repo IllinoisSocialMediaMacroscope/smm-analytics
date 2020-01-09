@@ -52,7 +52,7 @@ def rabbitmq_handler(ch, method, properties, body):
                 }
         }
 
-        # reply to the sender
+    # reply to the sender
     ch.basic_publish(exchange="",
                      routing_key=properties.reply_to,
                      properties=pika.BasicProperties(correlation_id=properties.correlation_id),
