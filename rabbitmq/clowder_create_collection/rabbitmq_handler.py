@@ -26,10 +26,6 @@ def rabbitmq_handler(ch, method, properties, body):
                           data=json.dumps(data),
                           headers=headers,
                           auth=auth)
-
-        print(r.status_code)
-        print(r.text)
-
         if r.status_code != 200:
             resp = {'info': r.text, 'id': 'null'}
         else:
@@ -44,13 +40,13 @@ def rabbitmq_handler(ch, method, properties, body):
                 }
         }
 
-        # reply to the sender
-        ch.basic_publish(exchange="",
-                         routing_key=properties.reply_to,
-                         properties=pika.BasicProperties(correlation_id=properties.correlation_id),
-                         body=json.dumps(resp))
+    # reply to the sender
+    ch.basic_publish(exchange="",
+                     routing_key=properties.reply_to,
+                     properties=pika.BasicProperties(correlation_id=properties.correlation_id),
+                     body=json.dumps(resp))
 
-        return resp
+    return resp
 
 
 if __name__ == '__main__':
