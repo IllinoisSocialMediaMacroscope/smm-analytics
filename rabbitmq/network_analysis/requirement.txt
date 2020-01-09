@@ -2,5 +2,5 @@ boto3>=1.6.11
 numpy>=1.16.1
 pandas>=0.24.1
 networkx==1.11
-plotly>=2.7.0
+plotly==2.7.0
 pika>=1.1.0

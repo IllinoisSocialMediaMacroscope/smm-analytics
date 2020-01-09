@@ -142,7 +142,6 @@ services:
     - algorithm_classification_train
     - algorithm_histogram
     - algorithm_network_analysis
-    - algorithm_pipeline
     - algorithm_preprocessing
     - algorithm_sentiment_analysis
     ports:
