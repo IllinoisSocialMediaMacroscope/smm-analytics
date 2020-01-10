@@ -132,6 +132,56 @@ services:
     - QUEUE_NAME=bae_screen_name_prompt
     restart: unless-stopped
 
+  clowder_create_collection:
+    build: ./clowder_create_collection
+    image: socialmediamacroscope/clowder_create_collection:latest
+    depends_on:
+      - rabbitmq
+    command: python ./rabbitmq_handler.py
+    environment:
+      - QUEUE_NAME=clowder_create_collection
+    restart: unless-stopped
+
+  clowder_create_dataset:
+    build: ./clowder_create_dataset
+    image: socialmediamacroscope/clowder_create_dataset:latest
+    depends_on:
+      - rabbitmq
+    command: python ./rabbitmq_handler.py
+    environment:
+      - QUEUE_NAME=lambda_invoke_clowder
+    restart: unless-stopped
+
+  clowder_create_space:
+    build: ./clowder_create_space
+    image: socialmediamacroscope/clowder_create_space:latest
+    depends_on:
+      - rabbitmq
+    command: python ./rabbitmq_handler.py
+    environment:
+      - QUEUE_NAME=clowder_create_space
+    restart: unless-stopped
+
+  clowder_list:
+    build: ./clowder_list
+    image: socialmediamacroscope/clowder_list:latest
+    depends_on:
+      - rabbitmq
+    command: python ./rabbitmq_handler.py
+    environment:
+      - QUEUE_NAME=lambda_list_clowder
+    restart: unless-stopped
+
+  clowder_upload_file:
+    build: ./clowder_upload_file
+    image: socialmediamacroscope/clowder_upload_file:latest
+    depends_on:
+      - rabbitmq
+    command: python ./rabbitmq_handler.py
+    environment:
+      - QUEUE_NAME=lambda_upload_clowder
+    restart: unless-stopped
+
   smile_server:
     image: socialmediamacroscope/smile_server:latest
     depends_on:
@@ -144,6 +194,11 @@ services:
     - algorithm_network_analysis
     - algorithm_preprocessing
     - algorithm_sentiment_analysis
+    - clowder_create_collection
+    - clowder_create_dataset
+    - clowder_create_space
+    - clowder_list
+    - clowder_upload_file
     ports:
     - "8001:8001"
     command: npm run docker-start
