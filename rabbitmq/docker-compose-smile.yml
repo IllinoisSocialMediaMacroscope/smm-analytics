@@ -180,6 +180,9 @@ services:
     command: python ./rabbitmq_handler.py
     environment:
       - QUEUE_NAME=lambda_upload_clowder
+      - BUCKET_NAME=${BUCKET_NAME}
+      - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+      - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     restart: unless-stopped
 
   smile_server:
@@ -204,6 +207,7 @@ services:
     command: npm run docker-start
     environment:
     - DOCKERIZED=${DOCKERIZED}
+    - BUCKET_NAME=${BUCKET_NAME}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - TWITTER_CONSUMER_KEY=${TWITTER_CONSUMER_KEY}

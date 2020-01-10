@@ -70,16 +70,15 @@ def rabbitmq_handler(ch, method, properties, body):
             # parse url to extract filename, localPath, and awsPath
             path = urlparse(file['url']).path.split('/')
             filename = path[-1]
-            localPath = os.path.join('/tmp', path[1])
+            localPath = os.path.join('/tmp', path[2])
             if not os.path.exists(localPath):
                 os.makedirs(localPath)
-            awsPath = '/'.join(path[0:-1])
-
+            awsPath = '/'.join(path[2:-1])
             try:
                 s3.downloadToDisk(filename, localPath, awsPath)
-                files.append(('File', open(os.path.join(localPath, file['fname']), 'rb')))
+                files.append(('File', open(os.path.join(localPath, filename), 'rb')))
             except:
-                raise ValueError('Cannot find the personality in the remote storage!')
+                raise ValueError('Cannot find file:' + os.path.join(awsPath, filename) + ' in the remote storage!')
 
         r = requests.post(
             'https://socialmediamacroscope.ncsa.illinois.edu/clowder/api/uploadToDataset/' + dataset_id +
