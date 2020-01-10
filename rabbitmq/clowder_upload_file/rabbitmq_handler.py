@@ -4,11 +4,12 @@ import traceback
 
 import pika
 import requests
+import writeToS3 as s3
+from urllib.parse import urlparse
 
-# global
-headers = {'Content-type': 'application/json', 'accept': 'application/json'}
 
 def add_tags(fileID, auth, tags):
+    headers = {'Content-type': 'application/json', 'accept': 'application/json'}
     payload = json.dumps({'tags': tags})
     r = requests.post('https://socialmediamacroscope.ncsa.illinois.edu/' +
                       'clowder/api/files/' + fileID + '/tags',
@@ -20,6 +21,7 @@ def add_tags(fileID, auth, tags):
 
 
 def add_descriptions(fileID, auth, descriptions):
+    headers = {'Content-type': 'application/json', 'accept': 'application/json'}
     payload = json.dumps({'description': descriptions})
     r = requests.put('https://socialmediamacroscope.ncsa.illinois.edu/clowder' +
                      '/api/files/' + fileID + '/updateDescription',
@@ -31,6 +33,7 @@ def add_descriptions(fileID, auth, descriptions):
 
 
 def add_metadata(fileID, auth, metadata):
+    headers = {'Content-type': 'application/json', 'accept': 'application/json'}
     payload = json.dumps(metadata)
     r = requests.post('https://socialmediamacroscope.ncsa.illinois.edu' +
                       '/clowder/api/files/' + fileID + '/metadata',
@@ -54,43 +57,58 @@ def rabbitmq_handler(ch, method, properties, body):
     try:
         # basic fields
         event = json.loads(body)
-        # basic fields
+        headers = {"Content-Type":"multipart/form-data"}
         auth = (event['username'], event['password'])
         dataset_id = event['payload']['dataset_id']
-        config_url = event['payload']['configuration']
-        config_json = get_config_json(config_url)
 
-        # loop through URL list
-        file_id = []
-        for url in event['payload'].keys():
-            if url != 'dataset_id' and url != 'configuration':
-                r = requests.post(
-                    'https://socialmediamacroscope.ncsa.illinois.edu/clowder/api/datasets/' + dataset_id + '/urls',
-                    data=json.dumps({'url': url}),
-                    headers=headers,
-                    auth=auth)
-                if r.status_code != 200:
-                    raise ValueError('cannot upload this file: ' + dataset_id)
-                else:
-                    file_id.append(r.json()['id'])
+        # config_url = event['payload']['configuration']
+        # config_json = get_config_json(config_url)
 
-                    if 'tags' in event['payload'][url].keys():
-                        if not add_tags(r.json()['id'], auth, event['payload'][url]['tags']):
-                            raise ValueError('cannot add tags to this file: ' + r.json()['id'])
+        files = []
+        for file in event['payload']['files']:
 
-                    # add config file to metadata (default)
-                    if not add_metadata(r.json()['id'], auth, config_json):
-                        raise ValueError('cannot add config metadata to this file: ' + r.json()['id'])
-                    if 'metadata' in event['payload'][url].keys():
-                        if not add_metadata(r.json()['id'], auth, event['payload'][url]['metadata']):
-                            raise ValueError('cannot add metadata to this file: ' + r.json()['id'])
+            # parse url to extract filename, localPath, and awsPath
+            path = urlparse(file['url']).path.split('/')
+            filename = path[-1]
+            localPath = os.path.join('/tmp', path[1])
+            if not os.path.exists(localPath):
+                os.makedirs(localPath)
+            awsPath = '/'.join(path[0:-1])
 
-                    if 'descriptions' in event['payload'][url].keys():
-                        if not add_descriptions(r.json()['id'], auth, event['payload'][url]['descriptions']):
-                            raise ValueError('cannot add tags to this file: ' + r.json()['id'])
+            try:
+                s3.downloadToDisk(filename, localPath, awsPath)
+                files.append(('File', open(os.path.join(localPath, file['fname']), 'rb')))
+            except:
+                raise ValueError('Cannot find the personality in the remote storage!')
+
+        r = requests.post(
+            'https://socialmediamacroscope.ncsa.illinois.edu/clowder/api/uploadToDataset/' + dataset_id +
+            '?extract=true',
+            files = files,
+            headers=headers,
+            auth=auth)
+
+        if r.status_code != 200:
+            raise ValueError('cannot upload this file: ' + dataset_id)
+        else:
+            file_ids = r.json()['ids']
+
+            # if 'tags' in event['payload'][url].keys():
+            #     if not add_tags(r.json()['id'], auth, event['payload'][url]['tags']):
+            #         raise ValueError('cannot add tags to this file: ' + r.json()['id'])
+            # # add config file to metadata (default)
+            # if not add_metadata(r.json()['id'], auth, config_json):
+            #     raise ValueError('cannot add config metadata to this file: ' + r.json()['id'])
+            # if 'metadata' in event['payload'][url].keys():
+            #     if not add_metadata(r.json()['id'], auth, event['payload'][url]['metadata']):
+            #         raise ValueError('cannot add metadata to this file: ' + r.json()['id'])
+            #
+            # if 'descriptions' in event['payload'][url].keys():
+            #     if not add_descriptions(r.json()['id'], auth, event['payload'][url]['descriptions']):
+            #         raise ValueError('cannot add tags to this file: ' + r.json()['id'])
 
         resp = {'info': 'You have successfully uploaded all the files to your specified dataset!',
-                'ids': file_id}
+                'ids': file_ids}
 
     except BaseException as e:
         resp = {
