@@ -160,6 +160,6 @@ def notification(toaddr,case,filename,links,sessionURL):
     msg.attach(MIMEText(html, 'html'))
 
     server = smtplib.SMTP_SSL(host, port)
-    server.login(fromaddr,os.environ['EMAIL_PASSWORD'])
+    server.login(fromaddr, os.environ['EMAIL_PASSWORD'])
     server.sendmail(fromaddr, toaddr, msg.as_string())
     server.quit()

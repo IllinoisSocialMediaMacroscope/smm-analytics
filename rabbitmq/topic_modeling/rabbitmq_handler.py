@@ -12,7 +12,7 @@ def rabbitmq_handler(ch, method, properties, body):
 
     try:
         os.system(body)
-        msg = {'command': body}
+        msg = {'response': 'success'}
     except BaseException as e:
         msg = {'ERROR':
                     {'message': str(e),
