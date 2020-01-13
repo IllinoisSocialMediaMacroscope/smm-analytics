@@ -14,6 +14,7 @@ export DROPBOX_CLIENT_ID=***REMOVED***
 export DROPBOX_CLIENT_SECRET=***REMOVED***
 export GOOGLE_CLIENT_ID=***REMOVED***
 export GOOGLE_CLIENT_SECRET=***REMOVED***
+export EMAIL_PASSWORD=NVC***REMOVED***
 
 # subtitute this to a folder that you want to mount on; must be absolute path
 export LOCAL_MOUNT_PATH=/Users/cwang138/Documents/Macroscope/smile_mounted_data

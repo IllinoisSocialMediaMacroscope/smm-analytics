@@ -132,6 +132,21 @@ services:
     - QUEUE_NAME=bae_screen_name_prompt
     restart: unless-stopped
 
+  algorithm_topic_modeling:
+    build: ./topic_modeling
+    image: socialmediamacroscope/topic_modeling:latest
+    depends_on:
+    - rabbitmq
+    - minio
+    command: python ./rabbitmq_handler.py
+    environment:
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+    - BUCKET_NAME=${BUCKET_NAME}
+    - QUEUE_NAME=batch_topic_modeling
+    - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+    restart: unless-stopped
+
   clowder_create_collection:
     build: ./clowder_create_collection
     image: socialmediamacroscope/clowder_create_collection:latest

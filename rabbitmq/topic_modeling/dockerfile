@@ -1,0 +1,11 @@
+FROM python:3
+
+RUN mkdir -p /scripts
+WORKDIR /scripts
+
+# copy paste python scripts
+COPY . ./
+
+# install dependency libraries and download required data
+RUN pip install --no-cache-dir -r requirement.txt
+RUN python3 -m nltk.downloader -d /usr/local/share/nltk_data stopwords wordnet
