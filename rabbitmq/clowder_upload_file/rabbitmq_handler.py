@@ -66,7 +66,8 @@ def rabbitmq_handler(ch, method, properties, body):
             # add config file to metadata (default)
             config_metadata_r = requests.post('https://socialmediamacroscope.ncsa.illinois.edu' +
                                               '/clowder/api/files/' + r.json()['id'] + '/metadata',
-                                              data=config_json,
+                                              data=json.dumps(config_json),
+                                              headers={"Content-Type": "application/json"},
                                               auth=auth)
             if config_metadata_r.status_code != 200:
                 raise ValueError('cannot add configuration metadata to this file: ' + r.json()['id'] + ". error: " +
@@ -78,6 +79,7 @@ def rabbitmq_handler(ch, method, properties, body):
                 tag_r = requests.post('https://socialmediamacroscope.ncsa.illinois.edu/' +
                                       'clowder/api/files/' + r.json()['id'] + '/tags',
                                       data=tag_payload,
+                                      headers={"Content-Type": "application/json"},
                                       auth=auth)
                 if tag_r.status_code != 200:
                     raise ValueError('cannot add tags to this file: ' + r.json()['id'] + ". error: " + tag_r.text)
@@ -88,6 +90,7 @@ def rabbitmq_handler(ch, method, properties, body):
                 metadata_r = requests.post('https://socialmediamacroscope.ncsa.illinois.edu' +
                                            '/clowder/api/files/' + r.json()['id'] + '/metadata',
                                            data=metadata_payload,
+                                           headers={"Content-Type": "application/json"},
                                            auth=auth)
                 if metadata_r.status_code != 200:
                     raise ValueError('cannot add metadata to this file: ' + r.json()['id'] + ". error: " +
@@ -99,6 +102,7 @@ def rabbitmq_handler(ch, method, properties, body):
                 description_r = requests.put('https://socialmediamacroscope.ncsa.illinois.edu/clowder' +
                                              '/api/files/' + r.json()['id'] + '/updateDescription',
                                              data=description_payload,
+                                             headers={"Content-Type": "application/json"},
                                              auth=auth)
                 if description_r.status_code != 200:
                     raise ValueError(
