@@ -1,0 +1,1 @@
+docker build -t socialmediamacroscope/crimson_hexagon_monitors:latest .

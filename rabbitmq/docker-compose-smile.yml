@@ -76,13 +76,13 @@ services:
     - QUEUE_NAME=histogram
     restart: unless-stopped
 
-  algorithm_network_analysis:
+  algorithm_lambda_network_analysis:
     build: ./network_analysis
     image: socialmediamacroscope/network_analysis:latest
     depends_on:
     - rabbitmq
     - minio
-    command: python ./rabbitmq_handler.py
+    command: python ./lambda_rabbitmq_handler.py
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
@@ -90,18 +90,48 @@ services:
     - QUEUE_NAME=lambda_network_analysis
     restart: unless-stopped
 
-  algorithm_preprocessing:
+  algorithm_batch_network_analysis:
+    build: ./network_analysis
+    image: socialmediamacroscope/network_analysis:latest
+    depends_on:
+    - rabbitmq
+    - minio
+    command: python ./batch_rabbitmq_handler.py
+    environment:
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+    - BUCKET_NAME=${BUCKET_NAME}
+    - QUEUE_NAME=batch_network_analysis
+    - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+    restart: unless-stopped
+
+  algorithm_lambda_preprocessing:
     build: ./preprocessing
     image: socialmediamacroscope/preprocessing:latest
     depends_on:
     - rabbitmq
     - minio
-    command: python ./rabbitmq_handler.py
+    command: python ./lambda_rabbitmq_handler.py
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
     - QUEUE_NAME=lambda_preprocessing
+    restart: unless-stopped
+
+  algorithm_batch_preprocessing:
+    build: ./preprocessing
+    image: socialmediamacroscope/preprocessing:latest
+    depends_on:
+    - rabbitmq
+    - minio
+    command: python ./batch_rabbitmq_handler.py
+    environment:
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+    - BUCKET_NAME=${BUCKET_NAME}
+    - QUEUE_NAME=batch_preprocessing
+    - EMAIL_PASSWORD=${EMAIL_PASSWORD}
     restart: unless-stopped
 
   algorithm_lambda_sentiment_analysis:
@@ -245,6 +275,16 @@ services:
       - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     restart: unless-stopped
 
+  crimson_hexagon_monitors:
+    build: ./crimson_hexagon_monitors
+    image: socialmediamacroscope/crimson_hexagon_monitors:latest
+    depends_on:
+      - rabbitmq
+    command: python ./rabbitmq_handler.py
+    environment:
+      - QUEUE_NAME=crimson_hexagon_monitors
+    restart: unless-stopped
+
   smile_server:
     image: socialmediamacroscope/smile_server:latest
     depends_on:
@@ -254,8 +294,10 @@ services:
     - algorithm_classification_split
     - algorithm_classification_train
     - algorithm_histogram
-    - algorithm_network_analysis
-    - algorithm_preprocessing
+    - algorithm_lambda_network_analysis
+    - algorithm_batch_network_analysis
+    - algorithm_lambda_preprocessing
+    - algorithm_batch_preprocessing
     - algorithm_lambda_sentiment_analysis
     - algorithm_batch_sentiment_analysis
     - algorithm_autophrase
