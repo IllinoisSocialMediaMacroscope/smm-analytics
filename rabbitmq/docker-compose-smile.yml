@@ -143,7 +143,22 @@ services:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
-    - QUEUE_NAME=batch_topic_modeling
+    - QUEUE_NAME=topic_modeling
+    - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+    restart: unless-stopped
+
+  algorithm_name_entity_recognition:
+    build: ./name_entity_recognition
+    image: socialmediamacroscope/name_entity_recognition:latest
+    depends_on:
+    - rabbitmq
+    - minio
+    command: python3 ./rabbitmq_handler.py
+    environment:
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+    - BUCKET_NAME=${BUCKET_NAME}
+    - QUEUE_NAME=name_entity_recognition
     - EMAIL_PASSWORD=${EMAIL_PASSWORD}
     restart: unless-stopped
 
