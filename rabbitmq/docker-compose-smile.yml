@@ -162,6 +162,21 @@ services:
     - EMAIL_PASSWORD=${EMAIL_PASSWORD}
     restart: unless-stopped
 
+  algorithm_autophrase:
+    build: ./autophrase
+    image: socialmediamacroscope/autophrase:latest
+    depends_on:
+    - rabbitmq
+    - minio
+    command: python3 ./rabbitmq_handler.py
+    environment:
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+    - BUCKET_NAME=${BUCKET_NAME}
+    - QUEUE_NAME=autophrase
+    - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+    restart: unless-stopped
+
   clowder_create_collection:
     build: ./clowder_create_collection
     image: socialmediamacroscope/clowder_create_collection:latest

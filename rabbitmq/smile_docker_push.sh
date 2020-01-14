@@ -8,7 +8,7 @@ docker push socialmediamacroscope/preprocessing:latest
 docker push socialmediamacroscope/sentiment_analysis:latest
 docker push socialmediamacroscope/screen_name_prompt:latest
 docker push socialmediamacroscope/topic_modeling:latest
-
+docker push socialmediamacroscope/autophrase:latest
 docker push socialmediamacroscope/clowder_create_collection:latest
 docker push socialmediamacroscope/clowder_create_dataset:latest
 docker push socialmediamacroscope/clowder_create_space:latest
