@@ -304,6 +304,7 @@ services:
     - algorithm_name_entity_recognition
     - algorithm_topic_modeling
     - algorithm_screen_name_prompt
+    - crimson_hexagon_monitors
     - clowder_create_collection
     - clowder_create_dataset
     - clowder_create_space

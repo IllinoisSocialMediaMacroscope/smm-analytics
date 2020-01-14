@@ -43,7 +43,6 @@ def rabbitmq_handler(ch, method, properties, body):
                     pass
 
         df = pd.DataFrame(Array[1:], columns=Array[0])
-        print(df.columns)
         # tweet
         if 'created_at' in df.columns:
             # default at 1 hour
