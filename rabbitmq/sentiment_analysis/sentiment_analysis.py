@@ -5,6 +5,8 @@ from nltk.corpus import sentiwordnet as swn, stopwords
 from nltk.sentiment.vader import SentimentIntensityAnalyzer, \
     allcap_differential, negated
 from nltk.tokenize import word_tokenize
+import sentiment_analysis_debias as SA_debias
+import pickle
 
 
 class Sentiment:
@@ -123,6 +125,31 @@ class Sentiment:
             sentiment_doc = {'neg': self.average(doc_neg_score),
                              'neu': self.average(doc_obj_score),
                              'pos': self.average(doc_pos_score)}
+
+        elif algorithm == 'debias':
+
+            # load embeddings and model
+            with open("sentiment_analysis_debias.pickle", "rb") as f:
+                model = pickle.load(f)
+            embeddings = SA_debias.load_embeddings('numberbatch-en-17.04b.txt')
+
+            # sentence level
+            sentiment_sentence = [[self.id_column, 'sentence', 'score']]
+            doc_score = []
+            for sent_id, sent in itertools.zip_longest(self.id,
+                                                       self.sentences):
+                # if valid
+                score = SA_debias.text_to_sentiment(sent, embeddings, model)
+                if score:
+                    doc_score.append(score)
+                    sentiment_sentence.append(
+                        [sent_id, sent.encode('utf-8', 'ignore'), round(score, 4)])
+                else:
+                    sentiment_sentence.append(
+                        [sent_id, sent.encode('utf-8', 'ignore'), 'NA'])
+
+            # document level
+            sentiment_doc = {'doc': self.average(doc_score)}
 
         return sentiment_sentence, sentiment_doc
 
