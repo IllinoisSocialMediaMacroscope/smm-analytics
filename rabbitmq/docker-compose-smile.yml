@@ -104,18 +104,33 @@ services:
     - QUEUE_NAME=lambda_preprocessing
     restart: unless-stopped
 
-  algorithm_sentiment_analysis:
+  algorithm_lambda_sentiment_analysis:
     build: ./sentiment_analysis
     image: socialmediamacroscope/sentiment_analysis:latest
     depends_on:
     - rabbitmq
     - minio
-    command: python ./rabbitmq_handler.py
+    command: python ./lambda_rabbitmq_handler.py
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
     - QUEUE_NAME=lambda_sentiment_analysis
+    restart: unless-stopped
+
+  algorithm_batch_sentiment_analysis:
+    build: ./sentiment_analysis
+    image: socialmediamacroscope/sentiment_analysis:latest
+    depends_on:
+    - rabbitmq
+    - minio
+    command: python ./batch_rabbitmq_handler.py
+    environment:
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+    - BUCKET_NAME=${BUCKET_NAME}
+    - QUEUE_NAME=batch_sentiment_analysis
+    - EMAIL_PASSWORD=${EMAIL_PASSWORD}
     restart: unless-stopped
 
   algorithm_screen_name_prompt:
@@ -241,7 +256,12 @@ services:
     - algorithm_histogram
     - algorithm_network_analysis
     - algorithm_preprocessing
-    - algorithm_sentiment_analysis
+    - algorithm_lambda_sentiment_analysis
+    - algorithm_batch_sentiment_analysis
+    - algorithm_autophrase
+    - algorithm_name_entity_recognition
+    - algorithm_topic_modeling
+    - algorithm_screen_name_prompt
     - clowder_create_collection
     - clowder_create_dataset
     - clowder_create_space
