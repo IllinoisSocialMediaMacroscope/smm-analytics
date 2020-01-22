@@ -134,32 +134,18 @@ services:
     - EMAIL_PASSWORD=${EMAIL_PASSWORD}
     restart: unless-stopped
 
-  algorithm_lambda_sentiment_analysis:
+  algorithm_sentiment_analysis:
     build: ./sentiment_analysis
     image: socialmediamacroscope/sentiment_analysis:latest
     depends_on:
     - rabbitmq
     - minio
-    command: python ./lambda_rabbitmq_handler.py
+    command: python ./rabbitmq_handler.py
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
-    - QUEUE_NAME=lambda_sentiment_analysis
-    restart: unless-stopped
-
-  algorithm_batch_sentiment_analysis:
-    build: ./sentiment_analysis
-    image: socialmediamacroscope/sentiment_analysis:latest
-    depends_on:
-    - rabbitmq
-    - minio
-    command: python ./batch_rabbitmq_handler.py
-    environment:
-    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
-    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
-    - BUCKET_NAME=${BUCKET_NAME}
-    - QUEUE_NAME=batch_sentiment_analysis
+    - QUEUE_NAME=lsentiment_analysis
     - EMAIL_PASSWORD=${EMAIL_PASSWORD}
     restart: unless-stopped
 
