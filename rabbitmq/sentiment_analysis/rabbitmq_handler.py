@@ -13,12 +13,14 @@ def rabbitmq_handler(ch, method, properties, body):
 
         # determine if it goes to aws, lambda, or batch
         params = json.loads(body)
-        if 'aws-lambda' in params.keys():
+
+        if params['platform'] == 'aws-lambda':
         # TODO connect to AWS algorithm
-        elif 'aws-batch' in params.keys():
+
+        elif params['platform'] == 'aws-batch':
         # TODO connect to AWS batch
 
-        elif 'lambda' in params.keys():
+        elif params['platform'] == 'lambda':
             path = dataset.organize_path_lambda(params['lambda'])
 
             # save the config file
@@ -44,8 +46,7 @@ def rabbitmq_handler(ch, method, properties, body):
                 else:
                     msg[key] = value
 
-
-        elif 'batch' in params.keys():
+        elif params['platform'] == 'batch':
             os.system(params['batch'])
             msg['response'] = 'success'
 
