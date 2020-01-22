@@ -21,20 +21,20 @@ def rabbitmq_handler(ch, method, properties, body):
         # TODO connect to AWS batch
 
         elif params['platform'] == 'lambda':
-            path = dataset.organize_path_lambda(params['lambda'])
+            path = dataset.organize_path_lambda(params)
 
             # save the config file
             msg['config'] = dataset.save_remote_output(path['localSavePath'],
                                                        path['remoteSavePath'],
                                                        'config',
-                                                       params['lambda'])
+                                                       params)
             # prepare input dataset
             df = dataset.get_remote_input(path['remoteReadPath'],
                                           path['filename'],
                                           path['localReadPath'])
 
             # execute the algorithm
-            output = algorithm(df, params['lambda'])
+            output = algorithm(df, params)
 
             # upload object to s3 bucket and return the url
             for key, value in output.items():
@@ -47,7 +47,7 @@ def rabbitmq_handler(ch, method, properties, body):
                     msg[key] = value
 
         elif params['platform'] == 'batch':
-            os.system(params['batch'])
+            os.system(params['command'])
             msg['response'] = 'success'
 
         else:
