@@ -145,7 +145,7 @@ services:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
-    - QUEUE_NAME=lsentiment_analysis
+    - QUEUE_NAME=sentiment_analysis
     - EMAIL_PASSWORD=${EMAIL_PASSWORD}
     restart: unless-stopped
 
@@ -284,8 +284,7 @@ services:
     - algorithm_batch_network_analysis
     - algorithm_lambda_preprocessing
     - algorithm_batch_preprocessing
-    - algorithm_lambda_sentiment_analysis
-    - algorithm_batch_sentiment_analysis
+    - algorithm_sentiment_analysis
     - algorithm_autophrase
     - algorithm_name_entity_recognition
     - algorithm_topic_modeling
@@ -301,6 +300,7 @@ services:
     command: npm run docker-start
     environment:
     - DOCKERIZED=${DOCKERIZED}
+    - LOCAL_ALGORITHM=${LOCAL_ALGORITHM}
     - BUCKET_NAME=${BUCKET_NAME}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}

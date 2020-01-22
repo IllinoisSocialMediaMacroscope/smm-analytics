@@ -15,9 +15,11 @@ def rabbitmq_handler(ch, method, properties, body):
         params = json.loads(body)
 
         if params['platform'] == 'aws-lambda':
+            raise ValueError('Not implemented yet!')
         # TODO connect to AWS algorithm
 
         elif params['platform'] == 'aws-batch':
+            raise ValueError('Not implemented yet!')
         # TODO connect to AWS batch
 
         elif params['platform'] == 'lambda':
@@ -52,7 +54,8 @@ def rabbitmq_handler(ch, method, properties, body):
 
         else:
             raise ValueError(
-                'Rabbitmq Message Not Recognizable. It has to specify what platform to run: aws-lambda, aws-batch, lambda or batch.')
+                'Rabbitmq Message Not Recognizable. '
+                'It has to specify what platform to run: aws-lambda, aws-batch, lambda or batch.')
 
     except BaseException as e:
 
