@@ -5,7 +5,7 @@ import os
 client = boto3.client('lambda', region_name="us-west-2", aws_access_key_id = os.environ['AWS_ACCESSKEY'],
                       aws_secret_access_key = os.environ['AWS_ACCESSKEYSECRET'])
 
-def invokeLambda(function_name, args):
+def invoke(function_name, args):
     response = client.invoke(
         Payload=json.dumps(args),
         FunctionName=function_name,

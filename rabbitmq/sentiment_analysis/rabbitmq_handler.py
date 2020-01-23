@@ -6,6 +6,9 @@ import dataset
 import pika
 from algorithm import algorithm
 
+import postToAWSLambda
+import postToAWSBatch
+
 
 def rabbitmq_handler(ch, method, properties, body):
     try:
@@ -15,12 +18,13 @@ def rabbitmq_handler(ch, method, properties, body):
         params = json.loads(body)
 
         if params['platform'] == 'aws-lambda':
-            raise ValueError('Not implemented yet!')
-        # TODO connect to AWS algorithm
+            msg = postToAWSLambda.invoke(params['function_name'], params)
 
         elif params['platform'] == 'aws-batch':
-            raise ValueError('Not implemented yet!')
-        # TODO connect to AWS batch
+            msg = postToAWSBatch.invoke(params['jobDefinition'],
+                                        params['jobName'],
+                                        params['jobQueue'],
+                                        params['command'])
 
         elif params['platform'] == 'lambda':
             path = dataset.organize_path_lambda(params)
@@ -49,7 +53,7 @@ def rabbitmq_handler(ch, method, properties, body):
                     msg[key] = value
 
         elif params['platform'] == 'batch':
-            os.system(params['command'])
+            os.system(' '.join(params['command']))
             msg['response'] = 'success'
 
         else:
