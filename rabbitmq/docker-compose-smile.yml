@@ -272,6 +272,7 @@ services:
     restart: unless-stopped
 
   smile_server:
+    build: /Users/cwang138/Documents/Macroscope/SMILE/www
     image: socialmediamacroscope/smile_server:latest
     depends_on:
     - rabbitmq
@@ -321,6 +322,7 @@ services:
     restart: unless-stopped
 
   smile_graphql:
+    build: /Users/cwang138/Documents/Macroscope/SMILE/www/graphql
     image: socialmediamacroscope/smile_graphql:latest
     depends_on:
     - smile_server
