@@ -6,58 +6,76 @@ import dataset
 import pika
 from algorithm import algorithm
 
+import postToAWSLambda
+import postToAWSBatch
+
 
 def rabbitmq_handler(ch, method, properties, body):
-    '''
-    entrance to invoke AWS lambda,
-    variable params contains parameters passed in
-    '''
-
     try:
-        urls = {}
+        msg = {}
 
-        # arranging the paths
+        # determine if it goes to aws, lambda, or batch
         params = json.loads(body)
-        path = dataset.organize_path_lambda(params)
 
-        # save the config file
-        urls['config'] = dataset.save_remote_output(path['localSavePath'],
-                                                    path['remoteSavePath'],
-                                                    'config',
-                                                    params)
-        # prepare input dataset
-        df = dataset.get_remote_input(path['remoteReadPath'],
-                                      path['filename'],
-                                      path['localReadPath'])
+        if params['platform'] == 'aws-lambda':
+            msg = postToAWSLambda.invoke(params['function_name'], params)
 
-        # execute the algorithm
-        output = algorithm(df, params)
+        elif params['platform'] == 'aws-batch':
+            msg = postToAWSBatch.invoke(params['jobDefinition'],
+                                        params['jobName'],
+                                        params['jobQueue'],
+                                        params['command'])
 
-        # upload object to s3 bucket and return the url
-        for key, value in output.items():
-            if key != 'uid':
-                urls[key] = dataset.save_remote_output(path['localSavePath'],
+        elif params['platform'] == 'lambda':
+            path = dataset.organize_path_lambda(params)
+
+            # save the config file
+            msg['config'] = dataset.save_remote_output(path['localSavePath'],
                                                        path['remoteSavePath'],
-                                                       key,
-                                                       value)
-            else:
-                urls[key] = value
+                                                       'config',
+                                                       params)
+            # prepare input dataset
+            df = dataset.get_remote_input(path['remoteReadPath'],
+                                          path['filename'],
+                                          path['localReadPath'])
+
+            # execute the algorithm
+            output = algorithm(df, params)
+
+            # upload object to s3 bucket and return the url
+            for key, value in output.items():
+                if key != 'uid':
+                    msg[key] = dataset.save_remote_output(path['localSavePath'],
+                                                          path['remoteSavePath'],
+                                                          key,
+                                                          value)
+                else:
+                    msg[key] = value
+
+        elif params['platform'] == 'batch':
+            os.system(' '.join(params['command']))
+            msg['response'] = 'success'
+
+        else:
+            raise ValueError(
+                'Rabbitmq Message Not Recognizable. '
+                'It has to specify what platform to run: aws-lambda, aws-batch, lambda or batch.')
 
     except BaseException as e:
-        urls = {'ERROR':
-                    {'message': str(e),
-                     'traceback': traceback.format_exc()
-                     }
-                }
+
+        msg = {'ERROR':
+                   {'message': str(e),
+                    'traceback': traceback.format_exc()
+                    }
+               }
 
     # reply to the sender
     ch.basic_publish(exchange="",
                      routing_key=properties.reply_to,
                      properties=pika.BasicProperties(correlation_id=properties.correlation_id),
-                     body=json.dumps(urls))
+                     body=json.dumps(msg))
 
-    return urls
-
+    return None
 
 
 if __name__ == '__main__':
