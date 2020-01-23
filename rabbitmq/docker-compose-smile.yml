@@ -31,7 +31,7 @@ services:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
-    - QUEUE_NAME=lambda_classification_predict_dev
+    - QUEUE_NAME=classification_predict_dev
     restart: unless-stopped
 
   algorithm_classification_split:
@@ -45,7 +45,7 @@ services:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
-    - QUEUE_NAME=lambda_classification_split_dev
+    - QUEUE_NAME=classification_split_dev
     restart: unless-stopped
 
   algorithm_classification_train:
@@ -59,7 +59,7 @@ services:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
-    - QUEUE_NAME=lambda_classification_train
+    - QUEUE_NAME=classification_train
     restart: unless-stopped
 
   algorithm_histogram:
@@ -76,62 +76,32 @@ services:
     - QUEUE_NAME=histogram
     restart: unless-stopped
 
-  algorithm_lambda_network_analysis:
+  algorithm_network_analysis:
     build: ./network_analysis
     image: socialmediamacroscope/network_analysis:latest
     depends_on:
     - rabbitmq
     - minio
-    command: python ./lambda_rabbitmq_handler.py
+    command: python ./rabbitmq_handler.py
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
-    - QUEUE_NAME=lambda_network_analysis
+    - QUEUE_NAME=network_analysis
     restart: unless-stopped
 
-  algorithm_batch_network_analysis:
-    build: ./network_analysis
-    image: socialmediamacroscope/network_analysis:latest
-    depends_on:
-    - rabbitmq
-    - minio
-    command: python ./batch_rabbitmq_handler.py
-    environment:
-    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
-    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
-    - BUCKET_NAME=${BUCKET_NAME}
-    - QUEUE_NAME=batch_network_analysis
-    - EMAIL_PASSWORD=${EMAIL_PASSWORD}
-    restart: unless-stopped
-
-  algorithm_lambda_preprocessing:
+  algorithm_preprocessing:
     build: ./preprocessing
     image: socialmediamacroscope/preprocessing:latest
     depends_on:
     - rabbitmq
     - minio
-    command: python ./lambda_rabbitmq_handler.py
+    command: python ./rabbitmq_handler.py
     environment:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
-    - QUEUE_NAME=lambda_preprocessing
-    restart: unless-stopped
-
-  algorithm_batch_preprocessing:
-    build: ./preprocessing
-    image: socialmediamacroscope/preprocessing:latest
-    depends_on:
-    - rabbitmq
-    - minio
-    command: python ./batch_rabbitmq_handler.py
-    environment:
-    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
-    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
-    - BUCKET_NAME=${BUCKET_NAME}
-    - QUEUE_NAME=batch_preprocessing
-    - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+    - QUEUE_NAME=preprocessing
     restart: unless-stopped
 
   algorithm_sentiment_analysis:
@@ -281,10 +251,8 @@ services:
     - algorithm_classification_split
     - algorithm_classification_train
     - algorithm_histogram
-    - algorithm_lambda_network_analysis
-    - algorithm_batch_network_analysis
-    - algorithm_lambda_preprocessing
-    - algorithm_batch_preprocessing
+    - algorithm_network_analysis
+    - algorithm_preprocessing
     - algorithm_sentiment_analysis
     - algorithm_autophrase
     - algorithm_name_entity_recognition
