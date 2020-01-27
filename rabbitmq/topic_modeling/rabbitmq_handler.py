@@ -1,12 +1,7 @@
 import json
 import os
 import traceback
-
-import dataset
 import pika
-from algorithm import algorithm
-
-import postToAWSLambda
 import postToAWSBatch
 
 
@@ -18,7 +13,7 @@ def rabbitmq_handler(ch, method, properties, body):
         params = json.loads(body)
 
         if params['platform'] == 'aws-lambda':
-            msg = postToAWSLambda.invoke(params['function_name'], params)
+            raise ValueError("Not applicable to this algorithm.")
 
         elif params['platform'] == 'aws-batch':
             msg = postToAWSBatch.invoke(params['jobDefinition'],
@@ -27,30 +22,7 @@ def rabbitmq_handler(ch, method, properties, body):
                                         params['command'])
 
         elif params['platform'] == 'lambda':
-            path = dataset.organize_path_lambda(params)
-
-            # save the config file
-            msg['config'] = dataset.save_remote_output(path['localSavePath'],
-                                                       path['remoteSavePath'],
-                                                       'config',
-                                                       params)
-            # prepare input dataset
-            df = dataset.get_remote_input(path['remoteReadPath'],
-                                          path['filename'],
-                                          path['localReadPath'])
-
-            # execute the algorithm
-            output = algorithm(df, params)
-
-            # upload object to s3 bucket and return the url
-            for key, value in output.items():
-                if key != 'uid':
-                    msg[key] = dataset.save_remote_output(path['localSavePath'],
-                                                          path['remoteSavePath'],
-                                                          key,
-                                                          value)
-                else:
-                    msg[key] = value
+            raise ValueError("Not applicable to this algorithm.")
 
         elif params['platform'] == 'batch':
             os.system(' '.join(params['command']))
