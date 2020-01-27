@@ -189,6 +189,22 @@ services:
     - EMAIL_PASSWORD=${EMAIL_PASSWORD}
     restart: unless-stopped
 
+  image_crawler:
+    build: ./image_crawler
+    image: socialmediamacroscope/image_crawler:latest
+    depends_on:
+    - rabbitmq
+    - minio
+    command: python3 ./rabbitmq_handler.py
+    environment:
+    - HOST_IP=${HOST_IP}
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+    - BUCKET_NAME=${BUCKET_NAME}
+    - QUEUE_NAME=image_crawler
+    - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+    restart: unless-stopped
+
   clowder_create_collection:
     build: ./clowder_create_collection
     image: socialmediamacroscope/clowder_create_collection:latest
@@ -270,6 +286,7 @@ services:
     - algorithm_name_entity_recognition
     - algorithm_topic_modeling
     - algorithm_screen_name_prompt
+    - image_crawler
     - crimson_hexagon_monitors
     - clowder_create_collection
     - clowder_create_dataset
