@@ -28,6 +28,7 @@ services:
     - minio
     command: python ./rabbitmq_handler.py
     environment:
+    - HOST_IP=${HOST_IP}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -42,6 +43,7 @@ services:
     - minio
     command: python ./rabbitmq_handler.py
     environment:
+    - HOST_IP=${HOST_IP}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -56,6 +58,7 @@ services:
     - minio
     command: python ./rabbitmq_handler.py
     environment:
+    - HOST_IP=${HOST_IP}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -70,6 +73,7 @@ services:
     - minio
     command: python ./rabbitmq_handler.py
     environment:
+    - HOST_IP=${HOST_IP}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -84,6 +88,7 @@ services:
     - minio
     command: python ./rabbitmq_handler.py
     environment:
+    - HOST_IP=${HOST_IP}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -98,6 +103,7 @@ services:
     - minio
     command: python ./rabbitmq_handler.py
     environment:
+    - HOST_IP=${HOST_IP}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -112,6 +118,7 @@ services:
     - minio
     command: python ./rabbitmq_handler.py
     environment:
+    - HOST_IP=${HOST_IP}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -127,6 +134,7 @@ services:
     - minio
     command: python ./screen_name_prompt.py
     environment:
+    - HOST_IP=${HOST_IP}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -141,6 +149,7 @@ services:
     - minio
     command: python ./rabbitmq_handler.py
     environment:
+    - HOST_IP=${HOST_IP}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -156,6 +165,7 @@ services:
     - minio
     command: python3 ./rabbitmq_handler.py
     environment:
+    - HOST_IP=${HOST_IP}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -171,6 +181,7 @@ services:
     - minio
     command: python3 ./rabbitmq_handler.py
     environment:
+    - HOST_IP=${HOST_IP}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -225,6 +236,7 @@ services:
       - rabbitmq
     command: python ./rabbitmq_handler.py
     environment:
+      - HOST_IP=${HOST_IP}
       - QUEUE_NAME=lambda_upload_clowder
       - BUCKET_NAME=${BUCKET_NAME}
       - AWS_ACCESSKEY=${AWS_ACCESSKEY}
@@ -270,6 +282,7 @@ services:
     environment:
     - DOCKERIZED=${DOCKERIZED}
     - LOCAL_ALGORITHM=${LOCAL_ALGORITHM}
+    - HOST_IP=${HOST_IP}
     - BUCKET_NAME=${BUCKET_NAME}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}

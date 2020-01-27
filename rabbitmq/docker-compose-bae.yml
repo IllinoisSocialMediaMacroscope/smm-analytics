@@ -37,6 +37,7 @@ services:
     - minio
     command: python ./bulk_comparison.py
     environment:
+    - HOST_IP=${HOST_IP}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -59,6 +60,7 @@ services:
     - minio
     command: python ./collect_timeline.py
     environment:
+    - HOST_IP=${HOST_IP}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -72,6 +74,7 @@ services:
     - minio
     command: python ./get_personality.py
     environment:
+    - HOST_IP=${HOST_IP}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -85,6 +88,7 @@ services:
     - minio
     command: python ./get_sim_score.py
     environment:
+    - HOST_IP=${HOST_IP}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -116,6 +120,7 @@ services:
     command: npm start
     environment:
     - DOCKERIZED=${DOCKERIZED}
+    - HOST_IP=${HOST_IP}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - TWITTER_CONSUMER_KEY=${TWITTER_CONSUMER_KEY}
