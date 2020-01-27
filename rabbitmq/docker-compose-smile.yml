@@ -32,7 +32,7 @@ services:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
-    - QUEUE_NAME=classification_predict_dev
+    - QUEUE_NAME=classification_predict
     restart: unless-stopped
 
   algorithm_classification_split:
@@ -47,7 +47,7 @@ services:
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
-    - QUEUE_NAME=classification_split_dev
+    - QUEUE_NAME=classification_split
     restart: unless-stopped
 
   algorithm_classification_train:
