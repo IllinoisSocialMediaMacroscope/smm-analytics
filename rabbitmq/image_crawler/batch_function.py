@@ -40,7 +40,6 @@ if __name__ == '__main__':
     else:
         raise ValueError("This data source does not support image collection!")
 
-    urls = {}
     for img_url in img_urls:
         if ic.is_image(img_url):
             filename, binary = ic.crawler(img_url)

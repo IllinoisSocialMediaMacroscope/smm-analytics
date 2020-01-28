@@ -10,6 +10,7 @@ docker push socialmediamacroscope/topic_modeling:latest
 docker push socialmediamacroscope/name_entity_recognition:latest
 docker push socialmediamacroscope/autophrase:latest
 docker push socialmediamacroscope/image_crawler:latest
+docker push socialmediamacroscope/collect_reddit_comment:latest
 docker push socialmediamacroscope/clowder_create_collection:latest
 docker push socialmediamacroscope/clowder_create_dataset:latest
 docker push socialmediamacroscope/clowder_create_space:latest

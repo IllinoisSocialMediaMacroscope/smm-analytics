@@ -205,6 +205,24 @@ services:
     - EMAIL_PASSWORD=${EMAIL_PASSWORD}
     restart: unless-stopped
 
+  collect_reddit_comment:
+    build: ./collect_reddit_comment
+    image: socialmediamacroscope/collect_reddit_comment:latest
+    depends_on:
+    - rabbitmq
+    - minio
+    command: python3 ./rabbitmq_handler.py
+    environment:
+    - HOST_IP=${HOST_IP}
+    - REDDIT_CLIENT_ID=${REDDIT_CLIENT_ID}
+    - REDDIT_CLIENT_SECRET=${REDDIT_CLIENT_SECRET}
+    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+    - BUCKET_NAME=${BUCKET_NAME}
+    - QUEUE_NAME=reddit_comment
+    - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+    restart: unless-stopped
+
   clowder_create_collection:
     build: ./clowder_create_collection
     image: socialmediamacroscope/clowder_create_collection:latest
@@ -287,6 +305,7 @@ services:
     - algorithm_topic_modeling
     - algorithm_screen_name_prompt
     - image_crawler
+    - collect_reddit_comment
     - crimson_hexagon_monitors
     - clowder_create_collection
     - clowder_create_dataset
