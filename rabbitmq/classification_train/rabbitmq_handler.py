@@ -7,7 +7,6 @@ import pika
 from algorithm import algorithm
 
 import postToAWSLambda
-import postToAWSBatch
 
 
 def rabbitmq_handler(ch, method, properties, body):
@@ -21,19 +20,17 @@ def rabbitmq_handler(ch, method, properties, body):
             msg = postToAWSLambda.invoke(params['function_name'], params)
 
         elif params['platform'] == 'aws-batch':
-            msg = postToAWSBatch.invoke(params['jobDefinition'],
-                                        params['jobName'],
-                                        params['jobQueue'],
-                                        params['command'])
+            raise ValueError("Not applicable to aws-batch")
 
         elif params['platform'] == 'lambda':
+            # arranging the paths
             path = dataset.organize_path_lambda(params)
 
             # save the config file
             msg['config'] = dataset.save_remote_output(path['localSavePath'],
-                                                       path['remoteSavePath'],
-                                                       'config',
-                                                       params)
+                                                        path['remoteSavePath'],
+                                                        'config',
+                                                        params)
             # prepare input dataset
             df = dataset.get_remote_input(path['remoteReadPath'],
                                           path['filename'],
@@ -46,15 +43,14 @@ def rabbitmq_handler(ch, method, properties, body):
             for key, value in output.items():
                 if key != 'uid':
                     msg[key] = dataset.save_remote_output(path['localSavePath'],
-                                                          path['remoteSavePath'],
-                                                          key,
-                                                          value)
+                                                           path['remoteSavePath'],
+                                                           key,
+                                                           value)
                 else:
                     msg[key] = value
 
         elif params['platform'] == 'batch':
-            os.system(' '.join(params['command']))
-            msg['response'] = 'success'
+            raise ValueError("Not applicable to batch")
 
         else:
             raise ValueError(
