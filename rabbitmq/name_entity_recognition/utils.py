@@ -26,7 +26,7 @@ ENTITY_MAPPINGS={k: "__%s__" % k for k in OTHER_ENTITIES_KEYS}
 
 def load_sequences(filename, sep="\t", notypes=False, test_data=False, encoding='utf-8'):
     sequences = []
-    with open(filename, e, encoding="utf-8", errors="ignore") as fp:
+    with open(filename, encoding="utf-8", errors="ignore") as fp:
         seq = []
         for line in fp:
             line = line.strip()
