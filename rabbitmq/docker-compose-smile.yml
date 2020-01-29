@@ -93,6 +93,7 @@ services:
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
     - QUEUE_NAME=network_analysis
+    - EMAIL_PASSWORD=${EMAIL_PASSWORD}
     restart: unless-stopped
 
   algorithm_preprocessing:
@@ -108,6 +109,7 @@ services:
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
     - QUEUE_NAME=preprocessing
+    - EMAIL_PASSWORD=${EMAIL_PASSWORD}
     restart: unless-stopped
 
   algorithm_sentiment_analysis:
