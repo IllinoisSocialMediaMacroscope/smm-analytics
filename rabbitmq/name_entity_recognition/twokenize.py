@@ -21,7 +21,6 @@ Ported to Python by Myle Ott <myleott@gmail.com>.
 """
 from __future__ import unicode_literals
 
-import operator
 import re
 import sys
 

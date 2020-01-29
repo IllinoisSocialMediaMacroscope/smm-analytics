@@ -1,5 +1,4 @@
 import requests
-import json
 import regex as re
 
 query="""
@@ -20,14 +19,13 @@ QID_REGEX=re.compile(r'^Q[0-9]+$')
 
 url = 'https://query.wikidata.org/bigdata/namespace/wdq/sparql'
 def download_data(queryfile,outdir="./downloaded"):
-    query = ""
-    with open(queryfile) as fp:
+    with open(queryfile, encoding="utf-8", errors="ignore") as fp:
         query = fp.read().strip()
-    print query
+    print(query)
     data = requests.get(url, params={'query': query, 'format': 'json'}).json()
-    print "Downloaded %s records for %s" % (len(data["results"]["bindings"]), queryfile)
+    print("Downloaded %s records for %s" % (len(data["results"]["bindings"]), queryfile))
     outfile="%s/%s.json" % (outdir,queryfile)
-    print "Saving in %s" % outfile
+    print("Saving in %s" % outfile)
     fp.close()
     with open(outfile, "wb+") as fp:
         for k in data["results"]["bindings"]:
@@ -35,7 +33,7 @@ def download_data(queryfile,outdir="./downloaded"):
                 line=k["musicLabel"]["value"]
                 if QID_REGEX.match(line):
                     continue
-                print >> fp, line
+                print (fp, line)
             except:
                 continue
     return data

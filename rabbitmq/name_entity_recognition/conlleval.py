@@ -12,9 +12,8 @@
 # - LaTeX output (-l argument) not supported
 # - raw tags (-r argument) not supported
 
-import sys
 import re
-
+import sys
 from collections import defaultdict, namedtuple
 
 ANY_SPACE = '<SPACE>'
@@ -241,8 +240,8 @@ def start_of_chunk(prev_tag, tag, prev_type, type_):
 
     return chunk_start
 
-def evaluate_from_file(filename, outstream=None):
-    with open(args.file) as f:
+def evaluate_from_file(args, outstream=None):
+    with open(args.file, encoding="utf-8", errors="ignore") as f:
         counts = evaluate(f, args)
     report(counts, outstream)
     
@@ -252,7 +251,7 @@ def main(argv):
     if args.file is None:
         counts = evaluate(sys.stdin, args)
     else:
-        with open(args.file) as f:
+        with open(args.file, encoding="utf-8", errors="ignore") as f:
             counts = evaluate(f, args)
     report(counts)
 

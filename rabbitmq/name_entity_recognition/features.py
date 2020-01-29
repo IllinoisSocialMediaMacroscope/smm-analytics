@@ -1,23 +1,20 @@
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
+
+import os
+import string
+import subprocess
+import sys
 from builtins import *
 from io import open
 
+import regex as re
+import six
 from gensim.models import word2vec
-from sklearn.feature_extraction import DictVectorizer
 from sklearn.cluster import AgglomerativeClustering
-
+from sklearn.feature_extraction import DictVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report
-from sklearn.svm import LinearSVC
-
-import regex as re
-import subprocess
-import string
-import os
-import sys
-import six
-
 from utils import *
 
 
@@ -80,7 +77,7 @@ class DictionaryFeatures(object):
             self.dictionaries.append(d)
             if d == '.svn':
                 continue
-            for line in open(dictDir + "/" + d):
+            for line in open(dictDir + "/" + d, encoding="utf-8", errors="ignore"):
                 word = line.rstrip('\n')
                 word = word.strip(' ').lower()
                 word = WORD_SPLITTER.sub(" ", word)
@@ -205,7 +202,7 @@ class ClusterFeatures(object):
         self.cluster_file_path = path
         
     def gen_training_data(self, sentences, filename):
-        with open(filename, "w", encoding="utf-8") as fp:
+        with open(filename, "w", encoding="utf-8", errors="ignore") as fp:
             for seq in sentences:
                 if self.cluster_type == "brown":
                     print(" ".join(seq), file=fp)
@@ -263,7 +260,7 @@ class ClusterFeatures(object):
     
     def _read_brown_clusters(self):
         cluster_vocab=dict()
-        with open(self.cluster_file_path) as fp:
+        with open(self.cluster_file_path, encoding="utf-8", errors="ignore") as fp:
             for line in fp:
                 cid, word, counts = line.strip().split("\t")
                 cluster_vocab[word] = cid
@@ -271,7 +268,7 @@ class ClusterFeatures(object):
     
     def _read_clark_clusters(self):
         cluster_vocab=dict()
-        with open(self.cluster_file_path) as fp:
+        with open(self.cluster_file_path, encoding="utf-8", errors="ignore") as fp:
             for line in fp:
                 try:
                     word, cid, prob = line.strip().split(" ")

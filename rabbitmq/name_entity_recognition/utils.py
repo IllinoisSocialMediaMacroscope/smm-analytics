@@ -26,7 +26,7 @@ ENTITY_MAPPINGS={k: "__%s__" % k for k in OTHER_ENTITIES_KEYS}
 
 def load_sequences(filename, sep="\t", notypes=False, test_data=False, encoding='utf-8'):
     sequences = []
-    with open(filename, encoding=encoding) as fp:
+    with open(filename, e, encoding="utf-8", errors="ignore") as fp:
         seq = []
         for line in fp:
             line = line.strip()
@@ -48,7 +48,7 @@ def load_sequences(filename, sep="\t", notypes=False, test_data=False, encoding=
 
 def load_vocab(filename):
     vocab = set()
-    with open(filename) as fp:
+    with open(filename, encoding="utf-8", errors="ignore") as fp:
         for line in fp:
             line = line.strip()
             vocab.add(line)
@@ -98,7 +98,7 @@ def plot_cm(y_test, y_pred, labels=[], axis=1):
 
 
 def print_sequences(sequences, predictions, filename, test_data=False, notypes=False):
-    with open(filename, "w", encoding='utf-8') as fp:
+    with open(filename, "w", encoding="utf-8", errors="ignore") as fp:
         for seq, pred in zip(sequences, predictions):
             for t, p in zip(seq, pred):
                 token, tag = t
@@ -183,7 +183,7 @@ GLOVE_TWEET_MAPPINGS={
 
 def process_glovevectors(filename):
     words, dim, errors = 0, 0, 0
-    with open(filename) as fp:
+    with open(filename, encoding="utf-8", errors="ignore") as fp:
         while True:
             try:
                 line = next(fp)
@@ -199,7 +199,7 @@ def process_glovevectors(filename):
                 continue
             words+= 1
     print("Words: {}, dim: {}, errors: {}".format(words, dim, errors))
-    with open(filename) as fp, open("{}.processed.txt".format(filename), "w") as fp1:
+    with open(filename, encoding="utf-8", errors="ignore") as fp, open("{}.processed.txt".format(filename), "w") as fp1:
         fp1.write(str(words) + u" " + str(dim) + u"\n")
         while True:
             try:

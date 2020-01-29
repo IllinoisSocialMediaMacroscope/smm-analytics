@@ -1,7 +1,8 @@
 import os
 import pickle
-import six
 import sys
+
+import six
 from features import sent2features, DictionaryFeatures, ClusterFeatures, WordVectors
 from utils import load_sequences, process_glovevectors
 
@@ -21,6 +22,7 @@ WORDVEC_FILE_PROCESSED = os.path.join(DATA_DIR, "glove.twitter.27B.200d.txt.proc
 GIMPLE_TWITTER_BROWN_CLUSTERS_DIR = os.path.join(DATA_DIR, "50mpaths2")
 TEST_ENRICHED_DATA_BROWN_CLUSTER_DIR = os.path.join(DATA_DIR, "brown_clusters%s")
 TEST_ENRICHED_DATA_CLARK_CLUSTER_DIR = os.path.join(DATA_DIR, "clark_clusters%s")
+
 
 class TwitterNER:
     def __init__(self, training_data_name="_wnut_and_hege",
@@ -63,9 +65,9 @@ class TwitterNER:
                              lowercase=False, dropout=0,
                              word2vec_model=self.word2vec_model.model,
                              cluster_vocabs=[
-                               self.gimple_brown_clusters,
-                               self.test_enriched_data_brown_clusters,
-                               self.test_enriched_data_clark_clusters
+                                 self.gimple_brown_clusters,
+                                 self.test_enriched_data_brown_clusters,
+                                 self.test_enriched_data_clark_clusters
                              ])
 
     def get_entities(self, tokens):
@@ -79,10 +81,10 @@ class TwitterNER:
             label = predictions[0][i]
             state = label[0]
             if state in ("B", "U") or \
-               (state in ("I", "E") and previous_state not in ("B", "I")):
+                    (state in ("I", "E") and previous_state not in ("B", "I")):
                 entity_start = i
             if state in ("E", "U") or \
-               (state in ("B", "I") and (i == len(tokens) - 1 or predictions[0][i + 1][0] not in ("I", "E"))):
+                    (state in ("B", "I") and (i == len(tokens) - 1 or predictions[0][i + 1][0] not in ("I", "E"))):
                 entity_type = label[2:]
                 if entity_type is not None:
                     entities.append((entity_start, i + 1, entity_type))

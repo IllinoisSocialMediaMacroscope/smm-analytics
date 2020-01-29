@@ -9,9 +9,8 @@
 # - LaTeX output (-l argument) not supported
 # - raw tags (-r argument) not supported
 
-import sys
 import re
-
+import sys
 from collections import defaultdict, namedtuple
 
 ANY_SPACE = '<SPACE>'
@@ -240,7 +239,7 @@ def main(argv):
     if args.file is None:
         counts = evaluate(sys.stdin, args)
     else:
-        with open(args.file) as f:
+        with open(args.file, encoding="utf-8", errors="ignore") as f:
             counts = evaluate(f, args)
     report(counts)
 
