@@ -19,12 +19,10 @@ def rabbitmq_handler(ch, method, properties, body):
 
         if params['platform'] == 'aws-lambda':
             msg = postToAWSLambda.invoke(params['function_name'], params)
-
-        elif params['platform'] == 'aws-batch':
-            msg = postToAWSBatch.invoke(params['jobDefinition'],
-                                        params['jobName'],
-                                        params['jobQueue'],
-                                        params['command'])
+            ch.basic_publish(exchange="",
+                             routing_key=properties.reply_to,
+                             properties=pika.BasicProperties(correlation_id=properties.correlation_id),
+                             body=json.dumps(msg))
 
         elif params['platform'] == 'lambda':
             path = dataset.organize_path_lambda(params)
@@ -52,9 +50,21 @@ def rabbitmq_handler(ch, method, properties, body):
                 else:
                     msg[key] = value
 
+            ch.basic_publish(exchange="",
+                             routing_key=properties.reply_to,
+                             properties=pika.BasicProperties(correlation_id=properties.correlation_id),
+                             body=json.dumps(msg))
+
+        elif params['platform'] == 'aws-batch':
+            postToAWSBatch.invoke(params['jobDefinition'],
+                                        params['jobName'],
+                                        params['jobQueue'],
+                                        params['command'])
+
+
+
         elif params['platform'] == 'batch':
             os.system(' '.join(params['command']))
-            msg['response'] = 'success'
 
         else:
             raise ValueError(
@@ -69,11 +79,11 @@ def rabbitmq_handler(ch, method, properties, body):
                     }
                }
 
-    # reply to the sender
-    ch.basic_publish(exchange="",
-                     routing_key=properties.reply_to,
-                     properties=pika.BasicProperties(correlation_id=properties.correlation_id),
-                     body=json.dumps(msg))
+        # reply to the sender
+        ch.basic_publish(exchange="",
+                         routing_key=properties.reply_to,
+                         properties=pika.BasicProperties(correlation_id=properties.correlation_id),
+                         body=json.dumps(msg))
 
     return None
 

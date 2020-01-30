@@ -7,8 +7,6 @@ import postToAWSBatch
 
 def rabbitmq_handler(ch, method, properties, body):
     try:
-        msg = {}
-
         # determine if it goes to aws, lambda, or batch
         params = json.loads(body)
 
@@ -16,7 +14,7 @@ def rabbitmq_handler(ch, method, properties, body):
             raise ValueError("Not applicable to this algorithm.")
 
         elif params['platform'] == 'aws-batch':
-            msg = postToAWSBatch.invoke(params['jobDefinition'],
+            postToAWSBatch.invoke(params['jobDefinition'],
                                         params['jobName'],
                                         params['jobQueue'],
                                         params['command'])
@@ -26,7 +24,6 @@ def rabbitmq_handler(ch, method, properties, body):
 
         elif params['platform'] == 'batch':
             os.system(' '.join(params['command']))
-            msg['response'] = 'success'
 
         else:
             raise ValueError(
@@ -41,11 +38,11 @@ def rabbitmq_handler(ch, method, properties, body):
                     }
                }
 
-    # reply to the sender
-    ch.basic_publish(exchange="",
-                     routing_key=properties.reply_to,
-                     properties=pika.BasicProperties(correlation_id=properties.correlation_id),
-                     body=json.dumps(msg))
+        # reply to the sender
+        ch.basic_publish(exchange="",
+                         routing_key=properties.reply_to,
+                         properties=pika.BasicProperties(correlation_id=properties.correlation_id),
+                         body=json.dumps(msg))
 
     return None
 

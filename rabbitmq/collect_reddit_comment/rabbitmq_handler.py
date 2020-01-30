@@ -7,26 +7,23 @@ import postToAWSBatch
 
 def rabbitmq_handler(ch, method, properties, body):
     try:
-        msg = {}
-
         # determine if it goes to aws, lambda, or batch
         params = json.loads(body)
 
         if params['platform'] == 'aws-lambda':
             raise ValueError("Not applicable to this algorithm.")
 
+        elif params['platform'] == 'lambda':
+            raise ValueError("Not applicable to this algorithm.")
+
         elif params['platform'] == 'aws-batch':
-            msg = postToAWSBatch.invoke(params['jobDefinition'],
+            postToAWSBatch.invoke(params['jobDefinition'],
                                         params['jobName'],
                                         params['jobQueue'],
                                         params['command'])
 
-        elif params['platform'] == 'lambda':
-            raise ValueError("Not applicable to this algorithm.")
-
         elif params['platform'] == 'batch':
             os.system(' '.join(params['command']))
-            msg['response'] = 'success'
 
         else:
             raise ValueError(
@@ -41,17 +38,17 @@ def rabbitmq_handler(ch, method, properties, body):
                     }
                }
 
-    # reply to the sender
-    ch.basic_publish(exchange="",
-                     routing_key=properties.reply_to,
-                     properties=pika.BasicProperties(correlation_id=properties.correlation_id),
-                     body=json.dumps(msg))
+        # reply to the sender
+        ch.basic_publish(exchange="",
+                         routing_key=properties.reply_to,
+                         properties=pika.BasicProperties(correlation_id=properties.correlation_id),
+                         body=json.dumps(msg))
 
     return None
 
 
 if __name__ == '__main__':
-    connection = pika.BlockingConnection(pika.ConnectionParameters(port=5672, host="rabbitmq"))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(port=5672, host="rabbitmq", heartbeat=0))
     channel = connection.channel()
 
     # pass the queue name in environment variable
