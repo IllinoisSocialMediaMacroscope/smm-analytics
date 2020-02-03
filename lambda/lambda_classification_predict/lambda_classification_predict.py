@@ -1,25 +1,21 @@
 import csv
-import os
-from os.path import join, dirname
-from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
-from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
-from sklearn.naive_bayes import MultinomialNB
-from sklearn import metrics
-import pickle
-import numpy as np
-from plotly.offline import plot
-import plotly.graph_objs as go
-from collections import Counter
 import json
-import writeToS3 as s3
+import os
+import pickle
+from collections import Counter
+
+import plotly.graph_objs as go
+from plotly.offline import plot
+from writeToS3 import WriteToS3
+
 
 class Classification:
 
-    def __init__(self, awsPath, localSavePath):
+    def __init__(self, s3, awsPath, localSavePath):
 
         self.localSavePath = localSavePath
         self.awsPath = awsPath
+        self.s3 = s3
 
     def predict(self):
 
@@ -74,8 +70,8 @@ class Classification:
                         writer.writerow([data[i],self.predicted[i]])
                     except:
                         pass
-        s3.upload(self.localSavePath, self.awsPath, fname)
-        return s3.generate_downloads(self.awsPath, fname)
+        self.s3.upload(self.localSavePath, self.awsPath, fname)
+        return self.s3.generate_downloads(self.awsPath, fname)
         
 
     def plot(self):
@@ -91,13 +87,33 @@ class Classification:
         fname_div_category = 'div_category.html'
         with open(self.localSavePath + fname_div_category,"w") as f:
             f.write(div_category)
-        s3.upload(self.localSavePath, self.awsPath, fname_div_category)
-        return s3.generate_downloads(self.awsPath, fname_div_category)
+        self.s3.upload(self.localSavePath, self.awsPath, fname_div_category)
+        return self.s3.generate_downloads(self.awsPath, fname_div_category)
 
         
 
 def lambda_handler(event,context):
+    if 'HOST_IP' in event.keys():
+        HOST_IP = event['HOST_IP']
+    else:
+        HOST_IP = None
 
+    if 'AWS_ACCESSKEY' in event.keys():
+        AWS_ACCESSKEY = event['AWS_ACCESSKEY']
+    else:
+        AWS_ACCESSKEY = None
+
+    if 'AWS_ACCESSKEYSECRET' in event.keys():
+        AWS_ACCESSKEYSECRET = event['AWS_ACCESSKEYSECRET']
+    else:
+        AWS_ACCESSKEYSECRET = None
+
+    if 'BUCKET_NAME' in event.keys():
+        BUCKET_NAME = event['BUCKET_NAME']
+    else:
+        BUCKET_NAME = None
+
+    s3 = WriteToS3(HOST_IP, AWS_ACCESSKEY, AWS_ACCESSKEYSECRET, BUCKET_NAME)
     output = dict()
 
     uid = event['uid']
@@ -146,8 +162,7 @@ def lambda_handler(event,context):
             It is likely that you have not yet performed step 2 -- model training, or you have provided the wrong sessionID.')
         exit()
 
-    
-    classification = Classification(awsPath, localSavePath)
+    classification = Classification(s3, awsPath, localSavePath)
     output['predicting'] = classification.predict()
     output['div_category'] = classification.plot()
 
