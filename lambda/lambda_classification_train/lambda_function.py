@@ -1,34 +1,5 @@
-import dataset
-import plot
-from lambda_classification_train import Classification
-
-
-def algorithm(array, params):
-    """
-    wrapper function to put each individual algorithm inside
-    :param array: array that contains all the input dataset
-    :param params: algorithm specific parameters
-    :return: a dictionary of { outputname: output content in memory }
-    """
-
-    output = {}
-
-    CF = Classification(array)
-
-    output['uid'] = params['uid']
-
-    fold_scores, text_clf = CF.classify(params['model'])
-    output['accuracy'] = fold_scores
-    output['pipeline'] = text_clf
-
-    labels = text_clf.classes_
-    output['metrics'] = CF.calc_metrics(labels)
-
-    # plot
-    output['div_accuracy'] = plot.plot_bar_chart(fold_scores[0], fold_scores[1],
-                                        title='10 fold cross validation accuracy score')
-
-    return output
+from algorithm import algorithm
+from dataset import Dataset
 
 
 def lambda_handler(params, context):
@@ -36,18 +7,39 @@ def lambda_handler(params, context):
     entrance to invoke AWS lambda,
     variable params contains parameters passed in
     '''
+    if 'HOST_IP' in params.keys():
+        HOST_IP = params['HOST_IP']
+    else:
+        HOST_IP = None
+
+    if 'AWS_ACCESSKEY' in params.keys():
+        AWS_ACCESSKEY = params['AWS_ACCESSKEY']
+    else:
+        AWS_ACCESSKEY = None
+
+    if 'AWS_ACCESSKEYSECRET' in params.keys():
+        AWS_ACCESSKEYSECRET = params['AWS_ACCESSKEYSECRET']
+    else:
+        AWS_ACCESSKEYSECRET = None
+
+    if 'BUCKET_NAME' in params.keys():
+        BUCKET_NAME = params['BUCKET_NAME']
+    else:
+        BUCKET_NAME = None
+
+    d = Dataset(HOST_IP, AWS_ACCESSKEY, AWS_ACCESSKEYSECRET, BUCKET_NAME)
     urls = {}
 
     # arranging the paths
-    path = dataset.organize_path_lambda(params)
+    path = d.organize_path_lambda(params)
 
     # save the config file
-    urls['config'] = dataset.save_remote_output(path['localSavePath'],
+    urls['config'] = d.save_remote_output(path['localSavePath'],
                                                 path['remoteSavePath'],
                                                 'config',
                                                 params)
     # prepare input dataset
-    df = dataset.get_remote_input(path['remoteReadPath'],
+    df = d.get_remote_input(path['remoteReadPath'],
                                   path['filename'],
                                   path['localReadPath'])
 
@@ -57,7 +49,7 @@ def lambda_handler(params, context):
     # upload object to s3 bucket and return the url
     for key, value in output.items():
         if key != 'uid':
-            urls[key] = dataset.save_remote_output(path['localSavePath'],
+            urls[key] = d.save_remote_output(path['localSavePath'],
                                                    path['remoteSavePath'],
                                                    key,
                                                    value)
