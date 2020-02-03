@@ -1,13 +1,5 @@
-import csv
-import pandas
 import random
-import os
-from plotly.offline import plot
-import plotly.graph_objs as go
-from os.path import join, dirname
-import json
 import re
-import writeToS3 as s3
 
 
 class Classification:
