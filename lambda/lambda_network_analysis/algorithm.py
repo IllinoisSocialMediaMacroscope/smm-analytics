@@ -1,6 +1,5 @@
 import plot
 from network_analysis import Network
-import pandas as pd
 
 
 def algorithm(df, params):
