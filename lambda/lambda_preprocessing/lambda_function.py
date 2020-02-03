@@ -32,15 +32,15 @@ def lambda_handler(params, context):
     urls = {}
 
     # arranging the paths
-    path = d.dataset.organize_path_lambda(params)
+    path = d.organize_path_lambda(params)
 
     # save the config file
-    urls['config'] = d.dataset.save_remote_output(path['localSavePath'],
+    urls['config'] = d.save_remote_output(path['localSavePath'],
                                                 path['remoteSavePath'],
                                                 'config',
                                                 params)
     # prepare input dataset
-    df = d.dataset.get_remote_input(path['remoteReadPath'],
+    df = d.get_remote_input(path['remoteReadPath'],
                                   path['filename'],
                                   path['localReadPath'])
 
@@ -50,7 +50,7 @@ def lambda_handler(params, context):
     # upload object to s3 bucket and return the url
     for key, value in output.items():
         if key != 'uid':
-            urls[key] = d.dataset.save_remote_output(path['localSavePath'],
+            urls[key] = d.save_remote_output(path['localSavePath'],
                                                    path['remoteSavePath'],
                                                    key,
                                                    value)
