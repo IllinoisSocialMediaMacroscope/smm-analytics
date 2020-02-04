@@ -318,6 +318,7 @@ services:
     - "8001:8001"
     command: npm run docker-start
     environment:
+    - HOME=${HOME}
     - DOCKERIZED=${DOCKERIZED}
     - LOCAL_ALGORITHM=${LOCAL_ALGORITHM}
     - HOST_IP=${HOST_IP}
@@ -338,6 +339,7 @@ services:
     - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
     volumes:
     - "smile_content_data:/tmp"
+    - "smile_tag:${HOME}/smile"
     restart: unless-stopped
 
   smile_graphql:
@@ -364,3 +366,12 @@ volumes:
       type: none
       # put your own local data path here
       device: ${LOCAL_MOUNT_PATH}
+
+  smile_tag:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      # put your own local data path here
+      device: "${HOME}/smile"
+
