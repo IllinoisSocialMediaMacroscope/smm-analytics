@@ -9,21 +9,25 @@ def lambda_handler(params, context):
     '''
     if 'HOST_IP' in params.keys():
         HOST_IP = params['HOST_IP']
+        params.pop('HOST_IP', None)
     else:
         HOST_IP = None
 
     if 'AWS_ACCESSKEY' in params.keys():
         AWS_ACCESSKEY = params['AWS_ACCESSKEY']
+        params.pop('AWS_ACCESSKEY', None)
     else:
         AWS_ACCESSKEY = None
 
     if 'AWS_ACCESSKEYSECRET' in params.keys():
         AWS_ACCESSKEYSECRET = params['AWS_ACCESSKEYSECRET']
+        params.pop('AWS_ACCESSKEYSECRET', None)
     else:
         AWS_ACCESSKEYSECRET = None
 
     if 'BUCKET_NAME' in params.keys():
         BUCKET_NAME = params['BUCKET_NAME']
+        params.pop('BUCKET_NAME', None)
     else:
         BUCKET_NAME = None
 

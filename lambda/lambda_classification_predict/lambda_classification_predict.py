@@ -92,33 +92,37 @@ class Classification:
 
         
 
-def lambda_handler(event,context):
-    if 'HOST_IP' in event.keys():
-        HOST_IP = event['HOST_IP']
+def lambda_handler(params,context):
+    if 'HOST_IP' in params.keys():
+        HOST_IP = params['HOST_IP']
+        params.pop('HOST_IP', None)
     else:
         HOST_IP = None
 
-    if 'AWS_ACCESSKEY' in event.keys():
-        AWS_ACCESSKEY = event['AWS_ACCESSKEY']
+    if 'AWS_ACCESSKEY' in params.keys():
+        AWS_ACCESSKEY = params['AWS_ACCESSKEY']
+        params.pop('AWS_ACCESSKEY', None)
     else:
         AWS_ACCESSKEY = None
 
-    if 'AWS_ACCESSKEYSECRET' in event.keys():
-        AWS_ACCESSKEYSECRET = event['AWS_ACCESSKEYSECRET']
+    if 'AWS_ACCESSKEYSECRET' in params.keys():
+        AWS_ACCESSKEYSECRET = params['AWS_ACCESSKEYSECRET']
+        params.pop('AWS_ACCESSKEYSECRET', None)
     else:
         AWS_ACCESSKEYSECRET = None
 
-    if 'BUCKET_NAME' in event.keys():
-        BUCKET_NAME = event['BUCKET_NAME']
+    if 'BUCKET_NAME' in params.keys():
+        BUCKET_NAME = params['BUCKET_NAME']
+        params.pop('BUCKET_NAME', None)
     else:
         BUCKET_NAME = None
 
     s3 = WriteToS3(HOST_IP, AWS_ACCESSKEY, AWS_ACCESSKEYSECRET, BUCKET_NAME)
     output = dict()
 
-    uid = event['uid']
-    awsPath = event['s3FolderName'] + '/ML/classification/' + uid +'/'
-    localSavePath = '/tmp/' + event['s3FolderName'] + '/ML/classification/' + uid + '/'
+    uid = params['uid']
+    awsPath = params['s3FolderName'] + '/ML/classification/' + uid +'/'
+    localSavePath = '/tmp/' + params['s3FolderName'] + '/ML/classification/' + uid + '/'
     if not os.path.exists(localSavePath):
         os.makedirs(localSavePath)
     if not os.path.exists(localSavePath):
@@ -131,10 +135,10 @@ def lambda_handler(event,context):
         with open(localSavePath + fname_config, "r") as fp:
             data = json.load(fp)
             for key in data.keys():
-                if key not in event.keys():
-                    event[key] = data[key]
+                if key not in params.keys():
+                    params[key] = data[key]
         with open(localSavePath + fname_config,"w") as f:
-            json.dump(event,f)
+            json.dump(params,f)
         s3.upload(localSavePath, awsPath, fname_config)
         output['config'] = s3.generate_downloads(awsPath, fname_config)
         output['uid'] = uid
