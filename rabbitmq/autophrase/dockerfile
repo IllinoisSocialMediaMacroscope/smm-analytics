@@ -2,7 +2,7 @@ FROM ubuntu:18.04
 
 # git clone autophrase algorithm
 RUN apt-get update
-RUN apt-get -y install git
+RUN apt-get -y install git && apt-get -y install cron
 RUN cd / && git clone https://github.com/IllinoisSocialMediaMacroscope/SMILE-AutoPhrase.git AutoPhrase
 
 # overwrite
@@ -18,3 +18,8 @@ RUN pip3 install -r requirement.txt
 
 # switch work directory to be AutoPhrase
 RUN /bin/bash -c "source compile.sh"
+
+# cron job clean tmp folder
+RUN chmod u+x ./clear_cache.sh
+RUN chmod 0644 ./clear_cache_cron
+RUN crontab ./clear_cache_cron
