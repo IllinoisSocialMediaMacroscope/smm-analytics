@@ -67,7 +67,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     uid = str(uuid.uuid4())
-    temp_dir = os.path.join('tmp', args.s3FolderName, uid)
+    temp_dir = os.path.join('/tmp', args.s3FolderName, uid)
     if not os.path.exists(temp_dir):
         os.makedirs(temp_dir)
 
@@ -109,7 +109,7 @@ if __name__ == '__main__':
         urls = df['_source.permalink'].dropna().astype('str').tolist()
         ids = df['_source.id'].dropna().astype('str').tolist()
     else:
-        deletedir('tmp')
+        deletedir('/tmp')
         n.notification(args.email, case=0, filename='', links='', sessionURL=args.sessionURL)
         raise ValueError('The Reddit post collection provided does not have permalink and/or id in it.')
 
@@ -137,7 +137,7 @@ if __name__ == '__main__':
     url = s3.generate_downloads(args.remoteReadPath, fname_zip)
 
     # delete the files
-    deletedir('tmp')
+    deletedir('/tmp')
 
     # send out email notification
     n.notification(args.email, case=2, filename=args.remoteReadPath, links=url, sessionURL=args.sessionURL)

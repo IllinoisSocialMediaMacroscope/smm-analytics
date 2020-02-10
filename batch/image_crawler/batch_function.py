@@ -20,6 +20,7 @@ if __name__ == '__main__':
         if arg.startswith("--"):
             parser.add_argument(arg, required=False)
 
+
     params = vars(parser.parse_args())
 
     if 'HOST_IP' in params.keys():
