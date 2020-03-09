@@ -24,7 +24,7 @@ def notification(toaddr, sessionURL):
                     </div>
                 </body>
         </html>"""
-    subject = 'Your Reddit Comment collection has been terminated...'
+    subject = 'Your Brand Personality Analysis is finished!'
 
     with open('email_password.txt') as f:
         password = f.readlines()[0]

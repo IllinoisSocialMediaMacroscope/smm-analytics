@@ -35,11 +35,11 @@ def average(df):
     ruggedness = df['ruggedness'].mean()
 
     return {
-        "sophistication": sophistication,
-        "excitement": excitement,
-        "sincerity": sincerity,
-        "competence": competence,
-        "ruggedness": ruggedness
+        "sophistication": float(sophistication),
+        "excitement": float(excitement),
+        "sincerity": float(sincerity),
+        "competence": float(competence),
+        "ruggedness": float(ruggedness)
     }
 
 
@@ -82,7 +82,7 @@ if __name__ == '__main__':
     df = pd.read_csv(os.path.join(localPath, screen_name + '_tweets.txt'))
     new_df = multiple_sentences(df, model)
     fname_sentences = screen_name + '_utku_personality_sentences.csv'
-    new_df.to_csv(os.path.join(localPath, fname_sentences))
+    new_df.to_csv(os.path.join(localPath, fname_sentences), index=False)
     s3.upload(localPath, awsPath, fname_sentences)
 
     # get the average score
