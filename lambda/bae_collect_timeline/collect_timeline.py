@@ -17,8 +17,9 @@ def lambda_handler(event, context):
 	api = tweepy.API(auth)
 
 	tweets = []
-	for status in tweepy.Cursor(api.user_timeline, screen_name=event['screen_name'],count=100).items():
-		tweets.append(status._json['text'].encode('utf-8', 'ignore').decode())
+	for status in tweepy.Cursor(api.user_timeline, screen_name=event['screen_name'], count=100,
+								tweet_mode="extended").items():
+		tweets.append([status._json['id'], status._json['full_text'].encode('utf-8', 'ignore').decode()])
 
 	if len(tweets) > 0:
 		fname = event['screen_name'] + '_tweets.txt'
