@@ -2,6 +2,7 @@ import os
 import json
 import requests
 import writeToS3 as s3
+import pandas as pd
 
 def lambda_handler(event, context):
 
@@ -12,14 +13,19 @@ def lambda_handler(event, context):
     screen_name = event['screen_name']
 
     try:
-        s3.downloadToDisk(screen_name + '_tweets.txt', localPath, awsPath)
+        s3.downloadToDisk(screen_name + '_tweets.csv', localPath, awsPath)
     except:
         raise ValueError('Cannot find the timeline in the remote storage!')
 
-    with open(os.path.join(localPath, screen_name + '_tweets.txt'), 'r') as personality_text:
+    with open(os.path.join(localPath, screen_name + '_tweets.csv'), 'r') as personality_text:
         headers = {'Content-Type': 'text/plain',
                    'Accept': 'application/json'}
-        body = personality_text.read().encode('utf-8', 'ignore')
+
+        # concatenate the text field to be a paragraph
+        df = pd.read_csv(os.path.join(localPath, screen_name + '_tweets.csv'))
+        tweets = df['text'].tolist()
+        body = '. '.join(tweets)
+
         r = requests.post('https://gateway.watsonplatform.net/personality-insights/api/v3/profile?version=2017-10-13&consumption_preferences=true&raw_scores=true',
             headers=headers, data=body, auth=('apikey', event['apikey']), timeout=300)
 
