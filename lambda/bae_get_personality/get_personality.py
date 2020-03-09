@@ -13,16 +13,16 @@ def lambda_handler(event, context):
     screen_name = event['screen_name']
 
     try:
-        s3.downloadToDisk(screen_name + '_tweets.csv', localPath, awsPath)
+        s3.downloadToDisk(screen_name + '_tweets.txt', localPath, awsPath)
     except:
         raise ValueError('Cannot find the timeline in the remote storage!')
 
-    with open(os.path.join(localPath, screen_name + '_tweets.csv'), 'r') as personality_text:
+    with open(os.path.join(localPath, screen_name + '_tweets.txt'), 'r') as personality_text:
         headers = {'Content-Type': 'text/plain',
                    'Accept': 'application/json'}
 
         # concatenate the text field to be a paragraph
-        df = pd.read_csv(os.path.join(localPath, screen_name + '_tweets.csv'))
+        df = pd.read_csv(os.path.join(localPath, screen_name + '_tweets.txt'))
         tweets = df['text'].tolist()
         body = '. '.join(tweets)
 

@@ -21,7 +21,7 @@ def lambda_handler(event, context):
 		tweets.append(status._json['text'].encode('utf-8', 'ignore').decode())
 
 	if len(tweets) > 0:
-		fname = event['screen_name'] + '_tweets.csv'
+		fname = event['screen_name'] + '_tweets.txt'
 		with open(os.path.join(localSavePath, fname), 'w', encoding='utf-8', newline='') as f:
 			header = ['id', 'text']
 			writer = csv.writer(f, delimiter=",")

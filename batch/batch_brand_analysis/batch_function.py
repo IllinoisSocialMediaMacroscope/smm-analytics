@@ -71,7 +71,7 @@ if __name__ == '__main__':
     screen_name = params['screen_name']
 
     try:
-        s3.downloadToDisk(screen_name + '_tweets.csv', localPath, awsPath)
+        s3.downloadToDisk(screen_name + '_tweets.txt', localPath, awsPath)
     except:
         raise ValueError('Cannot find the timeline in the remote storage!')
 
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     model = MultiLabelClassificationModel('roberta', 'checkpoint-17315-epoch-5', num_labels=5,
                                           args={"reprocess_input_data": True, 'use_cached_eval_features': False},
                                           use_cuda=False)
-    df = pd.read_csv(os.path.join(localPath, screen_name + '_tweets.csv'))
+    df = pd.read_csv(os.path.join(localPath, screen_name + '_tweets.txt'))
     new_df = multiple_sentences(df, model)
     fname_sentences = screen_name + '_utku_personality_sentences.csv'
     new_df.to_csv(os.path.join(localPath, fname_sentences))
