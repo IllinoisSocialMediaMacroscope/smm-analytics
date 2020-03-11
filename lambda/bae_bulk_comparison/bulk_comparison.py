@@ -83,7 +83,7 @@ def lambda_handler(event, context):
                              'excitement', 'sincerity',
                              'competence', 'ruggedness'
                              ]]
-        for screen_name in event['screen_name']:
+        for screen_name in event['screen_names']:
             awsPath = os.path.join(event['sessionID'], screen_name)
             try:
                 s3.downloadToDisk(screen_name + '_utku_personality_average.json', localPath, awsPath)
