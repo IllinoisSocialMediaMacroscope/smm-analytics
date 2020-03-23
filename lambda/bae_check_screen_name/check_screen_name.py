@@ -8,6 +8,8 @@ def lambda_handler(event, context):
 
 	try:
 		user = api.lookup_users(screen_names=[event['screen_name']])
-		return {'user_exist': True, 'profile_img': user[0]._json['profile_image_url_https']}
+		return {'user_exist': True,
+				'profile_img': user[0]._json['profile_image_url_https'],
+				'statuses_count': user[0]._json['statuses_count']}
 	except tweepy.TweepError as error:
-		return { 'user_exist': False, 'profile_img':None}
+		return {'user_exist': False, 'profile_img': None, 'statuses_count': None}

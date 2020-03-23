@@ -30,9 +30,7 @@ def lambda_handler(event, context):
             headers=headers, data=body, auth=('apikey', event['apikey']), timeout=300)
 
         if r.status_code == 200:
-            data = { 'screen_name': screen_name,
-                     'profile_img': event['profile_img'],
-                     'personality': r.json()}
+            data = { 'personality': r.json()}
 
             with open(os.path.join(localPath, screen_name + '_personality' + '.json'),'w') as outfile:
                 json.dump(data, outfile)
