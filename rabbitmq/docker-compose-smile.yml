@@ -23,15 +23,15 @@ services:
   mongodb:
     image: mongo
     hostname: mongodb
-    ports:
-    - "27017:27017"
+#    ports:
+#    - "27017:27017"
     restart: unless-stopped
 
   redis:
     image: redis
     hostname: redis
-    ports:
-    - "6379:6379"
+#    ports:
+#    - "6379:6379"
     restart: unless-stopped
 
   algorithm-classification-predict:
