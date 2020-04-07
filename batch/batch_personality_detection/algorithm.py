@@ -8,6 +8,7 @@ def algorithm(df, params):
     :param params: algorithm specific parameters
     :return: a dictionary of { outputname: output content in memory }
     """
+    output = {}
 
     PD = Personality(df, params['column'])
     predicted = PD.predict(params['algorithm'])
