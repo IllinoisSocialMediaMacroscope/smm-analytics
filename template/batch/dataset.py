@@ -100,7 +100,9 @@ def save_remote_output(localSavePath, remoteSavePath, fname, output_data):
     # dataframe to csv
     elif isinstance(output_data, pd.DataFrame):
         fname += '.csv'
-        output_data.to_csv(fname, encoding='utf-8')
+        output_data.to_csv(os.path.join(localSavePath, fname),
+                           encoding='utf-8',
+                           index=False)
 
     # string to html
     elif isinstance(output_data, str):
