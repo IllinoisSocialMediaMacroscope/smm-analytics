@@ -2,4 +2,4 @@ boto3==1.6.11
 numpy==1.16.1
 pandas==0.24.1
 tqdm==4.43.0
-simpletransformers==0.21.1c
+simpletransformers==0.21.1
