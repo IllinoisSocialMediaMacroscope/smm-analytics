@@ -3,6 +3,7 @@ from urllib.parse import unquote_plus
 
 import pandas as pd
 import writeToS3 as s3
+import plot
 
 
 def lambda_handler(event, context):
@@ -24,10 +25,21 @@ def lambda_handler(event, context):
     # extract hashtag
     hash = extract_hashtag(df)
 
+    # plot bar chart (frequency chart)
+    index = hash['hashtags'].to_list()[:10]
+    counts = hash['Freq'].to_list()[:10]
+    title = 'Top 10 prevalent hashtags (' + filename.split(".")[0] +')'
+    div = plot.plot_bar_chart(index, counts, title)
+
     # save result and write back to s3
-    hash_filename = filename + "_extracted_hashtag.csv"
-    hash.to_csv(os.path.join(localPath, hash_filename), index=False)
-    s3.upload("macroscope-paho-covid", localPath, "", hash_filename)
+    hash_filename = filename.split(".")[0]
+
+    hash.to_csv(os.path.join(localPath, hash_filename + "_extracted_hashtag.csv"), index=False)
+    s3.upload("macroscope-paho-covid", localPath, "", hash_filename + "_extracted_hashtag.csv")
+
+    with open(os.path.join(localPath, hash_filename + "_extracted_hashtag_frequency.html"), 'w') as f:
+        f.write(div)
+    s3.upload("macroscope-paho-covid", localPath, "", hash_filename + "_extracted_hashtag_frequency.html")
 
     return None
 
