@@ -67,9 +67,8 @@ def lambda_handler(event, context):
                 for row in tweets:
                     writer.writerow(row)
 
+            # TODO: lambda only allows 15 minutes running time; how can we balance rate limit with that 15 minute?!!
             time.sleep(60)
             s3.upload("macroscope-paho-covid", localPath, "input", fname)
 
     return None
-
-lambda_handler(None, None)
