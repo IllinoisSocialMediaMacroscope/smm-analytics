@@ -45,7 +45,15 @@ def lambda_handler(event, context):
 
 
 def extract_hashtag(df):
-    df["hashtags"] = df.Contents.str.findall(r"#(\w+)")
+    if 'Contents' in df.columns:
+        df["hashtags"] = df.Contents.str.findall(r"#(\w+)")
+    elif 'full_text' in df.columns:
+        df["hashtags"] = df['full_text'].str.findall(r"#(\w+)")
+    elif 'text' in df.columns:
+        df["hashtags"] = df['text'].str.findall(r"#(\w+)")
+    else:
+        raise ValueError("Unable to extract hashtag from this data source!")
+
     hash = df['hashtags'].apply(pd.Series)
     hash = hash.stack().value_counts()
     hash.index = "#" + hash.index.astype(str)
