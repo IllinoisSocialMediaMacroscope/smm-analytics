@@ -67,7 +67,7 @@ def lambda_handler(event, context):
                 for row in tweets:
                     writer.writerow(row)
 
-            s3.upload("macroscope-paho-covid", localPath, "input", fname)
+            s3.upload("macroscope-paho-covid", localPath, "input/twitter", fname)
 
             time.sleep(2)
 
