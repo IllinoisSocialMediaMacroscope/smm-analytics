@@ -45,7 +45,7 @@ def lambda_handler(event, context):
     for screen_name in screen_names:
 
         tweets = []
-        for status in tweepy.Cursor(api.user_timeline, screen_name=screen_name, count=100,
+        for status in tweepy.Cursor(api.user_timeline, screen_name=screen_name, count=200,
                                     tweet_mode="extended").items():
             tweet = []
             for key in header:
@@ -67,8 +67,8 @@ def lambda_handler(event, context):
                 for row in tweets:
                     writer.writerow(row)
 
-            # TODO: lambda only allows 15 minutes running time; how can we balance rate limit with that 15 minute?!!
-            time.sleep(60)
             s3.upload("macroscope-paho-covid", localPath, "input", fname)
+
+            time.sleep(2)
 
     return None
