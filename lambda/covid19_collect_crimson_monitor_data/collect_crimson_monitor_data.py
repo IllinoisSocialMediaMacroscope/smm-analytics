@@ -13,8 +13,8 @@ import urllib.request
 from datetime import date, timedelta
 
 import tweepy
-from tweepy import OAuthHandler
 import writeToS3 as s3
+from tweepy import OAuthHandler
 
 
 def getAuthToken():  # provides auth token needed to access Crimson API
@@ -27,12 +27,12 @@ def twitterAPI():  # Provides access keys for Twitter API
     consumer_key = os.environ['consumer_key']
     consumer_secret = os.environ['consumer_secret']
     access_token = os.environ['access_token']
-    access_secret = os.environ['access_secret']
+    access_token_secret = os.environ['access_token_secret']
 
-    if (consumer_key == '') or (consumer_secret == '') or (access_token == '') or (access_secret == ''):
+    if (consumer_key == '') or (consumer_secret == '') or (access_token == '') or (access_token_secret == ''):
         print("Not all Twitter keys have been entered, please add them to the script and try again")
     auth = OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_token, access_secret)
+    auth.set_access_token(access_token, access_token_secret)
     api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
     return api
 
@@ -48,11 +48,21 @@ def DatePull(startdate, enddate):
     return listArray
 
 
-def collect_crimson_monitor_data(monitorID, projectStartDate, projectEndDate, localPath):
+def collect_crimson_monitor_data(projectStartDate, projectEndDate, localPath):
+    monitorID = os.environ['monitorID']
     fname = "Monitor-" + monitorID + '-from-' + projectStartDate + '-to-' + projectEndDate + '.csv'
     lineArray = DatePull(projectStartDate, projectEndDate)
 
     urlStart = "https://api.crimsonhexagon.com/api"
+
+    # write header
+    with open(os.path.join(localPath, fname), 'w', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        header = ["PostType", "PostDate", "PostTime", "URL", "TweetID", "Contents", "RetweetCount", "FavoriteCount",
+                  "Location", "Language", "Sentiment", "NeutralScore", "PositiveScore", "NegativeScore", "Followers",
+                  "Friends", "Author", "AuthorGender", "AuthorTweets"]
+        writer.writerow(header)
+
     for i in range(len(lineArray) - 1):
         startDate = lineArray[i]
         endDate = lineArray[i + 1]
@@ -66,19 +76,11 @@ def collect_crimson_monitor_data(monitorID, projectStartDate, projectEndDate, lo
 
         webURL = urllib.request.urlopen(urlData)
 
-        if (webURL.getcode() == 200):
+        if webURL.getcode() == 200:
+            # write body
             with open(os.path.join(localPath, fname), 'a', newline='', encoding='utf-8') as f:
                 writer = csv.writer(f)
 
-                # write header
-                header = ["PostType", "PostDate", "PostTime", "URL", "TweetID", "Contents", "RetweetCount",
-                          "FavoriteCount",
-                          "Location", "Language", "Sentiment", "NeutralScore", "PositiveScore", "NegativeScore",
-                          "Followers",
-                          "Friends", "Author", "AuthorGender", "AuthorTweets"]
-                writer.writerow(header)
-
-                # write body
                 data = webURL.read().decode('utf8')
                 theJSON = json.loads(data)
 
@@ -269,9 +271,10 @@ def lambda_handler(event, context):
 
     today = date.today()
     yesterday = today - timedelta(days=1)
-    fname = collect_crimson_monitor_data('9926354559', yesterday, today, localPath)
+    dayBeforeYesterday = today - timedelta(days=2)
+    fname = collect_crimson_monitor_data(dayBeforeYesterday.strftime("%Y-%m-%d"), yesterday.strftime("%Y-%m-%d"),
+                                         localPath)
 
     s3.upload("macroscope-paho-covid", localPath, "input/crimson", fname)
 
     return None
-
