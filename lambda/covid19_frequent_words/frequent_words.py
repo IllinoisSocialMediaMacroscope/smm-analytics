@@ -3,6 +3,12 @@ import os
 from urllib.parse import unquote_plus
 
 import nltk
+os.makedirs('/tmp/nltk_data')
+nltk.download('punkt', download_dir='/tmp/nltk_data')
+nltk.download('stopwords', download_dir='/tmp/nltk_data')
+nltk.download('wordnet', download_dir='/tmp/nltk_data')
+nltk.data.path.append('/tmp/nltk_data/')
+
 import pandas as pd
 import plot
 import writeToS3 as s3
@@ -13,7 +19,7 @@ from nltk.stem import WordNetLemmatizer
 
 def lambda_handler(event, context):
     # create local path
-    localPath = os.path.join('/tmp', 'frequent_words')
+    localPath = os.path.join('/tmp', 'frequent_phrases')
     if not os.path.exists(localPath):
         os.makedirs(localPath)
 
@@ -28,7 +34,7 @@ def lambda_handler(event, context):
     df = pd.read_csv(os.path.join(localPath, filename))
 
     # extract hashtag
-    extract_frequent_words(df, localPath)
+    extract_frequent_phrases(df, localPath)
 
     return None
 
@@ -57,7 +63,7 @@ def tokenize_no_stop(string):
     return lemma_tokens
 
 
-def extract_frequent_words(df, localPath):
+def extract_frequent_phrases(df, localPath):
     hashtags = ["COVID19", "coronavirus", "COVID_19"]
 
     # filter df by hashtag
