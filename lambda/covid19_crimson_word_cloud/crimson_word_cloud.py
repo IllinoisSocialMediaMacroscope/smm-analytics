@@ -6,6 +6,7 @@ from collections import OrderedDict
 from operator import itemgetter
 
 import writeToS3 as s3
+import plot
 
 
 def getAuthToken():  # provides auth token needed to access Crimson API
@@ -53,9 +54,15 @@ def crimson_word_cloud(projectStartDate, projectEndDate, localPath):
             with open(os.path.join(localPath, fname), 'w') as f:
                 json.dump(sortedJSON, f, indent=2)
 
-            fnames.append(fname)
+            fnames.append(os.path.join(localPath, fname))
 
             # plot word cloud and save to html
+            div_fname = "Monitor-" + monitorID + '-wordcloud-from-' + startDate + '-to-' + endDate + '.html'
+            div = plot.word_cloud(list(sortedJSON.keys()), list(sortedJSON.values()))
+            with open(os.path.join(localPath, div_fname), 'w') as f:
+                f.write(div)
+
+            fnames.append(os.path.join(localPath, div_fname))
 
         else:
             raise ValueError("Server Error, No Data" + str(webURL.getcode()))
@@ -75,10 +82,8 @@ def lambda_handler(event, context):
     dayBeforeYesterday = today - timedelta(days=2)
     fnames = crimson_word_cloud(dayBeforeYesterday.strftime("%Y-%m-%d"), yesterday.strftime("%Y-%m-%d"),
                                localPath)
-    # for fname in fnames:
-    #     s3.upload("macroscope-paho-covid", localPath, "wordcloud", fname)
-
-
+    for fname in fnames:
+        s3.upload("macroscope-paho-covid", localPath, "wordcloud", fname)
 
     return None
 
