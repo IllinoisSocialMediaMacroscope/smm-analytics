@@ -2,6 +2,8 @@ import json
 import os
 import urllib.request
 from datetime import date, timedelta
+from collections import OrderedDict
+from operator import itemgetter
 
 import writeToS3 as s3
 
@@ -43,12 +45,13 @@ def crimson_word_cloud(projectStartDate, projectEndDate, localPath):
         if webURL.getcode() == 200:
 
             data = webURL.read().decode('utf8')
-            theJSON = json.loads(data)
+            theJSON = json.loads(data)["data"]
+            sortedJSON = OrderedDict(sorted(theJSON.items(), key=itemgetter(1), reverse=True))
 
             # write json content
-            fname = "Monitor-" + monitorID + '-wordcloud-from-' + startDate + '-to-' + endDate + '.csv'
+            fname = "Monitor-" + monitorID + '-wordcloud-from-' + startDate + '-to-' + endDate + '.json'
             with open(os.path.join(localPath, fname), 'w') as f:
-                json.dump(theJSON, f)
+                json.dump(sortedJSON, f, indent=2)
 
             fnames.append(fname)
 
@@ -62,7 +65,7 @@ def crimson_word_cloud(projectStartDate, projectEndDate, localPath):
 
 def lambda_handler(event, context):
     # create local path
-    localPath = os.path.join('/tmp', 'crimson')
+    localPath = os.path.join('/tmp', 'wordcloud')
     if not os.path.exists(localPath):
         os.makedirs(localPath)
 
@@ -72,9 +75,12 @@ def lambda_handler(event, context):
     dayBeforeYesterday = today - timedelta(days=2)
     fnames = crimson_word_cloud(dayBeforeYesterday.strftime("%Y-%m-%d"), yesterday.strftime("%Y-%m-%d"),
                                localPath)
-    for fname in fnames:
-        s3.upload("macroscope-paho-covid", localPath, "wordcloud", fname)
+    # for fname in fnames:
+    #     s3.upload("macroscope-paho-covid", localPath, "wordcloud", fname)
 
 
 
     return None
+
+if __name__ == "__main__":
+    lambda_handler(None, None)
