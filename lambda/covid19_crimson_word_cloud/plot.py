@@ -37,7 +37,6 @@ def word_cloud(words, scores):
 
     layout = go.Layout(
         {
-            'font': {'size': 12},
             'xaxis':
                 {
                     'showgrid': False,
@@ -49,6 +48,13 @@ def word_cloud(words, scores):
                     'showgrid': False,
                     'showticklabels': False,
                     'zeroline': False,
+                },
+            'margin':
+                {
+                    't':10,
+                    'b':10,
+                    'l':10,
+                    'r':10
                 }
         })
 

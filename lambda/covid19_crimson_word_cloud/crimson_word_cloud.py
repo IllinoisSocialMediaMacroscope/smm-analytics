@@ -28,44 +28,39 @@ def DatePull(startdate, enddate):
 
 def crimson_word_cloud(projectStartDate, projectEndDate, localPath):
     monitorID = os.environ['monitorID']
-    lineArray = DatePull(projectStartDate, projectEndDate)
     urlStart = "https://api.crimsonhexagon.com/api"
     fnames = []
 
-    for i in range(len(lineArray) - 1):
-        startDate = lineArray[i]
-        endDate = lineArray[i + 1]
+    dates = "&start=" + projectStartDate + "&end=" + projectEndDate  # Combines start and end date into format needed for API call
+    authToken = getAuthToken()  # Gets auth token
+    endpoint = "/monitor/wordcloud?id="  # endpoint needed for this query
+    urlData = urlStart + endpoint + monitorID + authToken + dates  # Combines all API calls parts into full URL
 
-        dates = "&start=" + startDate + "&end=" + endDate  # Combines start and end date into format needed for API call
-        authToken = getAuthToken()  # Gets auth token
-        endpoint = "/monitor/wordcloud?id="  # endpoint needed for this query
-        urlData = urlStart + endpoint + monitorID + authToken + dates  # Combines all API calls parts into full URL
+    webURL = urllib.request.urlopen(urlData)
 
-        webURL = urllib.request.urlopen(urlData)
+    if webURL.getcode() == 200:
 
-        if webURL.getcode() == 200:
+        data = webURL.read().decode('utf8')
+        theJSON = json.loads(data)["data"]
+        sortedJSON = OrderedDict(sorted(theJSON.items(), key=itemgetter(1), reverse=True))
 
-            data = webURL.read().decode('utf8')
-            theJSON = json.loads(data)["data"]
-            sortedJSON = OrderedDict(sorted(theJSON.items(), key=itemgetter(1), reverse=True))
+        # write json content
+        fname = "monitorID_" + monitorID +"_extracted_wordcloud.json"
+        with open(os.path.join(localPath, fname), 'w') as f:
+            json.dump(sortedJSON, f, indent=2)
 
-            # write json content
-            fname = "Monitor-" + monitorID + '-wordcloud-from-' + startDate + '-to-' + endDate + '.json'
-            with open(os.path.join(localPath, fname), 'w') as f:
-                json.dump(sortedJSON, f, indent=2)
+        fnames.append(fname)
 
-            fnames.append(fname)
+        # plot word cloud and save to html
+        div_fname = "monitorID_" + monitorID +"_extracted_wordcloud.html"
+        div = plot.word_cloud(list(sortedJSON.keys()), list(sortedJSON.values()))
+        with open(os.path.join(localPath, div_fname), 'w') as f:
+            f.write(div)
 
-            # plot word cloud and save to html
-            div_fname = "Monitor-" + monitorID + '-wordcloud-from-' + startDate + '-to-' + endDate + '.html'
-            div = plot.word_cloud(list(sortedJSON.keys()), list(sortedJSON.values()))
-            with open(os.path.join(localPath, div_fname), 'w') as f:
-                f.write(div)
+        fnames.append(div_fname)
 
-            fnames.append(div_fname)
-
-        else:
-            raise ValueError("Server Error, No Data" + str(webURL.getcode()))
+    else:
+        raise ValueError("Server Error, No Data" + str(webURL.getcode()))
 
     return fnames
 
