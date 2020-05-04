@@ -54,7 +54,7 @@ def crimson_word_cloud(projectStartDate, projectEndDate, localPath):
             with open(os.path.join(localPath, fname), 'w') as f:
                 json.dump(sortedJSON, f, indent=2)
 
-            fnames.append(os.path.join(localPath, fname))
+            fnames.append(fname)
 
             # plot word cloud and save to html
             div_fname = "Monitor-" + monitorID + '-wordcloud-from-' + startDate + '-to-' + endDate + '.html'
@@ -62,7 +62,7 @@ def crimson_word_cloud(projectStartDate, projectEndDate, localPath):
             with open(os.path.join(localPath, div_fname), 'w') as f:
                 f.write(div)
 
-            fnames.append(os.path.join(localPath, div_fname))
+            fnames.append(div_fname)
 
         else:
             raise ValueError("Server Error, No Data" + str(webURL.getcode()))
@@ -86,6 +86,3 @@ def lambda_handler(event, context):
         s3.upload("macroscope-paho-covid", localPath, "wordcloud", fname)
 
     return None
-
-if __name__ == "__main__":
-    lambda_handler(None, None)
