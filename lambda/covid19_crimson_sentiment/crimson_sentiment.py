@@ -68,7 +68,7 @@ def crimson_sentiment(projectStartDate, projectEndDate, localPath):
 
 def lambda_handler(event, context):
     # create local path
-    localPath = os.path.join('/tmp', 'results')
+    localPath = os.path.join('/tmp', 'sentiment')
     if not os.path.exists(localPath):
         os.makedirs(localPath)
 
@@ -79,7 +79,7 @@ def lambda_handler(event, context):
     fnames = crimson_sentiment(dayBeforeYesterday.strftime("%Y-%m-%d"), yesterday.strftime("%Y-%m-%d"),
                                  localPath)
     for fname in fnames:
-        s3.upload("macroscope-paho-covid", localPath, "results", fname)
+        s3.upload("macroscope-paho-covid", localPath, "sentiment", fname)
 
     return None
 
