@@ -47,17 +47,21 @@ def lambda_handler(event, context):
         tweets = []
         for status in tweepy.Cursor(api.user_timeline, screen_name=screen_name, count=200,
                                     tweet_mode="extended").items():
-            tweet = []
-            for key in header:
-                if key in status._json.keys():
-                    if key == 'full_text':
-                        tweet.append(status._json[key].encode('utf-8', 'ignore').decode())
-                    else:
-                        tweet.append(status._json[key])
-                else:
-                    tweet.append("NA")
+            if "created_at" in status._json.keys() and status._json["created_at"][-4:] == "2020":
+                tweet = []
+                for key in header:
+                    if key in status._json.keys():
+                        # make sure date
 
-            tweets.append(tweet)
+                        if key == 'full_text':
+                            tweet.append(status._json[key].encode('utf-8', 'ignore').decode())
+                        else:
+                            tweet.append(status._json[key])
+                    else:
+                        tweet.append("NA")
+                tweets.append(tweet)
+            else:
+                break
 
         if len(tweets) > 0:
             fname = screen_name + '_tweets.csv'
