@@ -36,9 +36,11 @@ def generate_downloads(bucket_name, remotepath, filename):
 
 
 def downloadToDisk(bucket_name, filename, localpath, remotepath):
-    with open(os.path.join(localpath, filename), 'wb') as f:
-        client.download_fileobj(bucket_name,
-                                os.path.join(remotepath, filename), f)
+    path = os.path.join(localpath, filename)
+    if not os.path.exists(path):
+        with open(os.path.join(localpath, filename), 'wb') as f:
+            client.download_fileobj(bucket_name,
+                                    os.path.join(remotepath, filename), f)
 
 
 def getObject(bucket_name, remoteKey):
