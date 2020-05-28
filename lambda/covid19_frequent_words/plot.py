@@ -17,12 +17,14 @@ def plot_multiple_bar_chart(indices, counts, title, subtitles):
     fig.update_layout(
         title_text=title,
         font=dict(family='Arial', size=12),
+        autosize=True,
         margin=dict(
             l=70,
             r=70,
             t=70,
             b=70,
-        )
+        ),
+        height=1500
     )
     div = plot(fig, output_type='div', auto_open=False, image_filename='plot_img')
 
