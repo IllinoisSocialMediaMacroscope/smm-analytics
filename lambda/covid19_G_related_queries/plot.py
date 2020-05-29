@@ -24,7 +24,7 @@ def plot_multiple_bar_chart(indices, counts, title, subtitles):
             t=70,
             b=70,
         ),
-        # height=1500
+        height=1500
     )
     div = plot(fig, output_type='div', auto_open=False, image_filename='plot_img')
 
