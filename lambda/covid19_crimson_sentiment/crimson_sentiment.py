@@ -43,17 +43,16 @@ def crimson_sentiment(projectStartDate, projectEndDate, localPath):
 
         labels = []
         values = []
-        for metric in ["categories", "emotions"]:
+        for metric in ["categories"]:
             label = []
             value = []
             for item in results[metric]:
                 label.append(item['category'])
                 value.append(item['volume'])
-            labels.append(label)
-            values.append(value)
+            labels.append([label])
+            values.append([value])
 
-        subtitles = ["Basic Sentiment Categories", "Emotions"]
-        div = plot.plot_multiple_pie_chart(labels, values, subtitles)
+        div = plot.plot_multiple_pie_chart(labels, values, "Basic Sentiment Categories")
         div_fname = "monitorID_" + monitorID + "_extracted_results.html"
         with open(os.path.join(localPath, div_fname), 'w') as f:
             f.write(div)
