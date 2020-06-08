@@ -4,7 +4,6 @@ import pandas as pd
 import plot
 import writeToS3 as s3
 from pytrends.request import TrendReq
-from datetime import date, timedelta
 
 
 def lambda_handler(event, context):
@@ -21,6 +20,7 @@ def lambda_handler(event, context):
 
 
 def interest_by_region(keywords, language, localPath):
+    country_code = pd.read_csv("tableconvert_csv_j8hnfj.csv", quotechar = "\"")
     if language.lower() == 'spanish':
         pytrend = TrendReq(hl='sp-SP')
     else:
@@ -38,11 +38,13 @@ def interest_by_region(keywords, language, localPath):
             keywords.remove(item)
 
         pytrend.build_payload(kw_list=keywords_split)
-        df_regions = pytrend.interest_by_region()
+        df_regions = pytrend.interest_by_region(inc_geo_code=True)
+        df_regions['country'] = df_regions.index
+        df_regions = pd.merge(df_regions, country_code, left_on="geoCode", right_on="Alpha-2 code", how="left")
 
         for keyword in keywords_split:
-            geo_name_df = df_regions[[keyword]]
-            geo_name_df['country'] = geo_name_df.index
+            geo_name_df = df_regions[['country', keyword, 'Alpha-2 code', 'Alpha-3 code', 'Numeric code',
+                                      'Latitude (average)', 'Longitude (average)']]
 
             if geo_name_df is not None:
                 title = "Google Trends Interest by Region related to keyword: " + keyword
@@ -60,3 +62,7 @@ def interest_by_region(keywords, language, localPath):
 
 
     return None
+
+
+if __name__ == "__main__":
+    lambda_handler(None, None)

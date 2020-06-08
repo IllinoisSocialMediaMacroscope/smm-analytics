@@ -5,8 +5,10 @@ from plotly.offline import plot
 def plot_geograph(df, key, title):
     df = df[df[key] != 0]
     fig = px.scatter_geo(df,
-                         locations="country",
-                         locationmode="country names",
+                         lat = "Latitude (average)",
+                         lon = "Longitude (average)",
+                         # locations="Alpha-3 code",
+                         # locationmode="ISO-3",
                          color="country",  # which column to use to set the color of markers
                          hover_name=key,  # column added to hover information
                          size=key,  # size of markers
