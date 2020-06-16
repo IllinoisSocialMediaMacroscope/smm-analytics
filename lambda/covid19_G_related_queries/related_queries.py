@@ -4,7 +4,6 @@ import pandas as pd
 import plot
 import writeToS3 as s3
 from pytrends.request import TrendReq
-from datetime import date, timedelta
 
 
 def lambda_handler(event, context):
@@ -26,8 +25,6 @@ def related_queries(keywords, language, localPath):
     else:
         pytrend = TrendReq()
 
-    today = date.today()
-    last_year = today - timedelta(days=365)
     timeframes = {'now 1-d': '1day', 'now 7-d': '7days', 'today 1-m': '30days'}
 
     # there is a limit on 100 characters for keywords break them to multiple requests then

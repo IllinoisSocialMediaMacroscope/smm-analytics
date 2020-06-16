@@ -1,4 +1,5 @@
 import os
+from datetime import date
 
 import pandas as pd
 import plot
@@ -26,6 +27,9 @@ def interest_by_region(keywords, language, localPath):
     else:
         pytrend = TrendReq()
 
+    today = date.today()
+    march = "2020-03-01"
+
     # there is a limit on 100 characters for keywords break them to multiple requests then
     while len(keywords) > 0:
         character_len = 0
@@ -37,7 +41,7 @@ def interest_by_region(keywords, language, localPath):
         for item in keywords_split:
             keywords.remove(item)
 
-        pytrend.build_payload(kw_list=keywords_split)
+        pytrend.build_payload(kw_list=keywords_split, timeframe= march + " " + today.strftime("%Y-%m-%d"))
         df_regions = pytrend.interest_by_region(inc_geo_code=True)
         df_regions['country'] = df_regions.index
         df_regions = pd.merge(df_regions, country_code, left_on="geoCode", right_on="Alpha-2 code", how="left")
