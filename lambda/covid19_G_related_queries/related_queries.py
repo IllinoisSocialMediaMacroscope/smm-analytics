@@ -28,8 +28,7 @@ def related_queries(keywords, language, localPath):
 
     today = date.today()
     last_year = today - timedelta(days=365)
-    timeframes = {'now 7-d': '7days', 'today 1-m': '30days', last_year.strftime("%Y-%m-%d")
-                                                             + " " + today.strftime("%Y-%m-%d"): '1year'}
+    timeframes = {'now 1-d': '1day', 'now 7-d': '7days', 'today 1-m': '30days'}
 
     # there is a limit on 100 characters for keywords break them to multiple requests then
     while len(keywords) > 0:
