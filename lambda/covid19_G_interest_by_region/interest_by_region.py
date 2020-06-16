@@ -51,7 +51,7 @@ def interest_by_region(keywords, language, localPath):
                                       'Latitude (average)', 'Longitude (average)']]
 
             if geo_name_df is not None:
-                title = "Google Trends Interest by Region related to keyword: " + keyword
+                title = "Google Trends Interest by Region related to keyword: " + keyword + " (Since March 2020)"
                 div = plot.plot_geograph(geo_name_df, keyword, title)
                 with open(os.path.join(localPath, keyword.replace(" ", "_") + "_interest_by_region.html"), 'w') as f:
                     f.write(div)

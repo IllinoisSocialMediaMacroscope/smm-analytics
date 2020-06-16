@@ -14,7 +14,7 @@ def plot_geograph(df, key, title):
                             size=key,  # size of markers
                             zoom=1,
                             title=title)
-    fig.update_layout(mapbox_style="open-street-map")
+    fig.update_layout(mapbox_style="open-street-map",  height=600)
     div = plot(fig, output_type='div', auto_open=False, image_filename='plot_img')
 
     return div
