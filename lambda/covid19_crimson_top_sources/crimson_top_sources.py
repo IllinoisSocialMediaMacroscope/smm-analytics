@@ -54,12 +54,15 @@ def crimson_top_sources(projectStartDate, projectEndDate, localPath):
             values.append(value)
 
         subtitles = ["Top Sites (up to 10)", "Top Sources (up to 10)"]
-        div = plot.plot_multiple_pie_chart(labels, values, subtitles)
+        fig, div = plot.plot_multiple_pie_chart(labels, values, subtitles)
         div_fname = "monitorID_" + monitorID + "_extracted_top_sources.html"
         with open(os.path.join(localPath, div_fname), 'w') as f:
             f.write(div)
-
         fnames.append(div_fname)
+
+        png_fname = "monitorID_" + monitorID + "_extracted_top_sources.png"
+        fig.write_image(os.path.join(localPath, png_fname))
+        fnames.append(png_fname)
 
     else:
         raise ValueError("Server Error, No Data" + str(webURL.getcode()))

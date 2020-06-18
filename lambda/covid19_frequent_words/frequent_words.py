@@ -76,10 +76,13 @@ def lambda_handler(event, context):
 
         # Plot and save
         title = "Most prevalent 10 frequent words and phrases used in #" + hashtag + " tweets"
-        div = plot.plot_multiple_bar_chart(indices_row, counts_row, title, legends_row)
+        fig, div = plot.plot_multiple_bar_chart(indices_row, counts_row, title, legends_row)
         with open(os.path.join(localPath, hashtag + "_extracted_frequent_phrases.html"), 'w') as f:
             f.write(div)
         s3.upload("macroscope-paho-covid", localPath, "frequent_phrases", hashtag + "_extracted_frequent_phrases.html")
+
+        fig.write_image(os.path.join(localPath, hashtag + "_extracted_frequent_phrases.png"))
+        s3.upload("macroscope-paho-covid", localPath, "frequent_phrases", hashtag + "_extracted_frequent_phrases.png")
 
     return None
 

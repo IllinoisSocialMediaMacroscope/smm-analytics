@@ -63,7 +63,7 @@ def word_cloud(words, scores):
     # save the plot
     div = plot(fig, output_type="div", auto_open=False, image_filename="word_cloud_img")
 
-    return div
+    return fig, div
 
 
 if __name__ == "__main__":

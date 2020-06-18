@@ -29,7 +29,7 @@ def lambda_handler(event, context):
     index = hash['hashtags'].values.tolist()[:10]
     counts = hash['Freq'].values.tolist()[:10]
     title = 'Top 10 prevalent hashtags (' + filename.split(".")[0] +')'
-    div = plot.plot_bar_chart(index, counts, title)
+    fig, div = plot.plot_bar_chart(index, counts, title)
 
     # save result and write back to s3
     hash_filename = filename.split(".")[0]
@@ -37,9 +37,8 @@ def lambda_handler(event, context):
     hash.to_csv(os.path.join(localPath, hash_filename + "_extracted_hashtag.csv"), index=False)
     s3.upload("macroscope-paho-covid", localPath, "hashtags", hash_filename + "_extracted_hashtag.csv")
 
-    with open(os.path.join(localPath, hash_filename + "_extracted_hashtag_frequency.html"), 'w') as f:
-        f.write(div)
-    s3.upload("macroscope-paho-covid", localPath, "hashtags", hash_filename + "_extracted_hashtag_frequency.html")
+    fig.write_image(os.path.join(localPath, hash_filename + "_extracted_hashtag_frequency.png"))
+    s3.upload("macroscope-paho-covid", localPath, "hashtags", hash_filename + "_extracted_hashtag_frequency.png")
 
     return None
 

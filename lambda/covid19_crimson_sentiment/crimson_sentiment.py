@@ -52,12 +52,16 @@ def crimson_sentiment(projectStartDate, projectEndDate, localPath):
             labels.append([label])
             values.append([value])
 
-        div = plot.plot_multiple_pie_chart(labels, values, "Basic Sentiment Categories")
+        fig, div = plot.plot_multiple_pie_chart(labels, values, "Basic Sentiment Categories")
         div_fname = "monitorID_" + monitorID + "_extracted_results.html"
         with open(os.path.join(localPath, div_fname), 'w') as f:
             f.write(div)
-
         fnames.append(div_fname)
+
+        # save to png
+        png_fname = "monitorID_" + monitorID + "_extracted_results.png"
+        fig.write_image(os.path.join(localPath, png_fname))
+        fnames.append(png_fname)
 
     else:
         raise ValueError("Server Error, No Data" + str(webURL.getcode()))

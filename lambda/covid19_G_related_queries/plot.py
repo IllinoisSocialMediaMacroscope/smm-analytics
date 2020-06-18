@@ -28,4 +28,4 @@ def plot_multiple_bar_chart(indices, counts, title, subtitles):
     )
     div = plot(fig, output_type='div', auto_open=False, image_filename='plot_img')
 
-    return div
+    return fig, div

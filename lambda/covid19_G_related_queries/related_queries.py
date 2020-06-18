@@ -78,10 +78,15 @@ def related_queries(keywords, language, localPath):
                               "_related_queries.csv")
 
         for keyword in keywords_split:
-            div = plot.plot_multiple_bar_chart(indices[keyword], counts[keyword], title[keyword], subtitles[keyword])
+            fig, div = plot.plot_multiple_bar_chart(indices[keyword], counts[keyword], title[keyword],
+                                                  subtitles[keyword])
             with open(os.path.join(localPath, keyword.replace(" ", "_") + "_related_queries.html"), 'w') as f:
                 f.write(div)
             s3.upload("macroscope-paho-covid", localPath, "related_queries",
                       keyword.replace(" ", "_") + "_related_queries.html")
+
+            fig.write_image(os.path.join(localPath, keyword.replace(" ", "_") + "_related_queries.png"))
+            s3.upload("macroscope-paho-covid", localPath, "related_queries",
+                      keyword.replace(" ", "_") + "_related_queries.png")
 
     return None

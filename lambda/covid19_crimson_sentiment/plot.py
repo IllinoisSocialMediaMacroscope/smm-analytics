@@ -27,4 +27,4 @@ def plot_multiple_pie_chart(labels, values, title):
         ))
     div = plot(fig, output_type='div', auto_open=False, image_filename='plot_img')
 
-    return div
+    return fig, div

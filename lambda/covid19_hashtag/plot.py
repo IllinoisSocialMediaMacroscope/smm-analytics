@@ -35,4 +35,4 @@ def plot_bar_chart(index, counts, title):
     fig = Figure(data=[trace], layout=layout)
     div = plot(fig, output_type='div', image='png', auto_open=False, image_filename='plot_img')
 
-    return div
+    return fig, div
