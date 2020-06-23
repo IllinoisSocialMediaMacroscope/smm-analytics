@@ -1,2 +1,2 @@
 docker build -t covid19_g_interest_by_region .
-docker run -it covid19_g_interest_by_region python3.6 /scripts/interest_by_region.py
+docker run -it covid19_g_interest_by_region python /scripts/interest_by_region.py
