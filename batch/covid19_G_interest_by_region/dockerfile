@@ -1,4 +1,4 @@
-FROM continuumio/anaconda3
+FROM ubuntu:18.04
 
 RUN mkdir -p /scripts
 WORKDIR /scripts
@@ -8,8 +8,8 @@ COPY . ./
 
 # install dependency libraries
 RUN apt-get update
-RUN apt-get -y install nodejs npm
+RUN apt-get -y install python3-pip nodejs npm
 
 # install dependency libraries and download required data
-RUN conda install -c plotly plotly-orca psutil requests
-RUN pip install -r requirement.txt
+RUN pip3 install -r requirement.txt
+RUN npm install -g electron orca

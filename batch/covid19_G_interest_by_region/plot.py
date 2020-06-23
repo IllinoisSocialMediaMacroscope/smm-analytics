@@ -1,5 +1,9 @@
+import plotly
 import plotly.express as px
 from plotly.offline import plot
+
+plotly.io.orca.config.executable = '/usr/local/bin/orca'
+plotly.io.orca.config.save()
 
 
 def plot_geograph(df, key, title):
