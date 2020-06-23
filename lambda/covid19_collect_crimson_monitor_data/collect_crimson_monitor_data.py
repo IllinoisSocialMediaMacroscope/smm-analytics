@@ -18,8 +18,8 @@ from tweepy import OAuthHandler
 
 
 def getAuthToken():  # provides auth token needed to access Crimson API
-    authToken = os.environ['crimsonAuthToken']
-    authToken = "&auth=" + authToken
+    authToken = os.environ['brandwatchAuthToken']
+    authToken = "&access_token=" + authToken
     return authToken
 
 
@@ -49,11 +49,11 @@ def DatePull(startdate, enddate):
 
 
 def collect_crimson_monitor_data(projectStartDate, projectEndDate, localPath):
-    monitorID = os.environ['monitorID']
+    monitorID = 'queryId=' + os.environ['monitorID']
     fname = "Monitor-" + monitorID + '-from-' + projectStartDate + '-to-' + projectEndDate + '.csv'
     lineArray = DatePull(projectStartDate, projectEndDate)
 
-    urlStart = "https://api.crimsonhexagon.com/api"
+    urlStart = "https://api.brandwatch.com"
 
     # write header
     with open(os.path.join(localPath, fname), 'w', newline='', encoding='utf-8') as f:
@@ -67,12 +67,11 @@ def collect_crimson_monitor_data(projectStartDate, projectEndDate, localPath):
         startDate = lineArray[i]
         endDate = lineArray[i + 1]
 
-        dates = "&start=" + startDate + "&end=" + endDate  # Combines start and end date into format needed for API call
+        dates = "&startDatae=" + startDate + "&endDate=" + endDate  # Combines start and end date into format needed
+        # for API call
         authToken = getAuthToken()  # Gets auth token
-        endpoint = "/monitor/posts?id="  # endpoint needed for this query
-        extendLimit = "&extendLimit=true"  # extends call number from 500 to 10,000
-        fullContents = "&fullContents=true"  # Brings back full contents for Blog and Tumblr posts which are usually truncated around search keywords. This can occasionally disrupt CSV formatting.
-        urlData = urlStart + endpoint + monitorID + authToken + dates + extendLimit + fullContents  # Combines all API calls parts into full URL
+        endpoint = "/projects/1998292854/data/mentions/fulltext?"  # endpoint needed for this query
+        urlData = urlStart + endpoint + monitorID + authToken + dates # Combines all API calls parts into full URL
 
         webURL = urllib.request.urlopen(urlData)
 
@@ -122,28 +121,30 @@ def collect_crimson_monitor_data(projectStartDate, projectEndDate, localPath):
                     urls.append(i["url"])
 
                     contents.append("")
-                    if ('contents' in i):  # identifies post contents
-                        contents[c] = i["contents"].replace(",", "").replace("\n", " ")
-                        # replaces commas and new lines to facilitate CSV formatting,
-                        # this occasionally missed new lines in some blog posts which I'm working to fix
+                    if ('fullText' in i and i['fullText'] is not None and len(i['fullText']) < 2000):
+                        contents[c] = i['fullText'].replace(",", "").replace("\n", " ")
+                    elif ('snippet' in i and i['snippet'] is not None):  # identifies post contents
+                        contents[c] = i["snippet"].replace(",", "").replace("\n",
+                                                                            " ")  # replaces commas and new lines to facilitate CSV formatting, this occasionally missed new lines in some blog posts which I'm working to fix
 
                     authors.append("")
-                    if ('author' in i):  # identifies author
-                        authors[c] = i["author"].replace(",", "")
+                    if ('fullname' in i and i['fullname'] is not None):  # identifies author
+                        authors[c] = i["fullname"].replace(",", "")
 
                     authorGenders.append("")
-                    if ('authorGender' in i):  # identifies author gender
-                        authorGenders[c] = i["authorGender"]
+                    if ('Gender' in i and i['Gender'] is not None):  # identifies author gender
+                        authorGenders[c] = i["Gender"]
 
                     locations.append("")
-                    if ('location' in i):  # identifies location
-                        locations[c] = i["location"].replace(",", "")
+                    if ('locationName' in i and i['locationName'] is not None):  # identifies location
+                        locations[c] = i["locationName"].replace(",", "")
 
                     languages.append("")
-                    if ('language' in i):  # identifies language specified in the author's profile
+                    if ('language' in i and i[
+                        'language'] is not None):  # identifies language specified in the author's profile
                         languages[c] = i["language"]
 
-                    postTypes.append(i["type"])  # identifies the type of post, i.e. Twitter, Tumblr, Blog
+                    postTypes.append(i["pageType"])  # identifies the type of post, i.e. Twitter, Tumblr, Blog
 
                     tweetIDs.append("")
 
@@ -157,9 +158,9 @@ def collect_crimson_monitor_data(projectStartDate, projectEndDate, localPath):
 
                     statusesCount.append("")
 
-                    if postTypes[c] == "Twitter":  # if the post type is Twitter it goes through more processing
+                    if postTypes[c] == "twitter":  # if the post type is Twitter it goes through more processing
                         tweetCount = tweetCount + 1  # counts number of tweets
-                        tweetSplit = urls[c].split("status/")  # splits URL to get tweetID
+                        tweetSplit = urls[c].split("statuses/")  # splits URL to get tweetID
                         tweetIDs[c] = tweetSplit[1]
                         tempTweetIDs.append(tweetIDs[c])
 
@@ -172,11 +173,9 @@ def collect_crimson_monitor_data(projectStartDate, projectEndDate, localPath):
                                 postMatch = 0
 
                                 for idMatch in tweetIDs:
-                                    # matches tweetID in Twitter API call to tweetID stored from Crimson API
-                                    if idMatch == tempID:
-                                        # These all fill the
-                                        # matching Crimson attributes to those found in the Twitter API
-                                        tempDate = str(tweet.created_at).replace("  ", " ")
+                                    if idMatch == tempID:  # matches tweetID in Twitter API call to tweetID stored from Crimson API
+                                        tempDate = str(tweet.created_at).replace("  ",
+                                                                                 " ")  # These all fill the matching Crimson attributes to those found in the Twitter API
                                         dateTime = tempDate.split(" ")
                                         postDates[postMatch] = dateTime[0]
                                         postTimes[postMatch] = dateTime[1]
@@ -275,6 +274,9 @@ def lambda_handler(event, context):
     fname = collect_crimson_monitor_data(dayBeforeYesterday.strftime("%Y-%m-%d"), yesterday.strftime("%Y-%m-%d"),
                                          localPath)
 
-    s3.upload("macroscope-paho-covid", localPath, "input/crimson", fname)
+    # s3.upload("macroscope-paho-covid", localPath, "input/crimson", fname)
 
     return None
+
+if __name__ =="__main__":
+    lambda_handler(None, None)
