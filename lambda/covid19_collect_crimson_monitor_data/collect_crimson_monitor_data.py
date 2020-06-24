@@ -15,6 +15,8 @@ from datetime import date, timedelta
 import tweepy
 from tweepy import OAuthHandler
 
+import writeToS3 as s3
+
 
 def getAuthToken():  # provides auth token needed to access Crimson API
     authToken = os.environ['brandwatchAuthToken']
