@@ -4,8 +4,8 @@ from plotly.offline import plot
 
 
 def plot_multiple_pie_chart(labels, values, subtitles):
-    fig = make_subplots(rows=1, cols=2, subplot_titles=subtitles,
-                        specs=[[{"type": "pie"}, {"type": "pie"}]])
+    fig = make_subplots(rows=1, cols=len(values), subplot_titles=subtitles,
+                        specs=[[{"type": "pie"} for i in range(len(values))]])
 
     i = 1
     for label, value, subtitle in zip(labels, values, subtitles):
