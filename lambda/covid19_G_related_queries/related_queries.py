@@ -90,3 +90,6 @@ def related_queries(keywords, language, localPath):
                       keyword.replace(" ", "_") + "_related_queries.png")
 
     return None
+
+if __name__ == "__main__":
+    lambda_handler(None, None)
