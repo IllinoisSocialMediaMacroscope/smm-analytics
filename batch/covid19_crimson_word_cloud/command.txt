@@ -1,0 +1,2 @@
+docker build -t covid19_crimson_word_cloud .
+docker run -it covid19_crimson_word_cloud python3.6 /scripts/crimson_word_cloud.py
