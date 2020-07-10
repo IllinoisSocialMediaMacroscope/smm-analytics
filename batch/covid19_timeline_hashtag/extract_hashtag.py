@@ -6,21 +6,14 @@ import writeToS3 as s3
 import plot
 
 
-def lambda_handler(event, context):
+def lambda_handler(input_data_path, filename):
     # create local path
     localPath = os.path.join('/tmp', 'hashtag')
     if not os.path.exists(localPath):
         os.makedirs(localPath)
 
-    # download triggered file
-    bucket = event['Records'][0]['s3']['bucket']['name']
-    key = unquote_plus(event['Records'][0]['s3']['object']['key'])
-    remotePath = "/".join(key.split("/")[:-1])
-    filename = key.split("/")[-1]
-    s3.downloadToDisk(bucket, filename, localPath, remotePath)
-
     # load to dataframe
-    df = pd.read_csv(os.path.join(localPath, filename))
+    df = pd.read_csv(os.path.join(input_data_path, filename))
 
     # extract hashtag
     hash = extract_hashtag(df)
@@ -63,6 +56,3 @@ def extract_hashtag(df):
     hash['pubshare'] = hash['Freq'] / (hash['Freq'].sum())
 
     return hash
-
-if __name__ == "__main__":
-    lambda_handler(None, None)
