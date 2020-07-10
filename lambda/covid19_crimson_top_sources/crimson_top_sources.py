@@ -2,70 +2,73 @@ import json
 import os
 import urllib.request
 from datetime import date, timedelta
-from operator import itemgetter
 
 import plot
 import writeToS3 as s3
 
 
 def getAuthToken():  # provides auth token needed to access Crimson API
-    authToken = os.environ['crimsonAuthToken']
-    authToken = "&auth=" + authToken
+    authToken = os.environ['brandwatchAuthToken']
+    authToken = "&access_token=" + authToken
     return authToken
 
 
 def crimson_top_sources(projectStartDate, projectEndDate, localPath):
     monitorID = os.environ['monitorID']
-    urlStart = "https://api.crimsonhexagon.com/api"
-    fnames = []
+    urlStart = "https://api.brandwatch.com"
 
-    dates = "&start=" + projectStartDate + "&end=" + projectEndDate  # Combines start and end date into format needed for API call
+    dates = "&startDate=" + projectStartDate + "&endDate=" + projectEndDate   # Combines start and end date into format needed for API call
     authToken = getAuthToken()  # Gets auth token
-    endpoint = "/monitor/sources?id="  # endpoint needed for this query
-    urlData = urlStart + endpoint + monitorID + authToken + dates  # Combines all API calls parts into full URL
+    topsite_endpoint = "/projects/1998292854/data/volume/topsites/queries?"  # endpoint needed for this query
+    toptweeter_endpoint = "/projects/1998292854/data/volume/toptweeters/queries?"
+    urlData = {
+        "top_sites":  urlStart + topsite_endpoint + 'queryId=' + monitorID + authToken + dates,
+        "top_tweeters": urlStart + toptweeter_endpoint + 'queryId=' + monitorID + authToken + dates
+    }
 
-    webURL = urllib.request.urlopen(urlData)
+    fnames = []
+    labels = []
+    values = []
+    subtitles = []
+    for metric in urlData.keys():
+        webURL = urllib.request.urlopen(urlData[metric])
 
-    if webURL.getcode() == 200:
+        if webURL.getcode() == 200:
 
-        data = webURL.read().decode('utf8')
-        theJSON = json.loads(data)
+            data = webURL.read().decode('utf8')
+            theJSON = json.loads(data)
 
-        # write json content
-        fname = "monitorID_" + monitorID + "_extracted_top_sources.json"
-        with open(os.path.join(localPath, fname), 'w') as f:
-            json.dump(theJSON, f, indent=2)
+            # write json content
+            fname = "monitorID_" + monitorID + "_extracted_" + metric + ".json"
+            with open(os.path.join(localPath, fname), 'w') as f:
+                json.dump(theJSON, f, indent=2)
 
-        fnames.append(fname)
+            fnames.append(fname)
 
-        # plot bar charts and save to html
-        source = theJSON["contentSources"][0]
-
-        labels = []
-        values = []
-        for metric in ["topSites", "sources"]:
+            # plot bar charts and save to html
+            sources = theJSON["results"]
             label = []
             value = []
-            data = sorted(source[metric].items(), key=itemgetter(1), reverse=True)
-            for pair in data[:10]:
-                label.append(pair[0])
-                value.append(pair[1])
+            for source in sources:
+                label.append(source['name'])
+                value.append(source['data']['volume'])
+
+            subtitles.append(metric)
             labels.append(label)
             values.append(value)
+        else:
+            raise ValueError("Server Error, No Data" + str(webURL.getcode()))
 
-        subtitles = ["Top Sites (up to 10)", "Top Sources (up to 10)"]
-        div, image = plot.plot_multiple_pie_chart(labels, values, subtitles)
-        div_fname = "monitorID_" + monitorID + "_extracted_top_sources.html"
-        with open(os.path.join(localPath, div_fname), 'w') as f:
-            f.write(div)
-        fnames.append(div_fname)
+    div, image = plot.plot_multiple_pie_chart(labels, values, subtitles)
+    div_fname = "monitorID_" + monitorID + "_extracted_top_sources.html"
+    with open(os.path.join(localPath, div_fname), 'w') as f:
+        f.write(div)
 
-        png_fname = "monitorID_" + monitorID + "_extracted_top_sources.png"
-        image.save(os.path.join(localPath, png_fname))
-        fnames.append(png_fname)
+    fnames.append(div_fname)
 
-    else:
-        raise ValueError("Server Error, No Data" + str(webURL.getcode()))
+    png_fname = "monitorID_" + monitorID + "_extracted_top_sources.png"
+    image.save(os.path.join(localPath, png_fname))
+    fnames.append(png_fname)
 
     return fnames
 
