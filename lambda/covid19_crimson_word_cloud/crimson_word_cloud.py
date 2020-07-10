@@ -52,14 +52,14 @@ def crimson_word_cloud(projectStartDate, projectEndDate, localPath):
         fnames.append(fname)
 
         # plot word cloud and save to html
-        fig, div = plot.word_cloud(list(sortedJSON.keys()), list(sortedJSON.values()))
+        div, image = plot.word_cloud(list(sortedJSON.keys()), list(sortedJSON.values()))
         div_fname = "monitorID_" + monitorID + "_extracted_wordcloud.html"
         with open(os.path.join(localPath, div_fname), 'w') as f:
             f.write(div)
         fnames.append(div_fname)
 
         png_fname = "monitorID_" + monitorID + "_extracted_wordcloud.png"
-        fig.write_image(os.path.join(localPath, png_fname))
+        image.save(os.path.join(localPath, png_fname))
         fnames.append(png_fname)
 
     else:
@@ -84,3 +84,7 @@ def lambda_handler(event, context):
         s3.upload("macroscope-paho-covid", localPath, "wordcloud", fname)
 
     return None
+
+
+if __name__ == "__main__":
+    lambda_handler(None, None)
