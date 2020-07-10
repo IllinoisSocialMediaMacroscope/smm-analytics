@@ -8,11 +8,10 @@ import extract_hashtag
 
 def lambda_handler(event, context):
 
-    screen_names = ["msalnacion"]
-    # screen_names = ["msalnacion", "gisbarbados", "MFABelize", "MinSaludBolivia", "minsaude", "GovCanHealth",
-    #                 "caymangovt", "ministeriosalud", "MinSaludCol", "msaludcr", "GoDomRep", "Salud_Ec",
-    #                 "ars_guyane", "MsppOfficiel", "themohwgovjm", "GobiernoMX", "msaludpy",
-    #                 "PeruPaisDigital", "skngov", "MOH_TT", "MSPUruguay", "USAGov"]
+    screen_names = ["msalnacion", "gisbarbados", "MFABelize", "MinSaludBolivia", "minsaude", "GovCanHealth",
+                    "caymangovt", "ministeriosalud", "MinSaludCol", "msaludcr", "GoDomRep", "Salud_Ec",
+                    "ars_guyane", "MsppOfficiel", "themohwgovjm", "GobiernoMX", "msaludpy",
+                    "PeruPaisDigital", "skngov", "MOH_TT", "MSPUruguay", "USAGov"]
 
     # create local path
     localPath = os.path.join('/tmp', 'tweets')
