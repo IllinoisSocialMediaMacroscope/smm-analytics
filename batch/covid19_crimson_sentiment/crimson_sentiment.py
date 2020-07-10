@@ -2,7 +2,6 @@ import json
 import os
 import urllib.request
 from datetime import date, timedelta
-from operator import itemgetter
 
 import plot
 import writeToS3 as s3
