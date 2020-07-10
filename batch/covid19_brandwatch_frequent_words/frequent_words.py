@@ -26,7 +26,7 @@ def lambda_handler():
 
     # download triggered file
     bucket = "macroscope-paho-covid"
-    remotePath = "input/crimson"
+    remotePath = "input/brandwatch"
     files = s3.listFiles(bucket, remotePath)
     sorted_files = sorted(files, key=lambda file: file['LastModified'], reverse=True)
 

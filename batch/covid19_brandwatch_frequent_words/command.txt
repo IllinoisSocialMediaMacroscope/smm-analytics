@@ -1,0 +1,2 @@
+docker build -t covid19_brandwatch_frequent_words .
+docker run -it covid19_brandwatch_frequent_words python3.6 /scripts/collect_brandwatch_monitor_data.py

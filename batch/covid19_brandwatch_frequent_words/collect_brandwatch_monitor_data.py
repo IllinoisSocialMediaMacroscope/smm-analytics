@@ -18,7 +18,7 @@ import writeToS3 as s3
 from tweepy import OAuthHandler
 
 
-def getAuthToken():  # provides auth token needed to access Crimson API
+def getAuthToken():  # provides auth token needed to access brandwatch API
     authToken = os.environ['brandwatchAuthToken']
     authToken = "&access_token=" + authToken
     return authToken
@@ -49,7 +49,7 @@ def DatePull(startdate, enddate):
     return listArray
 
 
-def collect_crimson_monitor_data(projectStartDate, projectEndDate, localPath):
+def collect_brandwatch_monitor_data(projectStartDate, projectEndDate, localPath):
     monitorID = os.environ['monitorID']
     fname = "Monitor-" + monitorID + '-from-' + projectStartDate + '-to-' + projectEndDate + '.csv'
     lineArray = DatePull(projectStartDate, projectEndDate)
@@ -178,9 +178,9 @@ def collect_crimson_monitor_data(projectStartDate, projectEndDate, localPath):
                                     postMatch = 0
 
                                     for idMatch in tweetIDs:
-                                        if idMatch == tempID:  # matches tweetID in Twitter API call to tweetID stored from Crimson API
+                                        if idMatch == tempID:  # matches tweetID in Twitter API call to tweetID stored from brandwatch API
                                             tempDate = str(tweet.created_at).replace("  ",
-                                                                                     " ")  # These all fill the matching Crimson attributes to those found in the Twitter API
+                                                                                     " ")  # These all fill the matching brandwatch attributes to those found in the Twitter API
                                             dateTime = tempDate.split(" ")
                                             postDates[postMatch] = dateTime[0]
                                             postTimes[postMatch] = dateTime[1]
@@ -270,17 +270,17 @@ def collect_crimson_monitor_data(projectStartDate, projectEndDate, localPath):
 
 def lambda_handler(event, context):
     # create local path
-    localPath = os.path.join('/tmp', 'crimson')
+    localPath = os.path.join('/tmp', 'brandwatch')
     if not os.path.exists(localPath):
         os.makedirs(localPath)
 
     today = date.today()
     yesterday = today - timedelta(days=1)
     dayBeforeYesterday = today - timedelta(days=2)
-    fname = collect_crimson_monitor_data(
+    fname = collect_brandwatch_monitor_data(
         dayBeforeYesterday.strftime("%Y-%m-%d"), yesterday.strftime("%Y-%m-%d"), localPath)
 
-    s3.upload("macroscope-paho-covid", localPath, "input/crimson", fname)
+    s3.upload("macroscope-paho-covid", localPath, "input/brandwatch", fname)
 
     # extract frequent words from collected monitor data
     frequent_words.lambda_handler()
