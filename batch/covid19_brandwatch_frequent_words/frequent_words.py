@@ -130,21 +130,21 @@ def extract_frequent_phrases(df, hashtag, date_marker, localPath):
         writer = csv.writer(f)
         writer.writerow(['word', 'count'])
         for row in most_common.most_common():
-            writer.writerow(row)
+            writer.writerow((row[0].encode('utf-8', 'ignore'), row[1]))
     s3.upload("macroscope-paho-covid", localPath, "frequent_phrases", hashtag + "_" + date_marker + "_extracted_frequent_words.csv")
 
     with open(os.path.join(localPath, hashtag + "_" + date_marker + "_extracted_frequent_bigrams.csv"), "w") as f:
         writer = csv.writer(f)
         writer.writerow(['bigram', 'count'])
         for row in most_common_bigrams.most_common():
-            writer.writerow(row)
+            writer.writerow(((i.encode('utf-8', 'ignore') for i in row[0]), row[1]))
     s3.upload("macroscope-paho-covid", localPath, "frequent_phrases", hashtag + "_" + date_marker + "_extracted_frequent_bigrams.csv")
 
     with open(os.path.join(localPath, hashtag + "_" + date_marker + "_extracted_frequent_trigrams.csv"), "w") as f:
         writer = csv.writer(f)
         writer.writerow(['trigram', 'count'])
         for row in most_common_trigrams.most_common():
-            writer.writerow(row)
+            writer.writerow(((i.encode('utf-8', 'ignore') for i in row[0]), row[1]))
     s3.upload("macroscope-paho-covid", localPath, "frequent_phrases", hashtag + "_" + date_marker + "_extracted_frequent_trigrams.csv")
 
     return indices, counts
