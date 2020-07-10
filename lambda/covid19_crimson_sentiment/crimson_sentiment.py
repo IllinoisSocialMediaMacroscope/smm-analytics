@@ -16,14 +16,13 @@ def getAuthToken():  # provides auth token needed to access Crimson API
 
 def crimson_sentiment(projectStartDate, projectEndDate, localPath):
     monitorID = os.environ['monitorID']
-    queryID = 'queryId=' + os.environ['queryID']
-    urlStart = "https://api.brandwatch.com"
+    urlStart = "https://api.crimsonhexagon.com/api"
     fnames = []
 
     dates = "&start=" + projectStartDate + "&end=" + projectEndDate  # Combines start and end date into format needed for API call
     authToken = getAuthToken()  # Gets auth token
-    endpoint = "/projects/1998292854/"  # endpoint needed for this query
-    urlData = urlStart + endpoint + queryID + authToken + dates +"&pageSize=5000"  # Combines all API calls parts into full URL
+    endpoint = "/monitor/results?id="  # endpoint needed for this query
+    urlData = urlStart + endpoint + monitorID + authToken + dates  # Combines all API calls parts into full URL
 
     webURL = urllib.request.urlopen(urlData)
 
