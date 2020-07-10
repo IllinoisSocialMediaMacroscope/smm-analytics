@@ -1,0 +1,2 @@
+docker build -t covid19_hashtag .
+docker run -it covid19_hashtag python3.6 /scripts/extract_hashtag.py
