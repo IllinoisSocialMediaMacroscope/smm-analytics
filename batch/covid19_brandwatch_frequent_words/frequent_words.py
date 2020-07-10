@@ -2,14 +2,6 @@ import csv
 import os
 
 import nltk
-
-if not os.path.exists('/tmp/nltk_data'):
-    os.makedirs('/tmp/nltk_data')
-nltk.download('punkt', download_dir='/tmp/nltk_data')
-nltk.download('stopwords', download_dir='/tmp/nltk_data')
-nltk.download('wordnet', download_dir='/tmp/nltk_data')
-nltk.data.path.append('/tmp/nltk_data/')
-
 import pandas as pd
 import plot
 import writeToS3 as s3
@@ -39,7 +31,7 @@ def lambda_handler():
         legends_row = []
         for date_marker in date_markers:
             if date_marker == "1day":
-                today = sorted_files[0]
+                today = sorted_files[0]['Key'].split("/")[-1]
                 s3.downloadToDisk(bucket, today, localPath, remotePath)
                 df_today = pd.read_csv(os.path.join(localPath, today))
                 indices, counts = extract_frequent_phrases(df_today, hashtag, date_marker, localPath)
