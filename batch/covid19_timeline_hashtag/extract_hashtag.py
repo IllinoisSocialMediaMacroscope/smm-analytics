@@ -29,6 +29,10 @@ def lambda_handler(input_data_path, filename):
     hash.to_csv(os.path.join(localPath, hash_filename + "_extracted_hashtag.csv"), index=False)
     s3.upload("macroscope-paho-covid", localPath, "hashtags", hash_filename + "_extracted_hashtag.csv")
 
+    with open(os.path.join(localPath, hash_filename + "_extracted_hashtag_frequency.html"), 'w') as f:
+        f.write(div)
+    s3.upload("macroscope-paho-covid", localPath, "hashtags", hash_filename + "_extracted_hashtag_frequency.html")
+
     image.save(os.path.join(localPath, hash_filename + "_extracted_hashtag_frequency.png"))
     s3.upload("macroscope-paho-covid", localPath, "hashtags", hash_filename + "_extracted_hashtag_frequency.png")
 
