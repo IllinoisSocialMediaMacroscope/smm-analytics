@@ -9,3 +9,4 @@ __pycache__
 glove.twitter.27B.*
 numberbatch-en-17.04b.*
 docker-command-smile.sh
+test_orca
