@@ -3,6 +3,7 @@ import os
 import urllib.request
 from datetime import date, timedelta
 
+import imgkit
 import plot
 import writeToS3 as s3
 
@@ -59,7 +60,7 @@ def brandwatch_top_sources(projectStartDate, projectEndDate, localPath):
         else:
             raise ValueError("Server Error, No Data" + str(webURL.getcode()))
 
-    div, image = plot.plot_multiple_pie_chart(labels, values, subtitles)
+    div = plot.plot_multiple_pie_chart(labels, values, subtitles)
     div_fname = "monitorID_" + monitorID + "_extracted_top_sources.html"
     with open(os.path.join(localPath, div_fname), 'w') as f:
         f.write(div)
@@ -67,7 +68,9 @@ def brandwatch_top_sources(projectStartDate, projectEndDate, localPath):
     fnames.append(div_fname)
 
     png_fname = "monitorID_" + monitorID + "_extracted_top_sources.png"
-    image.save(os.path.join(localPath, png_fname))
+    imgkit.from_file(os.path.join(localPath, div_fname),
+                     os.path.join(localPath, png_fname),
+                     options={"xvfb": ""})
     fnames.append(png_fname)
 
     return fnames
