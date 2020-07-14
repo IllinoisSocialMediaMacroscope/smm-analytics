@@ -5,15 +5,6 @@ import plotly as py
 import plotly.graph_objects as go
 from plotly.offline import plot
 
-import chart_studio
-from PIL import Image as PILImage
-from chart_studio.plotly import image as PlotlyImage
-import os
-import io
-
-# configure chart studio
-chart_studio.tools.set_credentials_file(username=os.environ['CHART_STUDIO_USERNAME'],
-                                        api_key=os.environ['CHART_STUDIO_APIKEY'])
 
 def word_cloud(words, scores):
     lower, upper = 10, 80
@@ -72,7 +63,4 @@ def word_cloud(words, scores):
     # save the plot
     div = plot(fig, output_type="div", auto_open=False, image_filename="word_cloud_img")
 
-    img_bytes = PlotlyImage.get(fig)
-    image = PILImage.open(io.BytesIO(img_bytes))
-
-    return div, image
+    return div

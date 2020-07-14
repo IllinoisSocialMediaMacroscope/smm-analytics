@@ -1,12 +1,13 @@
 import json
 import os
 import urllib.request
-from datetime import date, timedelta
 from collections import OrderedDict
+from datetime import date, timedelta
 from operator import itemgetter
 
-import writeToS3 as s3
+import imgkit
 import plot
+import writeToS3 as s3
 
 
 def getAuthToken():  # provides auth token needed to access Crimson API
@@ -52,14 +53,16 @@ def crimson_word_cloud(projectStartDate, projectEndDate, localPath):
         fnames.append(fname)
 
         # plot word cloud and save to html
-        div, image = plot.word_cloud(list(sortedJSON.keys()), list(sortedJSON.values()))
+        div = plot.word_cloud(list(sortedJSON.keys()), list(sortedJSON.values()))
         div_fname = "monitorID_" + monitorID + "_extracted_wordcloud.html"
         with open(os.path.join(localPath, div_fname), 'w') as f:
             f.write(div)
         fnames.append(div_fname)
 
         png_fname = "monitorID_" + monitorID + "_extracted_wordcloud.png"
-        image.save(os.path.join(localPath, png_fname))
+        imgkit.from_file(os.path.join(localPath, div_fname),
+                         os.path.join(localPath, png_fname),
+                         options = {"xvfb": ""})
         fnames.append(png_fname)
 
     else:
