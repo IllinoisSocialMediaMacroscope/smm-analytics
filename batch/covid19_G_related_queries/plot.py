@@ -1,16 +1,8 @@
 import io
-import os
 
-import chart_studio
 import plotly.graph_objects as go
-from PIL import Image as PILImage
-from chart_studio.plotly import image as PlotlyImage
 from plotly.offline import plot
 from plotly.subplots import make_subplots
-
-# configure chart studio
-chart_studio.tools.set_credentials_file(username=os.environ['CHART_STUDIO_USERNAME'],
-                                        api_key=os.environ['CHART_STUDIO_APIKEY'])
 
 
 def plot_multiple_bar_chart(indices, counts, title, subtitles):
@@ -37,7 +29,5 @@ def plot_multiple_bar_chart(indices, counts, title, subtitles):
         height=1500
     )
     div = plot(fig, output_type='div', auto_open=False, image_filename='plot_img')
-    img_bytes = PlotlyImage.get(fig, width=800, height=1500)
-    image = PILImage.open(io.BytesIO(img_bytes))
 
-    return div, image
+    return div

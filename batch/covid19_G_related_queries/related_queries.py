@@ -4,6 +4,7 @@ import pandas as pd
 import plot
 import writeToS3 as s3
 from pytrends.request import TrendReq
+import imgkit
 
 
 def lambda_handler(event, context):
@@ -78,14 +79,16 @@ def related_queries(keywords, language, localPath):
                               "_related_queries.csv")
 
         for keyword in keywords_split:
-            div, image = plot.plot_multiple_bar_chart(indices[keyword], counts[keyword], title[keyword],
+            div = plot.plot_multiple_bar_chart(indices[keyword], counts[keyword], title[keyword],
                                                   subtitles[keyword])
             with open(os.path.join(localPath, keyword.replace(" ", "_") + "_related_queries.html"), 'w') as f:
                 f.write(div)
             s3.upload("macroscope-paho-covid", localPath, "related_queries",
                       keyword.replace(" ", "_") + "_related_queries.html")
 
-            image.save(os.path.join(localPath, keyword.replace(" ", "_") + "_related_queries.png"))
+            imgkit.from_file(os.path.join(localPath, keyword.replace(" ", "_") + "_related_queries.html"),
+                             os.path.join(localPath, keyword.replace(" ", "_") + "_related_queries.png"),
+                             options={"xvfb": ""})
             s3.upload("macroscope-paho-covid", localPath, "related_queries",
                       keyword.replace(" ", "_") + "_related_queries.png")
 
