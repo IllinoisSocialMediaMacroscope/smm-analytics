@@ -3,6 +3,7 @@ import os
 import pandas as pd
 import writeToS3 as s3
 import plot
+import imgkit
 
 
 def lambda_handler(input_data_path, filename):
@@ -21,7 +22,7 @@ def lambda_handler(input_data_path, filename):
     index = hash['hashtags'].values.tolist()[:10]
     counts = hash['Freq'].values.tolist()[:10]
     title = 'Top 10 prevalent hashtags (' + filename.split(".")[0] +')'
-    div, image = plot.plot_bar_chart(index, counts, title)
+    div = plot.plot_bar_chart(index, counts, title)
 
     # save result and write back to s3
     hash_filename = filename.split(".")[0]
@@ -33,7 +34,9 @@ def lambda_handler(input_data_path, filename):
         f.write(div)
     s3.upload("macroscope-paho-covid", localPath, "hashtags", hash_filename + "_extracted_hashtag_frequency.html")
 
-    image.save(os.path.join(localPath, hash_filename + "_extracted_hashtag_frequency.png"))
+    imgkit.from_file(os.path.join(localPath, hash_filename + "_extracted_hashtag.csv"),
+                     os.path.join(localPath, hash_filename + "_extracted_hashtag_frequency.png"),
+                     options={"xvfb": ""})
     s3.upload("macroscope-paho-covid", localPath, "hashtags", hash_filename + "_extracted_hashtag_frequency.png")
 
     return None

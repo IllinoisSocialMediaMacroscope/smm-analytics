@@ -1,5 +1,3 @@
-import io
-
 import plotly.graph_objects as go
 from plotly.offline import plot
 from plotly.subplots import make_subplots
