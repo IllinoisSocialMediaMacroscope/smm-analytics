@@ -72,8 +72,8 @@ def lambda_handler():
         s3.upload("macroscope-paho-covid", localPath, "frequent_phrases", hashtag + "_extracted_frequent_phrases.html")
 
         imgkit.from_file(
-            os.path.join(localPath, os.path.join(localPath, hashtag + "_extracted_frequent_phrases.html")),
-            os.path.join(localPath, os.path.join(localPath, hashtag + "_extracted_frequent_phrases.png")),
+            os.path.join(localPath, hashtag + "_extracted_frequent_phrases.html"),
+            os.path.join(localPath, hashtag + "_extracted_frequent_phrases.png"),
             options={"xvfb": ""})
         s3.upload("macroscope-paho-covid", localPath, "frequent_phrases", hashtag + "_extracted_frequent_phrases.png")
 
