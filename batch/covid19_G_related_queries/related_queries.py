@@ -54,6 +54,8 @@ def related_queries(keywords, language, localPath):
                     indices[keyword] = []
                 if keyword not in counts.keys():
                     counts[keyword] = []
+                if keyword not in title.keys():
+                    title[keyword] = []
                 if keyword not in subtitles.keys():
                     subtitles[keyword] = []
 
