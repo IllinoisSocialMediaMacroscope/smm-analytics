@@ -1,6 +1,7 @@
 import csv
 import os
 
+import imgkit
 import nltk
 import pandas as pd
 import plot
@@ -65,12 +66,15 @@ def lambda_handler():
 
         # Plot and save
         title = "Most prevalent 10 frequent words and phrases used in #" + hashtag + " tweets"
-        div, image = plot.plot_multiple_bar_chart(indices_row, counts_row, title, legends_row)
+        div = plot.plot_multiple_bar_chart(indices_row, counts_row, title, legends_row)
         with open(os.path.join(localPath, hashtag + "_extracted_frequent_phrases.html"), 'w') as f:
             f.write(div)
         s3.upload("macroscope-paho-covid", localPath, "frequent_phrases", hashtag + "_extracted_frequent_phrases.html")
 
-        image.save(os.path.join(localPath, hashtag + "_extracted_frequent_phrases.png"))
+        imgkit.from_file(
+            os.path.join(localPath, os.path.join(localPath, hashtag + "_extracted_frequent_phrases.html")),
+            os.path.join(localPath, os.path.join(localPath, hashtag + "_extracted_frequent_phrases.png")),
+            options={"xvfb": ""})
         s3.upload("macroscope-paho-covid", localPath, "frequent_phrases", hashtag + "_extracted_frequent_phrases.png")
 
     return None
