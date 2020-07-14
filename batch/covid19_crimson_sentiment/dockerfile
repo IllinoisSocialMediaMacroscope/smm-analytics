@@ -8,7 +8,7 @@ COPY . ./
 
 # install dependency libraries
 RUN apt-get update
-RUN apt-get -y install python3-pip
+RUN apt-get -y install python3-pip xvfb libfontconfig wkhtmltopdf
 
 # install dependency libraries and download required data
 RUN pip3 install -r requirement.txt

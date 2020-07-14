@@ -3,6 +3,7 @@ import os
 import urllib.request
 from datetime import date, timedelta
 
+import imgkit
 import plot
 import writeToS3 as s3
 
@@ -51,7 +52,7 @@ def crimson_sentiment(projectStartDate, projectEndDate, localPath):
             labels.append([label])
             values.append([value])
 
-        div, image = plot.plot_multiple_pie_chart(labels, values, "Basic Sentiment Categories")
+        div = plot.plot_multiple_pie_chart(labels, values, "Basic Sentiment Categories")
         div_fname = "monitorID_" + monitorID + "_extracted_results.html"
         with open(os.path.join(localPath, div_fname), 'w') as f:
             f.write(div)
@@ -59,7 +60,9 @@ def crimson_sentiment(projectStartDate, projectEndDate, localPath):
 
         # save to png
         png_fname = "monitorID_" + monitorID + "_extracted_results.png"
-        image.save(os.path.join(localPath, png_fname))
+        imgkit.from_file(os.path.join(localPath, div_fname),
+                         os.path.join(localPath, png_fname),
+                         options={"xvfb": ""})
         fnames.append(png_fname)
 
     else:
