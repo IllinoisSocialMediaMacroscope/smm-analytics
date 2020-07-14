@@ -2,4 +2,5 @@ pandas==1.0.3
 pytrends==4.7.3
 plotly==4.6.0
 boto3==1.6.11
-imgkit==1.0.2
+chart_studio==1.1.0
+Pillow==7.0.0

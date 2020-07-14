@@ -52,16 +52,13 @@ def interest_by_region(keywords, language, localPath):
 
             if geo_name_df is not None:
                 title = "Google Trends Interest by Region related to keyword: " + keyword + " (Since March 2020)"
-                div = plot.plot_geograph(geo_name_df, keyword, title)
+                div, image = plot.plot_geograph(geo_name_df, keyword, title)
                 with open(os.path.join(localPath, keyword.replace(" ", "_") + "_interest_by_region.html"), 'w') as f:
                     f.write(div)
                 s3.upload("macroscope-paho-covid", localPath, "interest_by_region",
                           keyword.replace(" ", "_") + "_interest_by_region.html")
 
-                imgkit.from_file(
-                    os.path.join(localPath, keyword.replace(" ", "_") + "_interest_by_region.html"),
-                    os.path.join(localPath, keyword.replace(" ", "_") + "_interest_by_region.png"),
-                    options={"xvfb": ""})
+                image.save(os.path.join(localPath, keyword.replace(" ", "_") + "_interest_by_region.png"))
                 s3.upload("macroscope-paho-covid", localPath, "interest_by_region",
                           keyword.replace(" ", "_") + "_interest_by_region.png")
 
