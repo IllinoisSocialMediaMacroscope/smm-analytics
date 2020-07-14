@@ -34,7 +34,7 @@ def lambda_handler(input_data_path, filename):
         f.write(div)
     s3.upload("macroscope-paho-covid", localPath, "hashtags", hash_filename + "_extracted_hashtag_frequency.html")
 
-    imgkit.from_file(os.path.join(localPath, hash_filename + "_extracted_hashtag.csv"),
+    imgkit.from_file(os.path.join(localPath, hash_filename + "_extracted_hashtag_frequency.html"),
                      os.path.join(localPath, hash_filename + "_extracted_hashtag_frequency.png"),
                      options={"xvfb": ""})
     s3.upload("macroscope-paho-covid", localPath, "hashtags", hash_filename + "_extracted_hashtag_frequency.png")
