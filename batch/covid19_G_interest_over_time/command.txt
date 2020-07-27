@@ -1,0 +1,2 @@
+docker build -t covid19_g_interest_over_time .
+docker run -it covid19_g_interest_over_time python3.6 /scripts/interest_over_time.py

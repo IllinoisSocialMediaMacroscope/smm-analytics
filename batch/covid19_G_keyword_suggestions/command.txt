@@ -1,0 +1,2 @@
+docker build -t covid19_g_keyword_suggestions .
+docker run -it covid19_g_keyword_suggestions python3.6 /scripts/keyword_suggestions.py
