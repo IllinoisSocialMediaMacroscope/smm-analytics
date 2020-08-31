@@ -39,31 +39,34 @@ def crimson_sentiment(projectStartDate, projectEndDate, localPath):
         fnames.append(fname)
 
         # plot pie charts and save to html
-        results = theJSON["results"][0]
+        if theJSON is not None and len(theJSON["results"]) > 0:
+            results = theJSON["results"][0]
 
-        labels = []
-        values = []
-        for metric in ["categories"]:
-            label = []
-            value = []
-            for item in results[metric]:
-                label.append(item['category'])
-                value.append(item['volume'])
-            labels.append([label])
-            values.append([value])
+            labels = []
+            values = []
+            for metric in ["categories"]:
+                label = []
+                value = []
+                for item in results[metric]:
+                    label.append(item['category'])
+                    value.append(item['volume'])
+                labels.append([label])
+                values.append([value])
 
-        div = plot.plot_multiple_pie_chart(labels, values, "Basic Sentiment Categories")
-        div_fname = "monitorID_" + monitorID + "_extracted_results.html"
-        with open(os.path.join(localPath, div_fname), 'w') as f:
-            f.write(div)
-        fnames.append(div_fname)
+            div = plot.plot_multiple_pie_chart(labels, values, "Basic Sentiment Categories")
+            div_fname = "monitorID_" + monitorID + "_extracted_results.html"
+            with open(os.path.join(localPath, div_fname), 'w') as f:
+                f.write(div)
+            fnames.append(div_fname)
 
-        # save to png
-        png_fname = "monitorID_" + monitorID + "_extracted_results.png"
-        imgkit.from_file(os.path.join(localPath, div_fname),
-                         os.path.join(localPath, png_fname),
-                         options={"xvfb": ""})
-        fnames.append(png_fname)
+            # save to png
+            png_fname = "monitorID_" + monitorID + "_extracted_results.png"
+            imgkit.from_file(os.path.join(localPath, div_fname),
+                             os.path.join(localPath, png_fname),
+                             options={"xvfb": ""})
+            fnames.append(png_fname)
+        else:
+            raise ValueError("The return json is empty from the /monitor/results endpoint.")
 
     else:
         raise ValueError("Server Error, No Data" + str(webURL.getcode()))

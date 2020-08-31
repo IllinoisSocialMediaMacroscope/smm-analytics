@@ -3,6 +3,7 @@ import os
 import imgkit
 import plot
 import writeToS3 as s3
+import pytrends
 from pytrends.request import TrendReq
 
 
@@ -44,32 +45,36 @@ def interest_over_time(keywords, language, localPath):
         subtitles = {}
 
         for timeframe in timeframes.keys():
-            pytrend.build_payload(kw_list=keywords_split, timeframe=timeframe)
-            df_interest = pytrend.interest_over_time()
+            try:
+                pytrend.build_payload(kw_list=keywords_split, timeframe=timeframe)
+                df_interest = pytrend.interest_over_time()
 
-            for keyword in keywords_split:
+                for keyword in keywords_split:
 
-                if keyword not in indices.keys():
-                    indices[keyword] = []
-                if keyword not in counts.keys():
-                    counts[keyword] = []
-                if keyword not in title.keys():
-                    title[keyword] = []
-                if keyword not in subtitles.keys():
-                    subtitles[keyword] = []
+                    if keyword not in indices.keys():
+                        indices[keyword] = []
+                    if keyword not in counts.keys():
+                        counts[keyword] = []
+                    if keyword not in title.keys():
+                        title[keyword] = []
+                    if keyword not in subtitles.keys():
+                        subtitles[keyword] = []
 
-                indices[keyword].append([df_interest[keyword].index.tolist()])
-                counts[keyword].append([df_interest[keyword].tolist()])
-                title[keyword] = "Google Trends Interest over Time related to keyword: " + keyword
-                subtitles[keyword].append(["Interest Over Time(" + timeframes[timeframe] + ")"])
+                    indices[keyword].append([df_interest[keyword].index.tolist()])
+                    counts[keyword].append([df_interest[keyword].tolist()])
+                    title[keyword] = "Google Trends Interest over Time related to keyword: " + keyword
+                    subtitles[keyword].append(["Interest Over Time(" + timeframes[timeframe] + ")"])
 
-                # save csv
-                df_interest[keyword].to_csv(os.path.join(localPath, keyword.replace(" ", "_")
-                                                         + "_" + timeframes[timeframe] + "_interest_over_time.csv"))
+                    # save csv
+                    df_interest[keyword].to_csv(os.path.join(localPath, keyword.replace(" ", "_")
+                                                             + "_" + timeframes[timeframe] + "_interest_over_time.csv"))
 
-                s3.upload("macroscope-paho-covid", localPath, "interest_over_time",
-                          keyword.replace(" ", "_") + "_" + timeframes[timeframe] +
-                          "_interest_over_time.csv")
+                    s3.upload("macroscope-paho-covid", localPath, "interest_over_time",
+                              keyword.replace(" ", "_") + "_" + timeframes[timeframe] +
+                              "_interest_over_time.csv")
+            except pytrends.exceptions.ResponseError as e:
+                print("pytrend error with kw_list as: [" + (",").join(keywords_split) + "] and timeframe as: " +
+                      timeframe + str(e), flush=True)
 
         for keyword in keywords_split:
             if indices[keyword] != [] and counts[keyword] != [] and title[keyword] != [] and subtitles[keyword] != []:
