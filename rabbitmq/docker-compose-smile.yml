@@ -23,6 +23,8 @@ services:
   mongodb:
     image: mongo
     hostname: mongodb
+    volumes:
+      - "smile_user:/data/db"
 #    ports:
 #    - "27017:27017"
     restart: unless-stopped
@@ -345,8 +347,6 @@ services:
     - TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
     - REDDIT_CLIENT_ID=${REDDIT_CLIENT_ID}
     - REDDIT_CLIENT_SECRET=${REDDIT_CLIENT_SECRET}
-    - FLICKR_CONSUMER_KEY=${FLICKR_CONSUMER_KEY}
-    - FLICKR_CONSUMER_SECRET=${FLICKR_CONSUMER_SECRET}
     - BOX_CLIENT_ID=${BOX_CLIENT_ID}
     - BOX_CLIENT_SECRET=${BOX_CLIENT_SECRET}
     - DROPBOX_CLIENT_ID=${DROPBOX_CLIENT_ID}
@@ -370,8 +370,6 @@ services:
     - DOCKERIZED=${DOCKERIZED}
     - TWITTER_CONSUMER_KEY=${TWITTER_CONSUMER_KEY}
     - TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
-    - FLICKR_CONSUMER_KEY=${FLICKR_CONSUMER_KEY}
-    - FLICKR_CONSUMER_SECRET=${FLICKR_CONSUMER_SECRET}
     restart: unless-stopped
 
 volumes:
@@ -381,12 +379,18 @@ volumes:
       o: bind
       type: none
       # put your own local data path here
-      device: ${LOCAL_MOUNT_PATH}
+      device: "${HOME}/smile_data"
+
+  smile_user:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: "${HOME}/smile_user"
 
   smile_tag:
     driver: local
     driver_opts:
       o: bind
       type: none
-      # put your own local data path here
-      device: "${HOME}/smile"
+      device: "${HOME}/smile_tag"
