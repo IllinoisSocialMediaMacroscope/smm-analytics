@@ -37,7 +37,7 @@ services:
     restart: unless-stopped
 
   algorithm-classification-predict:
-    build: ./classification_predict
+#    build: ./classification_predict
     image: socialmediamacroscope/classification_predict:latest
     depends_on:
     - rabbitmq
@@ -52,7 +52,7 @@ services:
     restart: unless-stopped
 
   algorithm-classification-split:
-    build: ./classification_split
+#    build: ./classification_split
     image: socialmediamacroscope/classification_split:latest
     depends_on:
     - rabbitmq
@@ -67,7 +67,7 @@ services:
     restart: unless-stopped
 
   algorithm-classification-train:
-    build: ./classification_train
+#    build: ./classification_train
     image: socialmediamacroscope/classification_train:latest
     depends_on:
     - rabbitmq
@@ -82,7 +82,7 @@ services:
     restart: unless-stopped
 
   algorithm-histogram:
-    build: ./histogram
+#    build: ./histogram
     image: socialmediamacroscope/histogram:latest
     depends_on:
     - rabbitmq
@@ -97,7 +97,7 @@ services:
     restart: unless-stopped
 
   algorithm-network-analysis:
-    build: ./network_analysis
+#    build: ./network_analysis
     image: socialmediamacroscope/network_analysis:latest
     depends_on:
     - rabbitmq
@@ -113,7 +113,7 @@ services:
     restart: unless-stopped
 
   algorithm-preprocessing:
-    build: ./preprocessing
+#    build: ./preprocessing
     image: socialmediamacroscope/preprocessing:latest
     depends_on:
     - rabbitmq
@@ -129,7 +129,7 @@ services:
     restart: unless-stopped
 
   algorithm-sentiment-analysis:
-    build: ./sentiment_analysis
+#    build: ./sentiment_analysis
     image: socialmediamacroscope/sentiment_analysis:latest
     depends_on:
     - rabbitmq
@@ -145,7 +145,7 @@ services:
     restart: unless-stopped
 
   algorithm-screen-name-prompt:
-    build: ./screen_name_prompt
+#    build: ./screen_name_prompt
     image: socialmediamacroscope/screen_name_prompt:latest
     depends_on:
     - rabbitmq
@@ -160,7 +160,7 @@ services:
     restart: unless-stopped
 
   algorithm-topic-modeling:
-    build: ./topic_modeling
+#    build: ./topic_modeling
     image: socialmediamacroscope/topic_modeling:latest
     depends_on:
     - rabbitmq
@@ -176,7 +176,7 @@ services:
     restart: unless-stopped
 
   algorithm-name-entity-recognition:
-    build: ./name_entity_recognition
+#    build: ./name_entity_recognition
     image: socialmediamacroscope/name_entity_recognition:latest
     depends_on:
     - rabbitmq
@@ -192,7 +192,7 @@ services:
     restart: unless-stopped
 
   algorithm-autophrase:
-    build: ./autophrase
+#    build: ./autophrase
     image: socialmediamacroscope/autophrase:latest
     depends_on:
     - rabbitmq
@@ -208,7 +208,7 @@ services:
     restart: unless-stopped
 
   image-crawler:
-    build: ./image_crawler
+#    build: ./image_crawler
     image: socialmediamacroscope/image_crawler:latest
     depends_on:
     - rabbitmq
@@ -224,7 +224,7 @@ services:
     restart: unless-stopped
 
   collect-reddit-comment:
-    build: ./collect_reddit_comment
+#    build: ./collect_reddit_comment
     image: socialmediamacroscope/collect_reddit_comment:latest
     depends_on:
     - rabbitmq
@@ -242,7 +242,7 @@ services:
     restart: unless-stopped
 
   clowder-create-collection:
-    build: ./clowder_create_collection
+#    build: ./clowder_create_collection
     image: socialmediamacroscope/clowder_create_collection:latest
     depends_on:
       - rabbitmq
@@ -252,7 +252,7 @@ services:
     restart: unless-stopped
 
   clowder-create-dataset:
-    build: ./clowder_create_dataset
+#    build: ./clowder_create_dataset
     image: socialmediamacroscope/clowder_create_dataset:latest
     depends_on:
       - rabbitmq
@@ -262,7 +262,7 @@ services:
     restart: unless-stopped
 
   clowder-create-space:
-    build: ./clowder_create_space
+#    build: ./clowder_create_space
     image: socialmediamacroscope/clowder_create_space:latest
     depends_on:
       - rabbitmq
@@ -272,7 +272,7 @@ services:
     restart: unless-stopped
 
   clowder-list:
-    build: ./clowder_list
+#    build: ./clowder_list
     image: socialmediamacroscope/clowder_list:latest
     depends_on:
       - rabbitmq
@@ -282,7 +282,7 @@ services:
     restart: unless-stopped
 
   clowder-upload-file:
-    build: ./clowder_upload_file
+#    build: ./clowder_upload_file
     image: socialmediamacroscope/clowder_upload_file:latest
     depends_on:
       - rabbitmq
@@ -296,7 +296,7 @@ services:
     restart: unless-stopped
 
   crimson-hexagon-monitors:
-    build: ./crimson_hexagon_monitors
+#    build: ./crimson_hexagon_monitors
     image: socialmediamacroscope/crimson_hexagon_monitors:latest
     depends_on:
       - rabbitmq
@@ -306,7 +306,7 @@ services:
     restart: unless-stopped
 
   smile-server:
-    build: /Users/cwang138/Documents/Macroscope/SMILE/www
+#    build: /Users/cwang138/Documents/Macroscope/SMILE/www
     image: socialmediamacroscope/smile_server:latest
     depends_on:
     - rabbitmq
@@ -359,7 +359,7 @@ services:
     restart: unless-stopped
 
   smile-graphql:
-    build: /Users/cwang138/Documents/Macroscope/SMILE/www/graphql
+#    build: /Users/cwang138/Documents/Macroscope/SMILE/www/graphql
     image: socialmediamacroscope/smile_graphql:latest
     depends_on:
     - smile-server
