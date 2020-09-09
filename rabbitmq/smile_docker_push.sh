@@ -19,3 +19,4 @@ docker push socialmediamacroscope/clowder_upload_file:latest
 docker push socialmediamacroscope/crimson_hexagon_monitors:latest
 docker push socialmediamacroscope/smile_server:latest
 docker push socialmediamacroscope/smile_graphql:latest
+docker push socialmediamacroscope/screen_name_prompt:latest
