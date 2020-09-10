@@ -29,12 +29,12 @@ class Sentiment:
             df_new = df[df[column] != ''][[self.id_column, column]].dropna()
             self.sentences = df_new[column].astype('str').tolist()
             self.id = df_new[self.id_column].astype('str').tolist()
-        elif '_source.id_str':
+        elif '_source.id_str' in df.columns:
             self.id_column = '_source.id_str'
             df_new = df[df[column] != ''][[self.id_column, column]].dropna()
             self.sentences = df_new[column].astype('str').tolist()
             self.id = df_new[self.id_column].astype('str').tolist()
-        elif '_source.id':
+        elif '_source.id' in df.columns:
             self.id_column = '_source.id_str'
             df_new = df[df[column] != ''][[self.id_column, column]].dropna()
             self.sentences = df_new[column].astype('str').tolist()
