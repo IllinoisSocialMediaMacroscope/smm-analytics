@@ -8,9 +8,9 @@ def notification(toaddr,case,filename,links,sessionURL):
     # toaddr -- email address to send to
     # text content to send
     # subject
-    host = 'smtp.mail.us-east-1.awsapps.com'
-    port = '465'
-    fromaddr = 'smile@socialmediamacroscope.awsapps.com'
+    host = os.environ['EMAIL_HOST']
+    port = os.environ['EMAIL_PORT']
+    fromaddr = os.environ['EMAIL_FROM_ADDRESS']
     
 
     # map the fpath component to History panel names
