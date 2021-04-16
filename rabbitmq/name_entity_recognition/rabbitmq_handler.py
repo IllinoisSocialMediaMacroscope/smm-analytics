@@ -50,7 +50,12 @@ def rabbitmq_handler(ch, method, properties, body):
 
 
 if __name__ == '__main__':
-    connection = pika.BlockingConnection(pika.ConnectionParameters(port=5672, host="rabbitmq"))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(
+        port=5672,
+        host="rabbitmq",
+        heartbeat=600,
+        blocked_connection_timeout=600
+    ))
     channel = connection.channel()
 
     # pass the queue name in environment variable
