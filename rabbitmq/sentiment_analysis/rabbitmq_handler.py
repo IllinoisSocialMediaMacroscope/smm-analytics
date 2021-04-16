@@ -1,6 +1,7 @@
 import json
 import os
 import traceback
+import logging
 
 import dataset
 import pika
@@ -72,7 +73,8 @@ def rabbitmq_handler(ch, method, properties, body):
                 'Rabbitmq Message Not Recognizable. '
                 'It has to specify what platform to run: aws-lambda, aws-batch, lambda or batch.')
 
-    except BaseException as e:
+    except Exception as e:
+        logging.error(traceback.format_exc())
         msg = {'ERROR':
                    {'message': str(e),
                     'traceback': traceback.format_exc()
@@ -95,7 +97,7 @@ if __name__ == '__main__':
     # pass the queue name in environment variable
     queue = os.environ['QUEUE_NAME']
 
-    channel.queue_declare(queue=queue)
+    channel.queue_declare(queue=queue) #, arguments={'x-message-ttl': 1000 * 60 * 10}) # 10 minutes?
     channel.basic_qos(prefetch_count=1)
     channel.basic_consume(queue=queue, on_message_callback=rabbitmq_handler, auto_ack=True)
     channel.start_consuming()

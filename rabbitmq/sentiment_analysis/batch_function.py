@@ -15,7 +15,7 @@ if __name__ == '__main__':
     parser.add_argument('--s3FolderName', required=True)
     parser.add_argument('--uid', required=True)
     parser.add_argument('--resultPath', required=True)
-    parser.add_argument('--email', required=True)
+    parser.add_argument('--email', required=False)
     parser.add_argument('--sessionURL', required=True)
 
     # user specified parameters
