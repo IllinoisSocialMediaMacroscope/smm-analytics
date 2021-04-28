@@ -2,13 +2,13 @@ import json
 import botometer
 import pika
 import traceback
+import os
 
 
 def botometer_check_bot_handler(ch, method, properties, body):
 
     try:
         event = json.loads(body)
-        mashape_key = event['mashape_key']
         twitter_app_auth = {
             'consumer_key': event['consumer_key'],
             'consumer_secret': event['consumer_secret'],
@@ -16,7 +16,7 @@ def botometer_check_bot_handler(ch, method, properties, body):
             'access_token_secret': event['access_token_secret'],
         }
         bom = botometer.Botometer(wait_on_ratelimit=False,
-                                  mashape_key=mashape_key,
+                                  mashape_key=os.environ.get("RAPIDAPI_KEY"),
                                   **twitter_app_auth)
         result = bom.check_account(event['screen_name'])
     except BaseException as e:

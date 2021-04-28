@@ -118,7 +118,7 @@ services:
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - TWITTER_CONSUMER_KEY=${TWITTER_CONSUMER_KEY}
     - TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
-    - MASHAPE_APIKEY=${MASHAPE_APIKEY}
+    - RAPIDAPI_KEY=${RAPIDAPI_KEY}
     volumes:
     - "bae_content_data:/tmp"
     restart: unless-stopped
