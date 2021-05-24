@@ -1,0 +1,3 @@
+docker run -it smile-personality-detection python3.6 /scripts/batch_function.py --remoteReadPath cwang138/GraphQL/twitter-Tweet/hyunbin/ \
+--column text --s3FolderName cwang138 --uid 1234567890 --resultPath /NLP/personality/ --email cwang138@illinois.edu \
+--sessionURL http://localhost:8001 --algorithm Pamuksuz-Personality

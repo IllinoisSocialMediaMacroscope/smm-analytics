@@ -1,0 +1,2 @@
+docker build -t covid19_brandwatch_top_sources .
+docker run -it covid19_brandwatch_top_sources python3.6 /scripts/brandwatch_top_sources.py

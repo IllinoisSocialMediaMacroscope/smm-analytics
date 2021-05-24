@@ -2,6 +2,7 @@ import os
 import json
 import requests
 import writeToS3 as s3
+import pandas as pd
 
 def lambda_handler(event, context):
 
@@ -19,14 +20,17 @@ def lambda_handler(event, context):
     with open(os.path.join(localPath, screen_name + '_tweets.txt'), 'r') as personality_text:
         headers = {'Content-Type': 'text/plain',
                    'Accept': 'application/json'}
-        body = personality_text.read().encode('utf-8', 'ignore')
+
+        # concatenate the text field to be a paragraph
+        df = pd.read_csv(os.path.join(localPath, screen_name + '_tweets.txt'))
+        tweets = df['text'].tolist()
+        body = '. '.join(tweets).encode('utf-8', 'ignore')
+
         r = requests.post('https://gateway.watsonplatform.net/personality-insights/api/v3/profile?version=2017-10-13&consumption_preferences=true&raw_scores=true',
             headers=headers, data=body, auth=('apikey', event['apikey']), timeout=300)
 
         if r.status_code == 200:
-            data = { 'screen_name': screen_name,
-                     'profile_img': event['profile_img'],
-                     'personality': r.json()}
+            data = { 'personality': r.json()}
 
             with open(os.path.join(localPath, screen_name + '_personality' + '.json'),'w') as outfile:
                 json.dump(data, outfile)

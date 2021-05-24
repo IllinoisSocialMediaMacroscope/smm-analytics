@@ -1,6 +1,9 @@
-import tweepy
+import csv
 import os
+
+import tweepy
 import writeToS3 as s3
+
 
 def lambda_handler(event, context):
 
@@ -14,13 +17,18 @@ def lambda_handler(event, context):
 	api = tweepy.API(auth)
 
 	tweets = []
-	for status in tweepy.Cursor(api.user_timeline, screen_name=event['screen_name'],count=100).items():
-		tweets.append(status._json['text'].encode('utf-8', 'ignore').decode())
+	for status in tweepy.Cursor(api.user_timeline, screen_name=event['screen_name'], count=100,
+								tweet_mode="extended").items():
+		tweets.append([status._json['id'], status._json['full_text'].encode('utf-8', 'ignore').decode()])
 
 	if len(tweets) > 0:
 		fname = event['screen_name'] + '_tweets.txt'
-		with open(os.path.join(localSavePath, fname), 'w') as f:
-			f.write('. '.join(tweets))
+		with open(os.path.join(localSavePath, fname), 'w', encoding='utf-8', newline='') as f:
+			header = ['id', 'text']
+			writer = csv.writer(f, delimiter=",")
+			writer.writerow(header)
+			for row in tweets:
+				writer.writerow(row)
 
 		s3.upload(localSavePath, awsPath, fname)
 

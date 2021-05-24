@@ -1,0 +1,2 @@
+docker build -t covid19_timeline_hashtag .
+docker run -it covid19_timeline_hashtag python3.6 /scripts/collect_timeline.py

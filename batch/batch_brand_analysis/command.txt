@@ -1,0 +1,2 @@
+docker run -it bae-utku-personality python3.6 /scripts/batch_function.py --sessionID cwang138 --screen_name \
+realDonaldTrump --email cwang138@illinois.edu --sessionURL http://localhost:8001
