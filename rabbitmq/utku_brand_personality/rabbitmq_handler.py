@@ -54,9 +54,7 @@ if __name__ == '__main__':
     connection = pika.BlockingConnection(pika.ConnectionParameters(port=5672, host="rabbitmq"))
     channel = connection.channel()
 
-    # pass the queue name in environment variable
-    queue = os.environ['QUEUE_NAME']
-
+    queue = "bae_utku_brand_personality"
     channel.queue_declare(queue=queue)
     channel.basic_qos(prefetch_count=1)
     channel.basic_consume(queue=queue, on_message_callback=rabbitmq_handler, auto_ack=True)
