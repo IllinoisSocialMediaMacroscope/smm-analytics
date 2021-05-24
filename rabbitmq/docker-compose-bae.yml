@@ -49,6 +49,11 @@ services:
     - rabbitmq
     - minio
     command: python ./check_screen_name.py
+    environment:
+      - HOST_IP=${HOST_IP}
+      - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+      - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+      - BUCKET_NAME=${BUCKET_NAME}
     restart: unless-stopped
 
   algorithm_collect_timeline:

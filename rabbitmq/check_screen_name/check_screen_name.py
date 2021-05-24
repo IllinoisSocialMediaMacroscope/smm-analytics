@@ -1,7 +1,9 @@
 import json
+import os
 import pika
 import tweepy
 import traceback
+import writeToS3 as s3
 
 
 def check_screen_name_handler(ch, method, properties, body):
@@ -13,17 +15,28 @@ def check_screen_name_handler(ch, method, properties, body):
 
         try:
             user = api.lookup_users(screen_names=[event['screen_name']])
-            msg = {'user_exist': True, 'profile_img': user[0]._json['profile_image_url_https']}
+
+            awsPath = os.path.join(event['sessionID'], event['screen_name'])
+            localPath = os.path.join('/tmp', event['sessionID'], event['screen_name'])
+            if not os.path.exists(localPath):
+                os.makedirs(localPath)
+            with open(os.path.join(localPath, event['screen_name'] + "_account_info.json"), "w") as f:
+                json.dump(user[0]._json, f)
+            s3.upload(localPath, awsPath, event['screen_name'] + "_account_info.json")
+
+            msg = {'user_exist': True,
+                   'profile_img': user[0]._json['profile_image_url_https'],
+                   'statuses_count': user[0]._json['statuses_count']}
         except tweepy.TweepError as error:
-            msg = {'user_exist': False, 'profile_img': None}
+            msg = {'user_exist': False, 'profile_img': None, 'statuses_count': None}
 
     except BaseException as e:
         msg = {'ERROR':
-                      {
-                          'message': str(e),
-                          'traceback': traceback.format_exc()
-                       }
-                  }
+            {
+                'message': str(e),
+                'traceback': traceback.format_exc()
+            }
+        }
 
     # reply to the sender
     ch.basic_publish(exchange="",
@@ -35,7 +48,6 @@ def check_screen_name_handler(ch, method, properties, body):
 
 
 if __name__ == '__main__':
-
     connection = pika.BlockingConnection(pika.ConnectionParameters(port=5672, host="rabbitmq"))
     channel = connection.channel()
     queue = "bae_check_screen_name"
