@@ -79,7 +79,7 @@ if __name__ == '__main__':
     model = MultiLabelClassificationModel('roberta', 'checkpoint-17315-epoch-5', num_labels=5,
                                           args={"reprocess_input_data": True, 'use_cached_eval_features': False},
                                           use_cuda=False)
-    df = pd.read_csv(os.path.join(localPath, screen_name + '_tweets.txt'))
+    df = pd.read_csv(os.path.join(localPath, screen_name + '_tweets.txt'), error_bad_lines=False)
     new_df = multiple_sentences(df, model)
     fname_sentences = screen_name + '_utku_personality_sentences.csv'
     new_df.to_csv(os.path.join(localPath, fname_sentences), index=False)

@@ -4,6 +4,7 @@ import pika
 import tweepy
 import writeToS3 as s3
 import traceback
+import csv
 
 
 def collect_timeline_handler(ch, method, properties, body):
@@ -24,8 +25,13 @@ def collect_timeline_handler(ch, method, properties, body):
 
         if len(tweets) > 0:
             fname = event['screen_name'] + '_tweets.txt'
-            with open(os.path.join(localSavePath, fname), 'w') as f:
-                f.write('. '.join(tweets))
+
+            with open(os.path.join(localSavePath, fname), 'w', encoding='utf-8', newline='') as f:
+                header = ['id', 'text']
+                writer = csv.writer(f, delimiter=",")
+                writer.writerow(header)
+                for row in tweets:
+                    writer.writerow(row)
 
             s3.upload(localSavePath, awsPath, fname)
 
