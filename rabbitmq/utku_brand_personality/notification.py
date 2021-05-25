@@ -32,9 +32,6 @@ def notification(toaddr, sessionURL):
             </html>"""
         subject = 'Your Brand Personality Analysis is finished!'
 
-        with open('email_password.txt') as f:
-            password = f.readlines()[0]
-
         msg = MIMEMultipart('alternative')
         msg['Subject'] = subject
         msg['From'] = fromaddr
