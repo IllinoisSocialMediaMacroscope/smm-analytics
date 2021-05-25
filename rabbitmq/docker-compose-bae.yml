@@ -93,6 +93,10 @@ services:
       - AWS_ACCESSKEY=${AWS_ACCESSKEY}
       - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
       - BUCKET_NAME=${BUCKET_NAME}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_FROM_ADDRESS=${EMAIL_FROM_ADDRESS}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
     restart: unless-stopped
 
   algorithm_get_sim_score:
