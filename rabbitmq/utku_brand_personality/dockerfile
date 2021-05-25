@@ -1,10 +1,18 @@
-FROM python:3.7
+FROM continuumio/miniconda:latest
 
 RUN mkdir -p /scripts
 WORKDIR /scripts
 
+# copy paste python scripts
 COPY . ./
 
-RUN pip install torch --no-cache-dir
-RUN pip install torchvision --no-cache-dir
+RUN conda update conda
+RUN conda install -y python=3.6
+RUN conda install -y pandas
+RUN conda install -y tqdm
+RUN conda install -y pytorch cpuonly -c pytorch
+
+# install dependency libraries and download required data
+# RUN pip3 install torch --no-cache-dir
+# RUN pip3 install torchvision --no-cache-dir
 RUN pip install --no-cache-dir -r requirement.txt
