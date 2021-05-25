@@ -82,6 +82,24 @@ def bulk_comparison_handler(ch, method, properties, body):
                         user_info.append(p['percentile'])
                     comparison_table.append(user_info)
 
+        elif event['algorithm'] == 'Pamuksuz-Personality':
+            comparison_table = [['screen_name', 'sophistication',
+                                 'excitement', 'sincerity',
+                                 'competence', 'ruggedness'
+                                 ]]
+            for screen_name in event['screen_names']:
+                awsPath = os.path.join(event['sessionID'], screen_name)
+                try:
+                    s3.downloadToDisk(screen_name + '_utku_personality_average.json', localPath, awsPath)
+                except:
+                    raise ValueError('Cannot find the personality in the remote storage!')
+
+                with open(os.path.join(localPath, screen_name + '_utku_personality_average.json'), 'r') as f:
+                    data = json.load(f)
+                    comparison_table.append(
+                        [screen_name, data['sophistication'], data['excitement'], data['sincerity'],
+                         data['competence'], data['ruggedness']])
+
         # computer correlations
         event['screen_names'].insert(0, 'Correlation')
         correlation_matrix = [event['screen_names']]
