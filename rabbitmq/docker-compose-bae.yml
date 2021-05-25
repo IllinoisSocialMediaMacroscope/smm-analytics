@@ -82,6 +82,19 @@ services:
     - BUCKET_NAME=${BUCKET_NAME}
     restart: unless-stopped
 
+  algorithm_utku_brand_personality:
+    image: socialmediamacroscope/utku_brand_personality:latest
+    depends_on:
+      - rabbitmq
+      - minio
+    command: python ./rabbitmq_handler.py
+    environment:
+      - HOST_IP=${HOST_IP}
+      - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+      - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+      - BUCKET_NAME=${BUCKET_NAME}
+    restart: unless-stopped
+
   algorithm_get_sim_score:
     image: socialmediamacroscope/get_sim_score:latest
     depends_on:
@@ -113,6 +126,7 @@ services:
     - algorithm_check_screen_name
     - algorithm_collect_timeline
     - algorithm_get_personality
+    - algorithm_utku_brand_personality
     - algorithm_get_sim_score
     - algorithm_screen_name_prompt
     ports:
