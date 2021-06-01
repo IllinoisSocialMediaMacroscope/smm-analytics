@@ -381,6 +381,7 @@ services:
     - EMAIL_PORT=${EMAIL_PORT}
     - EMAIL_FROM_ADDRESS=${EMAIL_FROM_ADDRESS}
     - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+    - SINGLE_USER=${SINGLE_USER}
     volumes:
     - "smile_content_data:/tmp"
     - "smile_tag:${HOME}/smile"
@@ -421,4 +422,4 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: "${HOME}/smile_tag"
+      device: "${HOME}/smile"
