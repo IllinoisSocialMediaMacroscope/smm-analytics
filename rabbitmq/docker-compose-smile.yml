@@ -265,70 +265,6 @@ services:
     - EMAIL_PASSWORD=${EMAIL_PASSWORD}
     restart: unless-stopped
 
-  clowder-create-collection:
-#    build: ./clowder_create_collection
-    image: socialmediamacroscope/clowder_create_collection:latest
-    depends_on:
-      - rabbitmq
-    command: python ./rabbitmq_handler.py
-    environment:
-      - QUEUE_NAME=clowder_create_collection
-    restart: unless-stopped
-
-  clowder-create-dataset:
-#    build: ./clowder_create_dataset
-    image: socialmediamacroscope/clowder_create_dataset:latest
-    depends_on:
-      - rabbitmq
-    command: python ./rabbitmq_handler.py
-    environment:
-      - QUEUE_NAME=lambda_invoke_clowder
-    restart: unless-stopped
-
-  clowder-create-space:
-#    build: ./clowder_create_space
-    image: socialmediamacroscope/clowder_create_space:latest
-    depends_on:
-      - rabbitmq
-    command: python ./rabbitmq_handler.py
-    environment:
-      - QUEUE_NAME=clowder_create_space
-    restart: unless-stopped
-
-  clowder-list:
-#    build: ./clowder_list
-    image: socialmediamacroscope/clowder_list:latest
-    depends_on:
-      - rabbitmq
-    command: python ./rabbitmq_handler.py
-    environment:
-      - QUEUE_NAME=lambda_list_clowder
-    restart: unless-stopped
-
-  clowder-upload-file:
-#    build: ./clowder_upload_file
-    image: socialmediamacroscope/clowder_upload_file:latest
-    depends_on:
-      - rabbitmq
-    command: python ./rabbitmq_handler.py
-    environment:
-      - HOST_IP=${HOST_IP}
-      - QUEUE_NAME=lambda_upload_clowder
-      - BUCKET_NAME=${BUCKET_NAME}
-      - AWS_ACCESSKEY=${AWS_ACCESSKEY}
-      - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
-    restart: unless-stopped
-
-  crimson-hexagon-monitors:
-#    build: ./crimson_hexagon_monitors
-    image: socialmediamacroscope/crimson_hexagon_monitors:latest
-    depends_on:
-      - rabbitmq
-    command: python ./rabbitmq_handler.py
-    environment:
-      - QUEUE_NAME=crimson_hexagon_monitors
-    restart: unless-stopped
-
   smile-server:
 #    build: /Users/cwang138/Documents/Macroscope/SMILE/www
     image: socialmediamacroscope/smile_server:latest
@@ -349,13 +285,6 @@ services:
     - algorithm-topic-modeling
     - algorithm-screen-name-prompt
     - image-crawler
-    - collect-reddit-comment
-    - crimson-hexagon-monitors
-    - clowder-create-collection
-    - clowder-create-dataset
-    - clowder-create-space
-    - clowder-list
-    - clowder-upload-file
     ports:
     - "8001:8001"
     command: npm run docker-start
