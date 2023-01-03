@@ -19,10 +19,8 @@ services:
     - "smile_content_data:/tmp"
     command: server --console-address ":9001" /tmp
     environment:
-    - MINIO_ROOT_USER=${AWS_ACCESSKEY}
-    - MINIO_ROOT_PASSWORD=${AWS_ACCESSKEYSECRET}
-    - MINIO_ROOT_USER=minioadmin
-    - MINIO_ROOT_PASSWORD=minioadmin
+    - MINIO_ACCESS_KEY=${AWS_ACCESSKEY}
+    - MINIO_SECRET_KEY=${AWS_ACCESSKEYSECRET}
     restart: unless-stopped
 
   minio-nginx:
