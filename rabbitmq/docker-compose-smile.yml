@@ -10,15 +10,34 @@ services:
   minio:
     image: minio/minio
     hostname: minio
-    ports:
-    - "9000:9000"
+#    ports:
+#    - "9000:9000"
+#    - "9001:9001"
+    expose:
+      - "9000"
+      - "9001"
+    networks:
+      - default
     volumes:
     - "smile_content_data:/tmp"
     command: server /tmp
     environment:
     - MINIO_ACCESS_KEY=${AWS_ACCESSKEY}
     - MINIO_SECRET_KEY=${AWS_ACCESSKEYSECRET}
+    - MINIO_ROOT_USER=minioadmin
+    - MINIO_ROOT_PASSWORD=minioadmin
     restart: unless-stopped
+
+  minio-nginx:
+    image: nginx:1.19.2-alpine
+    hostname: nginx
+    volumes:
+      - ./minio-nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    depends_on:
+      - minio
 
   mongodb:
     image: mongo
@@ -292,7 +311,7 @@ services:
     - HOME=${HOME}
     - DOCKERIZED=${DOCKERIZED}
     - LOCAL_ALGORITHM=${LOCAL_ALGORITHM}
-    - MINIO_PORT=${MINIO_PORT}
+    - HOST_IP=${HOST_IP}
     - BUCKET_NAME=${BUCKET_NAME}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
