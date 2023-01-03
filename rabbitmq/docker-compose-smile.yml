@@ -7,9 +7,9 @@ services:
     - "5672:5672"
     - "15672:15672"
 
-  minio1:
+  minio:
     image: minio/minio
-    hostname: minio1
+    hostname: minio
     expose:
       - "9000"
       - "9001"
@@ -32,7 +32,7 @@ services:
       - "9000:9000"
       - "9001:9001"
     depends_on:
-      - minio1
+      - minio
 
   mongodb:
     image: mongo
@@ -55,7 +55,7 @@ services:
     image: socialmediamacroscope/classification_predict:latest
     depends_on:
     - rabbitmq
-    - minio1
+    - minio
     command: python ./rabbitmq_handler.py
     environment:
     - HOST_IP=${HOST_IP}
@@ -70,7 +70,7 @@ services:
     image: socialmediamacroscope/classification_split:latest
     depends_on:
     - rabbitmq
-    - minio1
+    - minio
     command: python ./rabbitmq_handler.py
     environment:
     - HOST_IP=${HOST_IP}
@@ -85,7 +85,7 @@ services:
     image: socialmediamacroscope/classification_train:latest
     depends_on:
     - rabbitmq
-    - minio1
+    - minio
     command: python ./rabbitmq_handler.py
     environment:
     - HOST_IP=${HOST_IP}
@@ -100,7 +100,7 @@ services:
     image: socialmediamacroscope/histogram:latest
     depends_on:
     - rabbitmq
-    - minio1
+    - minio
     command: python ./rabbitmq_handler.py
     environment:
     - HOST_IP=${HOST_IP}
@@ -115,7 +115,7 @@ services:
     image: socialmediamacroscope/network_analysis:latest
     depends_on:
     - rabbitmq
-    - minio1
+    - minio
     command: python ./rabbitmq_handler.py
     environment:
     - HOST_IP=${HOST_IP}
@@ -134,7 +134,7 @@ services:
     image: socialmediamacroscope/preprocessing:latest
     depends_on:
     - rabbitmq
-    - minio1
+    - minio
     command: python ./rabbitmq_handler.py
     environment:
     - HOST_IP=${HOST_IP}
@@ -153,7 +153,7 @@ services:
     image: socialmediamacroscope/sentiment_analysis:latest
     depends_on:
     - rabbitmq
-    - minio1
+    - minio
     command: python ./rabbitmq_handler.py
     environment:
     - HOST_IP=${HOST_IP}
@@ -172,7 +172,7 @@ services:
     image: socialmediamacroscope/screen_name_prompt:latest
     depends_on:
     - rabbitmq
-    - minio1
+    - minio
     command: python ./screen_name_prompt.py
     environment:
     - HOST_IP=${HOST_IP}
@@ -187,7 +187,7 @@ services:
     image: socialmediamacroscope/topic_modeling:latest
     depends_on:
     - rabbitmq
-    - minio1
+    - minio
     command: python ./rabbitmq_handler.py
     environment:
     - HOST_IP=${HOST_IP}
@@ -206,7 +206,7 @@ services:
     image: socialmediamacroscope/name_entity_recognition:latest
     depends_on:
     - rabbitmq
-    - minio1
+    - minio
     command: python3 ./rabbitmq_handler.py
     environment:
     - HOST_IP=${HOST_IP}
@@ -225,7 +225,7 @@ services:
     image: socialmediamacroscope/autophrase:latest
     depends_on:
     - rabbitmq
-    - minio1
+    - minio
     command: python3 ./rabbitmq_handler.py
     environment:
     - HOST_IP=${HOST_IP}
@@ -244,7 +244,7 @@ services:
     image: socialmediamacroscope/image_crawler:latest
     depends_on:
     - rabbitmq
-    - minio1
+    - minio
     command: python3 ./rabbitmq_handler.py
     environment:
     - HOST_IP=${HOST_IP}
@@ -263,7 +263,7 @@ services:
     image: socialmediamacroscope/collect_reddit_comment:latest
     depends_on:
     - rabbitmq
-    - minio1
+    - minio
     command: python3 ./rabbitmq_handler.py
     environment:
     - HOST_IP=${HOST_IP}
@@ -284,7 +284,7 @@ services:
     image: socialmediamacroscope/smile_server:latest
     depends_on:
     - rabbitmq
-    - minio1
+    - minio
     - mongodb
     - redis
     - algorithm-classification-predict
