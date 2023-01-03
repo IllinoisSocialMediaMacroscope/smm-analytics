@@ -20,10 +20,11 @@ services:
       - default
     volumes:
     - "smile_content_data:/tmp"
-    command: server /tmp
+    command: server --console-address ":9001" /tmp
+#    command: server --console-address ":9001" http://minio{1...4}/data
     environment:
-    - MINIO_ACCESS_KEY=${AWS_ACCESSKEY}
-    - MINIO_SECRET_KEY=${AWS_ACCESSKEYSECRET}
+    - MINIO_ROOT_USER=${AWS_ACCESSKEY}
+    - MINIO_ROOT_PASSWORD=${AWS_ACCESSKEYSECRET}
     - MINIO_ROOT_USER=minioadmin
     - MINIO_ROOT_PASSWORD=minioadmin
     restart: unless-stopped
