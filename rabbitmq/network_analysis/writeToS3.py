@@ -3,7 +3,12 @@ import mimetypes
 import os
 from botocore.client import Config
 
-client = boto3.client('s3', endpoint_url='http://' + os.environ['HOST_IP'] + ':9000',
+if os.environ['MINIO_PORT'] is not None:
+    minio_port = os.environ['MINIO_PORT']
+else:
+    minio_port = '9000'
+
+client = boto3.client('s3', endpoint_url='http://minio:' + minio_port,
                       aws_access_key_id = os.environ['AWS_ACCESSKEY'],
                       aws_secret_access_key = os.environ['AWS_ACCESSKEYSECRET'],
                       config=Config(signature_version='s3v4'))
