@@ -20,15 +20,6 @@ services:
     - MINIO_SECRET_KEY=${AWS_ACCESSKEYSECRET}
     restart: unless-stopped
 
-  mongodb:
-    image: mongo
-    hostname: mongodb
-    volumes:
-      - "smile_user:/data/db"
-    ports:
-    - "27017:27017"
-    restart: unless-stopped
-
   redis:
     image: redis
     hostname: redis
@@ -267,11 +258,10 @@ services:
 
   smile-server:
 #    build: /Users/cwang138/Documents/Macroscope/SMILE/www
-    image: socialmediamacroscope/smile_server:latest
+    image: socialmediamacroscope/smile_server:cilogon-alpha
     depends_on:
     - rabbitmq
     - minio
-    - mongodb
     - redis
     - algorithm-classification-predict
     - algorithm-classification-split
@@ -311,6 +301,9 @@ services:
     - EMAIL_FROM_ADDRESS=${EMAIL_FROM_ADDRESS}
     - EMAIL_PASSWORD=${EMAIL_PASSWORD}
     - SINGLE_USER=${SINGLE_USER}
+    - CILOGON_CLIENT_ID=${CILOGON_CLIENT_ID}
+    - CILOGON_CLIENT_SECRET=${CILOGON_CLIENT_SECRET}
+    - CILOGON_CALLBACK_URL=${CILOGON_CALLBACK_URL}
     volumes:
     - "smile_content_data:/tmp"
     - "smile_tag:${HOME}/smile"
