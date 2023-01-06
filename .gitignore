@@ -8,6 +8,9 @@ email_password.txt
 __pycache__
 glove.twitter.27B.*
 numberbatch-en-17.04b.*
+bae_docker.sh
+password.txt
 docker-command-smile.sh
 docker-command-bae.sh
 test_orca
+checkpoint-17315-epoch-5

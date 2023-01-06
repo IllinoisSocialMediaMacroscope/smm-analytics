@@ -1,0 +1,3 @@
+# command to build and run this container
+docker build -t collect_timeline:latest .
+docker run collect_timeline:latest

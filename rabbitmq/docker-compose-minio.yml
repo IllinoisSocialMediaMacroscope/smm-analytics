@@ -1,0 +1,23 @@
+version: "3.3"
+services:
+  minio:
+    image: minio/minio
+    hostname: minio
+    ports:
+      - "9000:9000"
+    volumes:
+      - "smile_content_data:/tmp"
+    command: server /tmp
+    environment:
+      - MINIO_ACCESS_KEY=${AWS_ACCESSKEY}
+      - MINIO_SECRET_KEY=${AWS_ACCESSKEYSECRET}
+    restart: unless-stopped
+
+volumes:
+  smile_content_data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      # put your own local data path here
+      device: "${HOME}/smile_data"
