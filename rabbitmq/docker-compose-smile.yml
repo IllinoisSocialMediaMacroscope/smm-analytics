@@ -20,6 +20,16 @@ services:
     - MINIO_SECRET_KEY=${AWS_ACCESSKEYSECRET}
     restart: unless-stopped
 
+  mc:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc config host add myminio http://minio:9000 ${AWS_ACCESSKEY} ${AWS_ACCESSKEYSECRET};
+      /usr/bin/mc ilm rule add myminio/${BUCKET_NAME} --expire-days 1
+      "
+
   mongodb:
     image: mongo
     hostname: mongodb
