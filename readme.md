@@ -5,4 +5,8 @@ This repository hosts all the analytics and computation scripts for SMM tools. S
 small dependency libraries are deployed on [AWS Lambda](https://aws.amazon.com/lambda/), while long running processes with large libraries 
 required are deployed on [AWS Batch](https://aws.amazon.com/batch/)
 
+### Setting up nginx
+- modify rabbitmg/nginx/nginx.conf to have <<server_name>>:8001
+- modify rabiitmg/nginx_wo_ssl/nginx_wo_ssl.conf to have <<server_name>>:8001
+
 Contact us the **[SRTI lab](https://srtilab.techservices.illinois.edu/about/)** if you have any question: <a href="mailto:srti-lab@illinois.edu">srti-lab@illinois.edu</a>
