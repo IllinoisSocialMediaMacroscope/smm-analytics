@@ -279,7 +279,7 @@ services:
 
   smile-server:
 #    build: /Users/cwang138/Documents/Macroscope/SMILE/www
-    image: socialmediamacroscope/smile_server:cilogon-alpha
+    image: socialmediamacroscope/smile_server:latest
     depends_on:
     - rabbitmq
     - minio
