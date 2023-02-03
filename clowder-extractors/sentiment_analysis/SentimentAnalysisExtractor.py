@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 """Example extractor based on the clowder code."""
+import dataset
+import pandas as pd
 
 import logging
 from pyclowder.extractors import Extractor
