@@ -1,0 +1,23 @@
+{
+  "@context": "http://clowder.ncsa.illinois.edu/contexts/extractors.jsonld",
+  "name": "smm.sentiment.analysis",
+  "version": "0.4",
+  "description": "Description on this extractor",
+  "author": "Wang, Chen <cwang138@illinois.edu>",
+  "contributors": [],
+  "contexts": [{}],
+  "repository": [
+    {
+      "repType": "git",
+      "repUrl": "https://github.com/ncsa/standalone-smm-analytics"
+    }
+  ],
+  "process": {
+    "file": [
+      "text/csv"
+    ]
+  },
+  "external_services": [],
+  "dependencies": [],
+  "bibtex": []
+}
