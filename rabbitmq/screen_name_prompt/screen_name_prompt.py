@@ -2,6 +2,7 @@ import tweepy
 import json
 import pika
 import traceback
+import os
 
 RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq')
 
