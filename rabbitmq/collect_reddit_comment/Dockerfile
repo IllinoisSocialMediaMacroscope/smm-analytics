@@ -8,6 +8,8 @@ WORKDIR /scripts
 # copy paste python scripts
 COPY . ./
 
+ENV RABBITMQ_HOST="rabbitmq"
+
 # install dependency libraries
 RUN apt-get update
 RUN apt-get -y install python3-pip
