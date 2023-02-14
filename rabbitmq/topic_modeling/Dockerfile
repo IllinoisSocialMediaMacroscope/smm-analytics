@@ -8,6 +8,8 @@ WORKDIR /scripts
 # copy paste python scripts
 COPY . ./
 
+ENV RABBITMQ_HOST="rabbitmq"
+
 # install dependency libraries and download required data
 RUN pip install --no-cache-dir -r requirement.txt
 RUN python3 -m nltk.downloader -d /usr/local/share/nltk_data stopwords wordnet
