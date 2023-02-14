@@ -7,6 +7,8 @@ WORKDIR /scripts
 
 COPY . ./
 
+ENV RABBITMQ_HOST="rabbitmq"
+
 RUN pip install --no-cache-dir -r requirement.txt
 RUN python3 -m nltk.downloader -d /usr/local/share/nltk_data punkt stopwords averaged_perceptron_tagger
 
