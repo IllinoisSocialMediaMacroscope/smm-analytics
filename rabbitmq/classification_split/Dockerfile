@@ -5,6 +5,8 @@ RUN apt-get -qq -y update && apt-get -qq -y install cron
 RUN mkdir -p /scripts
 WORKDIR /scripts
 
+ENV RABBITMQ_HOST="rabbitmq"
+
 COPY . ./
 
 RUN pip install --no-cache-dir -r requirement.txt
