@@ -9,6 +9,8 @@ RUN cd / && git clone https://github.com/IllinoisSocialMediaMacroscope/SMILE-Aut
 WORKDIR /AutoPhrase
 COPY . ./
 
+ENV RABBITMQ_HOST="rabbitmq"
+
 # install dependency libraries
 RUN apt-get -y install g++
 RUN apt-get -y install openjdk-8-jdk
