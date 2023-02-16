@@ -7,6 +7,8 @@ WORKDIR /scripts
 
 COPY . ./
 
+ENV RABBITMQ_HOST="rabbitmq"
+
 RUN pip install --no-cache-dir -r requirement.txt
 
 # cron job clean tmp folder

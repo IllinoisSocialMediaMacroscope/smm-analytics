@@ -2,7 +2,9 @@ import tweepy
 import json
 import pika
 import traceback
+import os
 
+RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq')
 
 def screen_name_prompt_handler(ch, method, properties, body):
     try:
@@ -36,7 +38,7 @@ def screen_name_prompt_handler(ch, method, properties, body):
 
 if __name__ == '__main__':
 
-    connection = pika.BlockingConnection(pika.ConnectionParameters(port=5672, host="rabbitmq"))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(port=5672, host=RABBITMQ_HOST))
     channel = connection.channel()
     queue = "bae_screen_name_prompt"
     channel.queue_declare(queue=queue)

@@ -4,6 +4,7 @@ import traceback
 import pika
 import postToAWSBatch
 
+RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq')
 
 def rabbitmq_handler(ch, method, properties, body):
     try:
@@ -52,7 +53,7 @@ def rabbitmq_handler(ch, method, properties, body):
 if __name__ == '__main__':
     connection = pika.BlockingConnection(pika.ConnectionParameters(
         port=5672,
-        host="rabbitmq",
+        host=RABBITMQ_HOST,
         heartbeat=600,
         blocked_connection_timeout=600
     ))
