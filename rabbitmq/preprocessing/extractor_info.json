@@ -1,7 +1,7 @@
 {
   "@context": "http://clowder.ncsa.illinois.edu/contexts/extractors.jsonld",
   "name": "smm.preprocessing.analysis",
-  "version": "0.8",
+  "version": "0.1",
   "description": "Description on this extractor",
   "author": "Wang, Chen <cwang138@illinois.edu>",
   "contributors": [],
@@ -27,15 +27,23 @@
         "title": "Text Column Header",
         "default": "text"
       },
-      "algorithm": {
+      "process": {
         "type": "string",
         "title": "Sentiment Analysis Algorithms",
          "enum": [
-           "vader",
-           "sentiWordNet",
-           "debias"
+           "lemmatization",
+           "stemming",
+           "both"
         ],
-        "default": "vader"
+        "default": "lemmatization"
+      },
+      "tagger": {
+        "type": "string",
+        "title": "Sentiment Analysis Algorithms",
+         "enum": [
+           "posTag"
+        ],
+        "default": "posTag"
       }
     },
     "form": [
@@ -44,7 +52,11 @@
         "type": "text"
       },
       {
-        "key": "algorithm",
+        "key": "process",
+        "type": "select"
+      },
+      {
+        "key": "tagger",
         "type": "select"
       }
     ]
