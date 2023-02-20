@@ -66,4 +66,4 @@ def save_local_output(localSavePath, fname, output_data):
         with open(os.path.join(localSavePath, fname), 'wb') as f:
             pickle.dump(output_data, f)
 
-    return os.path.join(localpath, filename)
+    return os.path.join(localSavePath, fname)

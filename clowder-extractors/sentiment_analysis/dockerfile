@@ -1,7 +1,4 @@
-# Base image is an Ubuntu based
-FROM python:3
-
-RUN apt-get -qq -y update && apt-get -qq -y install cron
+FROM python:3.8.5
 
 RUN mkdir -p /scripts
 WORKDIR /scripts
@@ -9,7 +6,7 @@ WORKDIR /scripts
 COPY . ./
 
 # Install pyClowder and any other python dependencies
-RUN pip3 install --no-cache-dir -r requirement.txt
+RUN pip install --no-cache-dir -r requirement.txt
 RUN python3 -m nltk.downloader -d /usr/local/share/nltk_data stopwords wordnet punkt averaged_perceptron_tagger \
 vader_lexicon sentiwordnet
 
