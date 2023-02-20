@@ -10,6 +10,9 @@ RUN pip install --no-cache-dir -r requirement.txt
 RUN python3 -m nltk.downloader -d /usr/local/share/nltk_data stopwords wordnet punkt averaged_perceptron_tagger \
 vader_lexicon sentiwordnet
 
+# wordnet cannot unzip fix
+RUN unzip /usr/local/share/nltk_data/corpora/wordnet.zip -d /usr/local/share/nltk_data/corpora
+
 # Command to be run when container is run
 # Can add heartbeat to change the refresh rate
 CMD python3 SentimentAnalysisExtractor.py --heartbeat 40
