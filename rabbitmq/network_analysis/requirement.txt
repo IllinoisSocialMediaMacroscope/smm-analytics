@@ -4,3 +4,4 @@ pandas>=0.24.1
 networkx==1.11
 plotly==2.7.0
 pika>=1.1.0
+pyclowder==2.7.0
