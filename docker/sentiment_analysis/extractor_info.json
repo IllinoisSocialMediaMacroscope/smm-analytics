@@ -1,7 +1,7 @@
 {
   "@context": "http://clowder.ncsa.illinois.edu/contexts/extractors.jsonld",
   "name": "smm.sentiment.analysis",
-  "version": "0.7",
+  "version": "0.8",
   "description": "Description on this extractor",
   "author": "Wang, Chen <cwang138@illinois.edu>",
   "contributors": [],

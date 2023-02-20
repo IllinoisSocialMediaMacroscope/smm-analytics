@@ -15,6 +15,6 @@ RUN unzip /usr/local/share/nltk_data/corpora/wordnet.zip -d /usr/local/share/nlt
 
 # Command to be run when container is run
 # Can add heartbeat to change the refresh rate
-CMD python3 SentimentAnalysisExtractor.py --heartbeat 40
+CMD python3 SmmExtractor.py --heartbeat 40
 
-ENV MAIN_SCRIPT="SentimentAnalysisExtractor.py"
+ENV MAIN_SCRIPT="SmmExtractor.py"

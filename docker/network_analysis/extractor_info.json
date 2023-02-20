@@ -1,0 +1,69 @@
+{
+  "@context": "http://clowder.ncsa.illinois.edu/contexts/extractors.jsonld",
+  "name": "smm.network.analysis",
+  "version": "0.1",
+  "description": "Description on this extractor",
+  "author": "Wang, Chen <cwang138@illinois.edu>",
+  "contributors": [],
+  "contexts": [{}],
+  "repository": [
+    {
+      "repType": "git",
+      "repUrl": "https://github.com/ncsa/standalone-smm-analytics"
+    }
+  ],
+  "process": {
+    "file": [
+      "manual"
+    ]
+  },
+  "external_services": [],
+  "dependencies": [],
+  "bibtex": [],
+  "parameters": {
+    "schema": {
+      "column": {
+        "type": "string",
+        "title": "Text Column Header",
+        "default": "text"
+      },
+      "relations": {
+        "type": "string",
+        "title": "Network relations",
+         "enum": [
+           "retweet_from",
+           "reply_to",
+           "mentions"
+        ],
+        "default": "retweet_from"
+      },
+      "layout": {
+        "type": "string",
+        "title": "Network layout",
+         "enum": [
+           "spring",
+           "circular",
+           "fruchterman",
+           "random",
+           "shell",
+           "spectral"
+        ],
+        "default": "circular"
+      }
+    },
+    "form": [
+      {
+        "key": "column",
+        "type": "text"
+      },
+      {
+        "key": "relations",
+        "type": "select"
+      },
+      {
+        "key": "layout",
+        "type": "select"
+      }
+    ]
+  }
+}

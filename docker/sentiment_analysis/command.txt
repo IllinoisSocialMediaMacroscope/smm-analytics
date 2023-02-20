@@ -1,0 +1,3 @@
+# command to build and run this container
+docker build -t socialmediamacroscope/sentiment_analysis:latest .
+docker build -f extractor.dockerfile -t socialmediamacroscope/sentiment_analysis_extractor:latest .
