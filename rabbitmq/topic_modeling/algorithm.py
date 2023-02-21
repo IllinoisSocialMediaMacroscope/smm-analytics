@@ -16,7 +16,7 @@ def algorithm(df, params):
     data_lemmatized, id2word, corpus = gensim_tm.preprocessing()
     output['lemmatized'] = data_lemmatized
 
-    lda_model = gensim_tm.build_lda_model(params['numTopics'], corpus, id2word)
+    lda_model = gensim_tm.build_lda_model(int(params['numTopics']), corpus, id2word)
     output['lda_model'] = lda_model
 
     metrics = gensim_tm.lda_model_metrics(
