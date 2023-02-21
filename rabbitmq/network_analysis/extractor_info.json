@@ -22,11 +22,6 @@
   "bibtex": [],
   "parameters": {
     "schema": {
-      "column": {
-        "type": "string",
-        "title": "Text Column Header",
-        "default": "text"
-      },
       "relations": {
         "type": "string",
         "title": "Network relations",
@@ -52,10 +47,6 @@
       }
     },
     "form": [
-      {
-        "key": "column",
-        "type": "text"
-      },
       {
         "key": "relations",
         "type": "select"
