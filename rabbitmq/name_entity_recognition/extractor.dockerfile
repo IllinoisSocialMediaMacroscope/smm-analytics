@@ -1,10 +1,14 @@
-FROM python:3.8.5
+FROM ubuntu:18.04
 
 RUN mkdir -p /scripts
 WORKDIR /scripts
 
 # copy paste python scripts
 COPY . ./
+
+# install dependency libraries
+RUN apt-get update
+RUN apt-get -y install python3-pip wget unzip
 
 # install dependency libraries and download required data
 RUN pip3 install -r requirement.txt
