@@ -1,9 +1,9 @@
 FROM ubuntu:18.04
 
 # git clone autophrase algorithm
-RUN apt-get update
-RUN apt-get -y install git && apt-get -y install cron
-RUN cd / && git clone https://github.com/IllinoisSocialMediaMacroscope/SMILE-AutoPhrase.git AutoPhrase
+RUN apt-get update \
+&& apt-get -y install git && apt-get -y install cron \
+&& cd / && git clone https://github.com/IllinoisSocialMediaMacroscope/SMILE-AutoPhrase.git AutoPhrase
 
 # overwrite
 WORKDIR /AutoPhrase
