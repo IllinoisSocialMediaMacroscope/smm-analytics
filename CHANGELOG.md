@@ -7,3 +7,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - Hard coded rabbimq url changed to env variable [18](https://github.com/ncsa/standalone-smm-analytics/issues/18)
+- Modifed S3 url to env variable [21](https://github.com/ncsa/standalone-smm-analytics/issues/21)
