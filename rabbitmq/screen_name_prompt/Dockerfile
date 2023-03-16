@@ -1,6 +1,7 @@
 FROM python:3.7
 
 RUN mkdir -p /scripts
+
 WORKDIR /scripts
 
 COPY . ./
