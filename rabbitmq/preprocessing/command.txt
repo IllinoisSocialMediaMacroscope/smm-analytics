@@ -1,2 +1,4 @@
 # command to build and run this container
 docker build -t socialmediamacroscope/preprocessing:latest .
+docker build -f extractor.dockerfile -t socialmediamacroscope/preprocessing_extractor:latest .
+docker push socialmediamacroscope/preprocessing_extractor:latest

@@ -5,3 +5,4 @@ plotly==2.7.0
 nltk>=3.2.5
 pika>=1.1.0
 networkx==1.11
+pyclowder==2.7.0
