@@ -36,7 +36,7 @@ topic_modeling=false
 utku_brand_personality=false
 
 # set version numbers
-autophrase_version=1.0.0
+autophrase_version=PR-18
 biometer_check_bot_version=1.0.0
 bulk_comparison_version=1.0.0
 check_screen_name_version=1.0.0
@@ -67,7 +67,8 @@ utku_brand_personality_version=1.0.0
 
 #build images
 if [ "$autophrase" = true ] ; then
-    echo 'docker build -t "docker_repo"/autophrase:"autophrase_version" autophrase'
+    docker build -t "$docker_repo"/autophrase:"$autophrase_version" autophrase
+    docker push "$docker_repo"/autophrase:"$autophrase_version"
 fi
 
 
