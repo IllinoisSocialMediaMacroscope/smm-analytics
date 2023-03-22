@@ -6,7 +6,7 @@ build=true
 push=false
 
 # set components selection
-autophrase=true
+autophrase=false
 biometer_check_bot=false
 bulk_comparison=false
 check_screen_name=false
@@ -24,9 +24,9 @@ crimson_hexagon_monitors=false
 get_personality=false
 get_sim_score=false
 histogram=false
-image_crawler=true
-name_entity_recognition=true
-network_analysis=true
+image_crawler=false
+name_entity_recognition=false
+network_analysis=false
 nginx=false
 nginx_wo_ssl=false
 preprocessing=false
