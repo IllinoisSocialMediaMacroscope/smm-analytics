@@ -6,7 +6,7 @@ build=true
 push=false
 
 # set components selection
-autophrase=false
+autophrase=true
 biometer_check_bot=false
 bulk_comparison=false
 check_screen_name=false
@@ -64,6 +64,21 @@ screen_name_prompt_version=1.0.0
 sentiment_analysis_version=1.0.0
 topic_modeling_version=1.0.0
 utku_brand_personality_version=1.0.0
+
+function build_and_push ()
+{
+  image_name = $1
+  image_version = $2
+  docker_repo = $3
+  if [ "$build" = true ]; then
+    echo "docker build -t $3/$1:$2 $1"
+#    docker build -t "$3"/"$1":"$2" "$1"
+  fi
+  if [ "$push" = true ]; then
+    echo "docker push $3/$1:$2"
+#    docker push "$3"/"$1":"$2"
+  fi
+}
 
 #build images
 if [ "$autophrase" = true ]; then
@@ -321,18 +336,3 @@ fi
 #    docker push "$docker_repo"/utku_brand_personality:"$utku_brand_personality_version"
 #  fi
 #fi
-
-function build_and_push ()
-{
-  image_name = $1
-  image_version = $2
-  docker_repo = $3
-  if [ "$build" = true ]; then
-    echo "docker build -t"$3/$1:$2 $1"
-#    docker build -t "$3"/"$1":"$2" "$1"
-  fi
-  if [ "$push" = true ]; then
-    echo "docker push $3/$1:$2"
-#    docker push "$3"/"$1":"$2"
-  fi
-}
