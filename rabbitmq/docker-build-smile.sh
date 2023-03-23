@@ -1,3 +1,11 @@
+# this script will build and push the images in the repository to the desginated docker hub
+# set docker hub location by modifying docker_repo variable
+# set build option by modifying build variable
+# set push option by modifying push variable
+# set each components for build/push by modifying each component's variable
+# set the tag for each components for each component's version variable
+# whenever it pushes the image, the latest version will be built and pushed at the same time
+
 # set repository
 docker_repo=socialmediamacroscope
 
@@ -72,9 +80,11 @@ function build_and_push ()
   docker_repo=$3
   if [ "$build" = true ]; then
     docker build -t "$3"/"$1":"$2" "$1"
+    docker build -t "$3"/"$1":latest "$1"
   fi
   if [ "$push" = true ]; then
     docker push "$3"/"$1":"$2"
+    docker push "$3"/"$1":latest
   fi
 }
 
