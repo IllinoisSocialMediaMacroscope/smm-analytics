@@ -165,9 +165,10 @@ if [ "$network_analysis" = true ]; then
   build_and_push network_analysis $network_analysis_version $docker_repo
 fi
 
-if [ "$nginx" = true ]; then
-  build_and_push nginx $nginx_version $docker_repo
-fi
+# nginx doesn't work since the word nginx makes an error
+#if [ "$nginx" = true ]; then
+#  build_and_push nginx $nginx_version $docker_repo
+#fi
 
 if [ "$nginx_wo_ssl" = true ]; then
   build_and_push nginx_wo_ssl $nginx_wo_ssl_version $docker_repo
