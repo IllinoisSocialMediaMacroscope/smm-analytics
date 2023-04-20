@@ -1,7 +1,7 @@
 FROM python:3.7
 
 RUN apt-get -qq -y update && apt-get -qq -y install cron \
-&& mkdir -p /scripts \
+&& mkdir -p /scripts
 
 WORKDIR /scripts
 
