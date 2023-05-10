@@ -50,13 +50,16 @@ services:
 
   algorithm-classification-predict:
 #    build: ./classification_predict
-    image: socialmediamacroscope/classification_predict:latest
+    image: socialmediamacroscope/classification_predict:0.1.1
     depends_on:
     - rabbitmq
     - minio
     command: python ./rabbitmq_handler.py
     environment:
+    - MINIO_URL=${MINIO_URL}
+    - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
     - HOST_IP=${HOST_IP}
+    - RABBITMQ_HOST=${RABBITMQ_HOST}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -65,13 +68,16 @@ services:
 
   algorithm-classification-split:
 #    build: ./classification_split
-    image: socialmediamacroscope/classification_split:latest
+    image: socialmediamacroscope/classification_split:0.1.1
     depends_on:
     - rabbitmq
     - minio
     command: python ./rabbitmq_handler.py
     environment:
+    - MINIO_URL=${MINIO_URL}
+    - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
     - HOST_IP=${HOST_IP}
+    - RABBITMQ_HOST=${RABBITMQ_HOST}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -80,13 +86,16 @@ services:
 
   algorithm-classification-train:
 #    build: ./classification_train
-    image: socialmediamacroscope/classification_train:latest
+    image: socialmediamacroscope/classification_train:0.1.1
     depends_on:
     - rabbitmq
     - minio
     command: python ./rabbitmq_handler.py
     environment:
+    - MINIO_URL=${MINIO_URL}
+    - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
     - HOST_IP=${HOST_IP}
+    - RABBITMQ_HOST=${RABBITMQ_HOST}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -95,13 +104,16 @@ services:
 
   algorithm-histogram:
 #    build: ./histogram
-    image: socialmediamacroscope/histogram:latest
+    image: socialmediamacroscope/histogram:0.1.1
     depends_on:
     - rabbitmq
     - minio
     command: python ./rabbitmq_handler.py
     environment:
+    - MINIO_URL=${MINIO_URL}
+    - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
     - HOST_IP=${HOST_IP}
+    - RABBITMQ_HOST=${RABBITMQ_HOST}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -110,13 +122,16 @@ services:
 
   algorithm-network-analysis:
 #    build: ./network_analysis
-    image: socialmediamacroscope/network_analysis:latest
+    image: socialmediamacroscope/network_analysis:0.1.1
     depends_on:
     - rabbitmq
     - minio
     command: python ./rabbitmq_handler.py
     environment:
+    - MINIO_URL=${MINIO_URL}
+    - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
     - HOST_IP=${HOST_IP}
+    - RABBITMQ_HOST=${RABBITMQ_HOST}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -129,13 +144,16 @@ services:
 
   algorithm-preprocessing:
 #    build: ./preprocessing
-    image: socialmediamacroscope/preprocessing:latest
+    image: socialmediamacroscope/preprocessing:0.1.1
     depends_on:
     - rabbitmq
     - minio
     command: python ./rabbitmq_handler.py
     environment:
+    - MINIO_URL=${MINIO_URL}
+    - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
     - HOST_IP=${HOST_IP}
+    - RABBITMQ_HOST=${RABBITMQ_HOST}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -148,13 +166,16 @@ services:
 
   algorithm-sentiment-analysis:
 #    build: ./sentiment_analysis
-    image: socialmediamacroscope/sentiment_analysis:latest
+    image: socialmediamacroscope/sentiment_analysis:0.1.3
     depends_on:
     - rabbitmq
     - minio
     command: python ./rabbitmq_handler.py
     environment:
+    - MINIO_URL=${MINIO_URL}
+    - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
     - HOST_IP=${HOST_IP}
+    - RABBITMQ_HOST=${RABBITMQ_HOST}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -167,13 +188,16 @@ services:
 
   algorithm-screen-name-prompt:
 #    build: ./screen_name_prompt
-    image: socialmediamacroscope/screen_name_prompt:latest
+    image: socialmediamacroscope/screen_name_prompt:0.1.1
     depends_on:
     - rabbitmq
     - minio
     command: python ./screen_name_prompt.py
     environment:
+    - MINIO_URL=${MINIO_URL}
+    - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
     - HOST_IP=${HOST_IP}
+    - RABBITMQ_HOST=${RABBITMQ_HOST}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -182,13 +206,16 @@ services:
 
   algorithm-topic-modeling:
 #    build: ./topic_modeling
-    image: socialmediamacroscope/topic_modeling:latest
+    image: socialmediamacroscope/topic_modeling:0.1.1
     depends_on:
     - rabbitmq
     - minio
     command: python ./rabbitmq_handler.py
     environment:
+    - MINIO_URL=${MINIO_URL}
+    - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
     - HOST_IP=${HOST_IP}
+    - RABBITMQ_HOST=${RABBITMQ_HOST}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -201,13 +228,16 @@ services:
 
   algorithm-name-entity-recognition:
 #    build: ./name_entity_recognition
-    image: socialmediamacroscope/name_entity_recognition:latest
+    image: socialmediamacroscope/name_entity_recognition:0.1.0
     depends_on:
     - rabbitmq
     - minio
     command: python3 ./rabbitmq_handler.py
     environment:
+    - MINIO_URL=${MINIO_URL}
+    - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
     - HOST_IP=${HOST_IP}
+    - RABBITMQ_HOST=${RABBITMQ_HOST}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -220,13 +250,16 @@ services:
 
   algorithm-autophrase:
 #    build: ./autophrase
-    image: socialmediamacroscope/autophrase:latest
+    image: socialmediamacroscope/autophrase:0.1.2
     depends_on:
     - rabbitmq
     - minio
     command: python3 ./rabbitmq_handler.py
     environment:
+    - MINIO_URL=${MINIO_URL}
+    - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
     - HOST_IP=${HOST_IP}
+    - RABBITMQ_HOST=${RABBITMQ_HOST}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -239,13 +272,16 @@ services:
 
   image-crawler:
 #    build: ./image_crawler
-    image: socialmediamacroscope/image_crawler:latest
+    image: socialmediamacroscope/image_crawler:0.1.1
     depends_on:
     - rabbitmq
     - minio
     command: python3 ./rabbitmq_handler.py
     environment:
+    - MINIO_URL=${MINIO_URL}
+    - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
     - HOST_IP=${HOST_IP}
+    - RABBITMQ_HOST=${RABBITMQ_HOST}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
     - BUCKET_NAME=${BUCKET_NAME}
@@ -258,13 +294,16 @@ services:
 
   collect-reddit-comment:
 #    build: ./collect_reddit_comment
-    image: socialmediamacroscope/collect_reddit_comment:latest
+    image: socialmediamacroscope/collect_reddit_comment:0.1.1
     depends_on:
     - rabbitmq
     - minio
     command: python3 ./rabbitmq_handler.py
     environment:
+    - MINIO_URL=${MINIO_URL}
+    - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
     - HOST_IP=${HOST_IP}
+    - RABBITMQ_HOST=${RABBITMQ_HOST}
     - REDDIT_CLIENT_ID=${REDDIT_CLIENT_ID}
     - REDDIT_CLIENT_SECRET=${REDDIT_CLIENT_SECRET}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
@@ -279,7 +318,7 @@ services:
 
   smile-server:
 #    build: /Users/cwang138/Documents/Macroscope/SMILE/www
-    image: socialmediamacroscope/smile_server:latest
+    image: socialmediamacroscope/smile_server:0.2.4
     depends_on:
     - rabbitmq
     - minio
@@ -303,7 +342,11 @@ services:
     - HOME=${HOME}
     - DOCKERIZED=${DOCKERIZED}
     - LOCAL_ALGORITHM=${LOCAL_ALGORITHM}
+    - MINIO_URL=${MINIO_URL}
     - HOST_IP=${HOST_IP}
+    - REDIS_URL=${REDIS_URL}
+    - SMILE_GRAPHQL_URL=${SMILE_GRAPHQL_URL}
+    - RABBITMQ_URL=${RABBITMQ_URL}
     - BUCKET_NAME=${BUCKET_NAME}
     - AWS_ACCESSKEY=${AWS_ACCESSKEY}
     - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
@@ -333,7 +376,7 @@ services:
 
   smile-graphql:
 #    build: /Users/cwang138/Documents/Macroscope/SMILE/www/graphql
-    image: socialmediamacroscope/smile_graphql:latest
+    image: socialmediamacroscope/smile_graphql:0.1.0
     depends_on:
     - smile-server
     ports:

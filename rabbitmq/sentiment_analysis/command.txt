@@ -1,3 +1,19 @@
 # command to build and run this container
 docker build -t socialmediamacroscope/sentiment_analysis:latest .
 docker build -f extractor.dockerfile -t socialmediamacroscope/sentiment_analysis_extractor:latest .
+
+
+# command to build and run this container
+docker build -t socialmediamacroscope/sentiment_analysis:{version_number} .
+docker build -f extractor.dockerfile -t socialmediamacroscope/sentiment_analysis_extractor:{version_number} .
+
+
+# tag as latest
+docker tag socialmediamacroscope/sentiment_analysis:{version_number} socialmediamacroscope/sentiment_analysis:latest
+docker tag socialmediamacroscope/sentiment_analysis_extractor:{version_number} socialmediamacroscope/sentiment_analysis_extractor:latest
+
+# push
+docker push socialmediamacroscope/sentiment_analysis:{version_number}
+docker push socialmediamacroscope/sentiment_analysis_extractor:{version_number}
+docker push socialmediamacroscope/sentiment_analysis:latest
+docker push socialmediamacroscope/sentiment_analysis_extractor:latest
