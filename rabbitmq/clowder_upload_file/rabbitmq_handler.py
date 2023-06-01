@@ -1,32 +1,29 @@
 import json
 import os
 import traceback
-from urllib.parse import urlparse
 
 import pika
 import requests
 import writeToS3 as s3
 
+RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq')
+
 
 def get_config_json(config_url):
     # download config data to json
-    # parse url to extract filename, localPath, and awsPath
-    path = urlparse(config_url).path.split('/')
-    filename = path[-1]
-    localPath = os.path.join('/tmp', path[2])
-    if not os.path.exists(localPath):
-        os.makedirs(localPath)
-    awsPath = '/'.join(path[2:-1])
     try:
-        s3.downloadToDisk(filename, localPath, awsPath)
+        localPath, filename = s3.downloadUrlToDisk(config_url)
     except:
-        raise ValueError('Cannot find file:' + os.path.join(localPath, filename) + ' in the remote storage!')
+        raise ValueError('Cannot find file in the remote storage!')
 
     with open(os.path.join(localPath, filename), 'r') as f:
         return json.load(f)
 
 
 def rabbitmq_handler(ch, method, properties, body):
+
+    clowder_base_url = os.getenv('CLOWDER_BASE_URL', 'https://clowder.smm.ncsa.illinois.edu/')
+
     try:
         # basic fields
         event = json.loads(body)
@@ -37,22 +34,15 @@ def rabbitmq_handler(ch, method, properties, body):
         config_json = get_config_json(config_url)
 
         # upload files
-        file_ids = []
+        file_urls = []
         for file in event['payload']['files']:
-            # parse url to extract filename, localPath, and awsPath
-            path = urlparse(file['url']).path.split('/')
-            filename = path[-1]
-            localPath = os.path.join('/tmp', path[2])
-            if not os.path.exists(localPath):
-                os.makedirs(localPath)
-            awsPath = '/'.join(path[2:-1])
             try:
-                s3.downloadToDisk(filename, localPath, awsPath)
+                localPath, filename = s3.downloadUrlToDisk(file['url'])
             except:
-                raise ValueError('Cannot find file:' + os.path.join(localPath, filename) + ' in the remote storage!')
+                raise ValueError('Cannot find file: in the remote storage!')
 
             r = requests.post(
-                'https://socialmediamacroscope.ncsa.illinois.edu/clowder/api/uploadToDataset/' + dataset_id +
+                clowder_base_url + 'api/uploadToDataset/' + dataset_id +
                 '?extract=true',
                 files=[('File', open(os.path.join(localPath, filename), 'rb'))],
                 auth=auth)
@@ -61,11 +51,10 @@ def rabbitmq_handler(ch, method, properties, body):
                 raise ValueError("cannot upload these files to dataset: " +
                                  dataset_id + ". error:" + r.text)
             else:
-                file_ids.append(r.json()['id'])
+                file_urls.append(clowder_base_url + "files/" + r.json()['id'])
 
             # add config file to metadata (default)
-            config_metadata_r = requests.post('https://socialmediamacroscope.ncsa.illinois.edu' +
-                                              '/clowder/api/files/' + r.json()['id'] + '/metadata',
+            config_metadata_r = requests.post(clowder_base_url + 'api/files/' + r.json()['id'] + '/metadata',
                                               data=json.dumps(config_json),
                                               headers={"Content-Type": "application/json"},
                                               auth=auth)
@@ -76,8 +65,7 @@ def rabbitmq_handler(ch, method, properties, body):
             # add tags
             if 'tags' in file.keys():
                 tag_payload = json.dumps({'tags': file['tags']})
-                tag_r = requests.post('https://socialmediamacroscope.ncsa.illinois.edu/' +
-                                      'clowder/api/files/' + r.json()['id'] + '/tags',
+                tag_r = requests.post(clowder_base_url + 'api/files/' + r.json()['id'] + '/tags',
                                       data=tag_payload,
                                       headers={"Content-Type": "application/json"},
                                       auth=auth)
@@ -87,8 +75,7 @@ def rabbitmq_handler(ch, method, properties, body):
             # add metadata
             if 'metadata' in file.keys():
                 metadata_payload = json.dumps(file['metadata'])
-                metadata_r = requests.post('https://socialmediamacroscope.ncsa.illinois.edu' +
-                                           '/clowder/api/files/' + r.json()['id'] + '/metadata',
+                metadata_r = requests.post(clowder_base_url + 'api/files/' + r.json()['id'] + '/metadata',
                                            data=metadata_payload,
                                            headers={"Content-Type": "application/json"},
                                            auth=auth)
@@ -99,8 +86,7 @@ def rabbitmq_handler(ch, method, properties, body):
             # add description
             if 'descriptions' in file.keys():
                 description_payload = json.dumps({'description': file['descriptions']})
-                description_r = requests.put('https://socialmediamacroscope.ncsa.illinois.edu/clowder' +
-                                             '/api/files/' + r.json()['id'] + '/updateDescription',
+                description_r = requests.put(clowder_base_url + 'api/files/' + r.json()['id'] + '/updateDescription',
                                              data=description_payload,
                                              headers={"Content-Type": "application/json"},
                                              auth=auth)
@@ -109,7 +95,7 @@ def rabbitmq_handler(ch, method, properties, body):
                         'cannot add descriptions to this file: ' + r.json()['id'] + ". error: " + description_r.text)
 
         resp = {'info': 'You have successfully uploaded all the files to your specified dataset!',
-                'ids': file_ids}
+                'ids': file_urls}
 
     except BaseException as e:
         resp = {
@@ -130,7 +116,7 @@ def rabbitmq_handler(ch, method, properties, body):
 
 
 if __name__ == '__main__':
-    connection = pika.BlockingConnection(pika.ConnectionParameters(port=5672, host="rabbitmq"))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(port=5672, host=RABBITMQ_HOST))
     channel = connection.channel()
 
     # pass the queue name in environment variable

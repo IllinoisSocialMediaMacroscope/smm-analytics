@@ -5,8 +5,13 @@ import traceback
 import pika
 import requests
 
+RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq')
+
 
 def rabbitmq_handler(ch, method, properties, body):
+
+    clowder_base_url = os.getenv('CLOWDER_BASE_URL', 'https://clowder.smm.ncsa.illinois.edu/')
+
     try:
         # basic fields
         event = json.loads(body)
@@ -22,7 +27,7 @@ def rabbitmq_handler(ch, method, properties, body):
         if 'space' in event['payload'].keys():
             data['space'] = event['payload']['space']
 
-        r = requests.post('https://socialmediamacroscope.ncsa.illinois.edu/clowder/api/collections',
+        r = requests.post(clowder_base_url + 'api/collections',
                           data=json.dumps(data),
                           headers=headers,
                           auth=auth)
@@ -50,7 +55,7 @@ def rabbitmq_handler(ch, method, properties, body):
 
 
 if __name__ == '__main__':
-    connection = pika.BlockingConnection(pika.ConnectionParameters(port=5672, host="rabbitmq"))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(port=5672, host=RABBITMQ_HOST))
     channel = connection.channel()
 
     # pass the queue name in environment variable

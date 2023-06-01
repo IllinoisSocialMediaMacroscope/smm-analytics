@@ -305,7 +305,7 @@ services:
 
   smile-server:
 #    build: /Users/cwang138/Documents/Macroscope/SMILE/www
-    image: socialmediamacroscope/smile_server:0.2.4
+    image: socialmediamacroscope/smile_server:0.2.5
     depends_on:
     - rabbitmq
     - minio
@@ -321,7 +321,11 @@ services:
     - algorithm-name-entity-recognition
     - algorithm-topic-modeling
     - algorithm-screen-name-prompt
-    - image-crawler
+    - clowder-create-collection
+    - clowder-create-dataset
+    - clowder-create-space
+    - clowder-list
+    - clowder-upload-file
     ports:
     - "8001:8001"
     command: npm run docker-start
@@ -372,6 +376,66 @@ services:
     - DOCKERIZED=${DOCKERIZED}
     - TWITTER_CONSUMER_KEY=${TWITTER_CONSUMER_KEY}
     - TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
+    restart: unless-stopped
+
+  clowder-list:
+    image: socialmediamacroscope/clowder_list:0.1.0
+    depends_on:
+      - rabbitmq
+    command: python3 ./rabbitmq_handler.py
+    environment:
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - CLOWDER_BASE_URL=${CLOWDER_BASE_URL}
+      - CLOWDER_GLOBAL_KEY=${CLOWDER_GLOBAL_KEY}
+      - QUEUE_NAME=lambda_list_clowder
+    restart: unless-stopped
+
+  clowder-create-space:
+    image: socialmediamacroscope/clowder_create_space:0.1.0
+    depends_on:
+      - rabbitmq
+    command: python3 ./rabbitmq_handler.py
+    environment:
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - CLOWDER_BASE_URL=${CLOWDER_BASE_URL}
+      - QUEUE_NAME=clowder_create_space
+    restart: unless-stopped
+
+  clowder-create-dataset:
+    image: socialmediamacroscope/clowder_create_dataset:0.1.0
+    depends_on:
+      - rabbitmq
+    command: python3 ./rabbitmq_handler.py
+    environment:
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - CLOWDER_BASE_URL=${CLOWDER_BASE_URL}
+      - QUEUE_NAME=lambda_invoke_clowder
+    restart: unless-stopped
+
+  clowder-create-collection:
+    image: socialmediamacroscope/clowder_create_collection:0.1.0
+    depends_on:
+      - rabbitmq
+    command: python3 ./rabbitmq_handler.py
+    environment:
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - CLOWDER_BASE_URL=${CLOWDER_BASE_URL}
+      - QUEUE_NAME=clowder_create_collection
+    restart: unless-stopped
+
+  clowder-upload-file:
+    image: socialmediamacroscope/clowder_upload_file:0.1.2
+    depends_on:
+      - rabbitmq
+    command: python3 ./rabbitmq_handler.py
+    environment:
+      - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
+      - AWS_ACCESSKEY=${AWS_ACCESSKEY}
+      - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
+      - BUCKET_NAME=${BUCKET_NAME}
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - CLOWDER_BASE_URL=${CLOWDER_BASE_URL}
+      - QUEUE_NAME=lambda_upload_clowder
     restart: unless-stopped
 
 volumes:

@@ -5,8 +5,13 @@ import traceback
 import pika
 import requests
 
+RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq')
+
 
 def rabbitmq_handler(ch, method, properties, body):
+
+    clowder_base_url = os.getenv('CLOWDER_BASE_URL', 'https://clowder.smm.ncsa.illinois.edu/')
+
     try:
         # basic fields
         event = json.loads(body)
@@ -24,7 +29,7 @@ def rabbitmq_handler(ch, method, properties, body):
         if 'descriptions' in event['payload'].keys():
             data['description'] = event['payload']['descriptions']
 
-        r = requests.post('https://socialmediamacroscope.ncsa.illinois.edu/clowder/api/datasets/createempty',
+        r = requests.post(clowder_base_url + 'api/datasets/createempty',
                           data=json.dumps(data),
                           headers=headers,
                           auth=auth)
@@ -39,7 +44,7 @@ def rabbitmq_handler(ch, method, properties, body):
             if 'metadata' in event['payload'].keys():
                 metadata = event['payload']['metadata']
                 r = requests.post(
-                    'https://socialmediamacroscope.ncsa.illinois.edu/clowder/api/datasets/' + dataset_id + '/metadata',
+                    clowder_base_url + 'api/datasets/' + dataset_id + '/metadata',
                     data=json.dumps(metadata),
                     headers=headers,
                     auth=auth)
@@ -51,7 +56,7 @@ def rabbitmq_handler(ch, method, properties, body):
             if 'tags' in event['payload'].keys():
                 tags = {'tags': event['payload']['tags']}
                 r = requests.post(
-                    'https://socialmediamacroscope.ncsa.illinois.edu/clowder/api/datasets/' + dataset_id + '/tags',
+                    clowder_base_url + 'api/datasets/' + dataset_id + '/tags',
                     data=json.dumps(tags),
                     headers=headers,
                     auth=auth)
@@ -78,7 +83,7 @@ def rabbitmq_handler(ch, method, properties, body):
 
 
 if __name__ == '__main__':
-    connection = pika.BlockingConnection(pika.ConnectionParameters(port=5672, host="rabbitmq"))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(port=5672, host=RABBITMQ_HOST))
     channel = connection.channel()
 
     # pass the queue name in environment variable
