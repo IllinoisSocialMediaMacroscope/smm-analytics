@@ -16,7 +16,8 @@ RUN apt-get update \
 && pip3 install -r requirement.txt \
 # download glove data
 && cd ./data && wget http://nlp.stanford.edu/data/glove.twitter.27B.zip && unzip glove.twitter.27B.zip \
-# cron job clean tmp folder
+# cron job clean tmp folder \
+&& cd ../ \
 && chmod u+x ./clear_cache.sh \
 && chmod 0644 ./clear_cache_cron \
 && crontab ./clear_cache_cron

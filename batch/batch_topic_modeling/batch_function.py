@@ -26,11 +26,11 @@ if __name__ == '__main__':
 
     params = vars(parser.parse_args())
 
-    if 'HOST_IP' in params.keys():
-        HOST_IP = params['HOST_IP']
-        params.pop('HOST_IP', None)
+    if 'MINIO_URL' in params.keys():
+        MINIO_URL = params['MINIO_URL']
+        params.pop('MINIO_URL', None)
     else:
-        HOST_IP = None
+        MINIO_URL = None
 
     if 'AWS_ACCESSKEY' in params.keys():
         AWS_ACCESSKEY = params['AWS_ACCESSKEY']
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     else:
         BUCKET_NAME = None
 
-    d = Dataset(HOST_IP, AWS_ACCESSKEY, AWS_ACCESSKEYSECRET, BUCKET_NAME)
+    d = Dataset(MINIO_URL, AWS_ACCESSKEY, AWS_ACCESSKEYSECRET, BUCKET_NAME)
 
     # arranging the paths
     path = d.organize_path_lambda(params)

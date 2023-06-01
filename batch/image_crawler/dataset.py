@@ -6,8 +6,8 @@ from writeToS3 import WriteToS3
 
 class Dataset:
 
-    def __init__(self, HOST_IP=None, AWS_ACCESSKEY=None, AWS_ACCESSKEYSECRET=None, BUCKET_NAME=None):
-        self.s3 = WriteToS3(HOST_IP, AWS_ACCESSKEY, AWS_ACCESSKEYSECRET, BUCKET_NAME)
+    def __init__(self, MINIO_URL=None, AWS_ACCESSKEY=None, AWS_ACCESSKEYSECRET=None, BUCKET_NAME=None):
+        self.s3 = WriteToS3(MINIO_URL, AWS_ACCESSKEY, AWS_ACCESSKEYSECRET, BUCKET_NAME)
 
     def organize_path_lambda(self, event):
         """

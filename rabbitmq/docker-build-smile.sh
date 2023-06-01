@@ -12,65 +12,66 @@ docker_repo=socialmediamacroscope
 # set build and push option
 build=false
 push=false
+cleanup=false
 
 # set components selection
-autophrase=false
+autophrase=true
 biometer_check_bot=false
 bulk_comparison=false
 check_screen_name=false
-classification_predict=false
-classification_split=false
-classification_train=false
+classification_predict=true
+classification_split=true
+classification_train=true
 clowder_create_collection=false
 clowder_create_dataset=false
 clowder_create_space=false
 clowder_list=false
 clowder_upload_file=false
-collect_reddit_comment=false
+collect_reddit_comment=true
 collect_timeline=false
 crimson_hexagon_monitors=false
 get_personality=false
 get_sim_score=false
-histogram=false
-image_crawler=false
-name_entity_recognition=false
-network_analysis=false
+histogram=true
+image_crawler=true
+name_entity_recognition=true
+network_analysis=true
 nginx=false
 nginx_wo_ssl=false
-preprocessing=false
-screen_name_prompt=false
-sentiment_analysis=false
-topic_modeling=false
+preprocessing=true
+screen_name_prompt=true
+sentiment_analysis=true
+topic_modeling=true
 utku_brand_personality=false
 
 # set version numbers
-autophrase_version=1.0.0
+autophrase_version=0.1.3
 biometer_check_bot_version=1.0.0
 bulk_comparison_version=1.0.0
 check_screen_name_version=1.0.0
-classification_predict_version=1.0.0
-classification_split_version=1.0.0
-classification_train_version=1.0.0
+classification_predict_version=0.1.2
+classification_split_version=0.1.2
+classification_train_version=0.1.2
 clowder_create_collection_version=1.0.0
 clowder_create_dataset_version=1.0.0
 clowder_create_space_version=1.0.0
 clowder_list_version=1.0.0
 clowder_upload_file_version=1.0.0
-collect_reddit_comment_version=1.0.0
+collect_reddit_comment_version=0.1.2
 collect_timeline_version=1.0.0
 crimson_hexagon_monitors_version=1.0.0
 get_personality_version=1.0.0
 get_sim_score_version=1.0.0
-histogram_version=1.0.0
-image_crawler_version=1.0.0
-name_entity_recognition_version=1.0.0
-network_analysis_version=1.0.0
+histogram_version=0.1.1
+image_crawler_version=0.1.2
+name_entity_recognition_version=0.1.1
+network_analysis_version=0.1.2
 nginx_version_version=1.0.0
 nginx_wo_ssl_version=1.0.0
-preprocessing_version=1.0.0
-screen_name_prompt_version=1.0.0
-sentiment_analysis_version=1.0.0
-topic_modeling_version=1.0.0
+preprocessing_version=0.1.2
+screen_name_prompt_version=0.1.2
+sentiment_analysis_version=0.1.4
+topic_modeling_version=0.1.2
 utku_brand_personality_version=1.0.0
 
 function build_and_push ()
@@ -85,6 +86,10 @@ function build_and_push ()
   if [ "$push" = true ]; then
     docker push "$3"/"$1":"$2"
     docker push "$3"/"$1":latest
+  fi
+  if [ "$cleanup" = true ]; then
+    docker rmi "$3"/"$1":"$2"
+    docker rmi "$3"/"$1":latest
   fi
 }
 
@@ -106,7 +111,7 @@ if [ "$check_screen_name" = true ]; then
 fi
 
 if [ "$classification_predict" = true ]; then
-  build_and_push autoclassification_predictphrase $classification_predict_version $docker_repo
+  build_and_push autoclassification_predict $classification_predict_version $docker_repo
 fi
 
 if [ "$classification_split" = true ]; then

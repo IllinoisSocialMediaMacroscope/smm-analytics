@@ -8,7 +8,7 @@ client = boto3.client('lambda', region_name="us-west-2", aws_access_key_id = os.
 def invoke(function_name, args):
 
     # pass information so remote lambda can access local s3 minio
-    args['HOST_IP'] = os.environ['MINIO_URL']
+    args['MINIO_URL'] = os.environ['MINIO_PUBLIC_ACCESS_URL']
     args['AWS_ACCESSKEY'] = os.environ['AWS_ACCESSKEY']
     args['AWS_ACCESSKEYSECRET'] = os.environ['AWS_ACCESSKEYSECRET']
     args['BUCKET_NAME'] = os.environ['BUCKET_NAME']

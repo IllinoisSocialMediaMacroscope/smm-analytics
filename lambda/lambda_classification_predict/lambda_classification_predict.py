@@ -93,11 +93,11 @@ class Classification:
         
 
 def lambda_handler(params,context):
-    if 'HOST_IP' in params.keys():
-        HOST_IP = params['HOST_IP']
-        params.pop('HOST_IP', None)
+    if 'MINIO_URL' in params.keys():
+        MINIO_URL = params['MINIO_URL']
+        params.pop('MINIO_URL', None)
     else:
-        HOST_IP = None
+        MINIO_URL = None
 
     if 'AWS_ACCESSKEY' in params.keys():
         AWS_ACCESSKEY = params['AWS_ACCESSKEY']
@@ -117,7 +117,7 @@ def lambda_handler(params,context):
     else:
         BUCKET_NAME = None
 
-    s3 = WriteToS3(HOST_IP, AWS_ACCESSKEY, AWS_ACCESSKEYSECRET, BUCKET_NAME)
+    s3 = WriteToS3(MINIO_URL, AWS_ACCESSKEY, AWS_ACCESSKEYSECRET, BUCKET_NAME)
     output = dict()
 
     uid = params['uid']
