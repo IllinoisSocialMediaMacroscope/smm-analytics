@@ -305,7 +305,7 @@ services:
 
   smile-server:
 #    build: /Users/cwang138/Documents/Macroscope/SMILE/www
-    image: socialmediamacroscope/smile_server:0.2.5
+    image: socialmediamacroscope/smile_server:0.2.7
     depends_on:
     - rabbitmq
     - minio
@@ -334,6 +334,7 @@ services:
     - DOCKERIZED=${DOCKERIZED}
     - LOCAL_ALGORITHM=${LOCAL_ALGORITHM}
     - MINIO_URL=${MINIO_URL}
+    - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
     - REDIS_URL=${REDIS_URL}
     - SMILE_GRAPHQL_URL=${SMILE_GRAPHQL_URL}
     - RABBITMQ_URL=${RABBITMQ_URL}
