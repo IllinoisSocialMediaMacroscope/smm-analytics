@@ -1,0 +1,107 @@
+name: Docker
+
+# TODO: post an alert to incore-alerts slack channel when there is a failure on develop or main branches
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'release/*'
+
+  pull_request:
+    branches:
+      - main
+      - develop
+      - 'release/*'
+
+env:
+  MAIN_REPO: ncsa/standalone-smm-analytics
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    needs: unit_tests
+    strategy:
+      fail-fast: true
+      matrix:
+        name:
+          - autophrase
+          - classification_predict
+          - classification_split
+          - classification_train
+        include:
+          - name: autophrase
+            dockerfile: Dockerfile
+            docker_location: socialmediamacroscope/autophrase
+          - name: classification_predict
+            dockerfile: Dockerfile
+            docker_location: socialmediamacroscope/classification_predict
+          - name: classification_split
+            dockerfile: Dockerfile
+            docker_location: socialmediamacroscope/classification_split
+          - name: classification_train
+            dockerfile: Dockerfile
+            docker_location: socialmediamacroscope/classification_train
+
+    steps:
+      - name: version information and set envs
+        run: |
+          if [ "${{ github.event.release.target_commitish }}" != "" ]; then
+            BRANCH="${{ github.event.release.target_commitish }}"
+          elif [[ "${{github.event_name}}" == "pull_request" ]]; then
+            BRANCH="PR-${{github.event.pull_request.number}}"
+          else
+            if [[ $GITHUB_REF =~ "release/" ]]; then
+              BRANCH="release"
+            else
+              BRANCH=${GITHUB_REF##*/}
+            fi
+          fi
+
+          echo "GITHUB_BRANCH=${BRANCH}" >> $GITHUB_ENV
+          version=$(cat ./server/build.gradle | grep "archiveVersion" | head -1 | awk -F= "{ print $2 }" | sed "s/[archiveVersion =,',]//g")
+          if [ "$BRANCH" == "main" ]; then
+            tags="latest"
+            oldversion=""
+            while [ "${oldversion}" != "${version}" ]; do
+              oldversion="${version}"
+              tags="${tags},${version}"
+              version=${version%.*}
+            done
+            echo "VERSION=${version}" >> $GITHUB_ENV
+            echo "TAGS=${tags}" >> $GITHUB_ENV
+          elif [ "$BRANCH" == "release" ]; then
+            echo "VERSION=${version}-rc" >> $GITHUB_ENV
+            echo "TAGS=${version}-rc" >> $GITHUB_ENV
+          elif [ "$BRANCH" == "develop" ]; then
+            echo "VERSION=develop" >> $GITHUB_ENV
+            echo "TAGS=develop" >> $GITHUB_ENV
+          else
+            echo "VERSION=testing" >> $GITHUB_ENV
+            STRIPPED_TAGS=${BRANCH/\#/_}
+            echo "TAGS=${STRIPPED_TAGS}" >> $GITHUB_ENV
+          fi
+
+      - name: Build docker image
+        if: |
+          github.repository == env.MAIN_REPO &&
+          (github.event_name == 'pull_request' || env.GITHUB_BRANCH == 'develop' || env.GITHUB_BRANCH == 'main' || env.GITHUB_BRANCH == 'release')
+        uses: elgohr/Publish-Docker-Github-Action@3.04
+        with:
+          dockerfile: ${{ matrix.dockerfile }}
+          name: ${{ matrix.hub_project }}
+          no_push: true
+
+      - name: Publish docker image to Docker hub
+        if: |
+          github.repository == env.MAIN_REPO &&
+          (github.event_name == 'pull_request' || env.GITHUB_BRANCH == 'develop' || env.GITHUB_BRANCH == 'main'|| env.GITHUB_BRANCH == 'release')
+        uses: elgohr/Publish-Docker-Github-Action@3.04
+        with:
+          dockerfile: ${{ matrix.dockerfile }}
+          registry: hub.docker.com
+          name: ${{ matrix.docker_location }}
+          username: ${{ secrets.HUB_USERNAME }}
+          password: ${{ secrets.HUB_PASSWORD }}
+          tags: "${{ env.TAGS }}"
