@@ -1,53 +1,87 @@
 version: "3.3"
 
 services:
-  rabbitmq:
-    image: rabbitmq:3-management
-    ports:
-      - 5672:5672
-      - 15672:15672
 
-  minio:
-    image: minio/minio
-    hostname: minio
-    ports:
-      - 9000:9000
-      - 9001:9001
-    volumes:
-      - "smile_content_data:/tmp"
-    command: server /tmp
-    environment:
-      - MINIO_ACCESS_KEY=${AWS_ACCESSKEY}
-      - MINIO_SECRET_KEY=${AWS_ACCESSKEYSECRET}
+  traefik:
+    image: traefik:v2.9
+    container_name: traefik
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.redis.address=:6379
+      - --certificatesresolvers.myresolver.acme.tlschallenge=true
+      - --certificatesresolvers.myresolver.acme.email=${ADMIN_USER_ID:-""}
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
     restart: unless-stopped
-
-  redis:
-    image: redis
-    hostname: redis
-    ports:
-      - 6379:6379
-    restart: unless-stopped
-
-  nginx:
-    build: ./nginx
-    volumes:
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
     ports:
       - 80:80
       - 443:443
-    depends_on:
-      - smile-server
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-    restart: unless-stopped
-
-  certbot:
-    image: certbot/certbot
+      - 6379:6379
     volumes:
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+      - ${DATA:-~/docker_data}/letsencrypt:/letsencrypt
+      - ${DATA:-~/docker_data}/dynamic:/etc/traefik/dynamic
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.traefik_https.rule= Host(`traefik.${SERVER}`)
+      - traefik.http.routers.traefik_https.entrypoints=websecure
+      - traefik.http.routers.traefik_https.tls=true
+      - traefik.http.routers.traefik_https.tls.certResolver=myresolver
+      - traefik.http.routers.traefik_https.service=api@internal
+      - traefik.http.middlewares.subnet-only-whitelist.ipwhitelist.sourcerange=141.142.0.0/16, 141.142.0.0/32
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
     restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.rabbitmq.rule=Host(`rabbitmq.${SERVER}`) && PathPrefix(`/`)
+      - traefik.http.routers.rabbitmq.entrypoints=websecure
+      - traefik.http.routers.rabbitmq.service=rabbitmq
+      - traefik.http.services.rabbitmq.loadbalancer.server.port=15672
+      - traefik.http.routers.rabbitmq.tls.certresolver=myresolver
+
+  minio:
+    image: docker.io/bitnami/minio:2023.1.31-debian-11-r0
+    container_name: minio
+    hostname: minio
+    volumes:
+      - "smile_content_data:/tmp"
+    environment:
+      - MINIO_ROOT_USER=${AWS_ACCESSKEY}
+      - MINIO_ROOT_PASSWORD=${AWS_ACCESSKEYSECRET}
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.minio.rule=Host(`minio.${SERVER}`) && PathPrefix(`/`)
+      - traefik.http.routers.minio.entrypoints=websecure
+      - traefik.http.routers.minio.service=minio
+      - traefik.http.services.minio.loadbalancer.server.port=9001
+      - traefik.http.routers.minio.tls.certresolver=myresolver
+      - traefik.http.routers.minio-api.rule=Host(`minio-api.${SERVER}`) && PathPrefix(`/`)
+      - traefik.http.routers.minio-api.entrypoints=websecure
+      - traefik.http.routers.minio-api.service=minio-api
+      - traefik.http.services.minio-api.loadbalancer.server.port=9000
+      - traefik.http.routers.minio-api.tls.certresolver=myresolver
+
+  redis:
+    image: redis
+    container_name: redis
+    hostname: redis
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.tcp.routers.redis.rule=HostSNI(`redis.${SERVER}`)
+      - traefik.tcp.http.routers.redis.entrypoints=redis
+      - traefik.tcp.http.routers.redis.service=redis
+      - traefik.tcp.http.services.redis.loadbalancer.server.port=6379
+      - traefik.tcp.http.routers.redis.tls.certresolver=myresolver
 
   algorithm-classification-predict:
     image: socialmediamacroscope/classification_predict:0.1.2
@@ -56,14 +90,14 @@ services:
       - minio
     command: python ./rabbitmq_handler.py
     environment:
-            #- MINIO_URL=${MINIO_URL}
+      #- MINIO_URL=${MINIO_URL}
       - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
       - RABBITMQ_HOST=${RABBITMQ_HOST}
       - AWS_ACCESSKEY=${AWS_ACCESSKEY}
       - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
       - BUCKET_NAME=${BUCKET_NAME}
       - QUEUE_NAME=classification_predict
-    restart: unless-stopped    
+    restart: unless-stopped
 
   algorithm-classification-split:
     image: socialmediamacroscope/classification_split:0.1.2
@@ -88,7 +122,7 @@ services:
       - minio
     command: python ./rabbitmq_handler.py
     environment:
-            #- MINIO_URL=${MINIO_URL}
+      #- MINIO_URL=${MINIO_URL}
       - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
       - RABBITMQ_HOST=${RABBITMQ_HOST}
       - AWS_ACCESSKEY=${AWS_ACCESSKEY}
@@ -120,7 +154,7 @@ services:
       - minio
     command: python ./rabbitmq_handler.py
     environment:
-            #- MINIO_URL=${MINIO_URL}
+      #- MINIO_URL=${MINIO_URL}
       - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
       - RABBITMQ_HOST=${RABBITMQ_HOST}
       - AWS_ACCESSKEY=${AWS_ACCESSKEY}
@@ -140,7 +174,7 @@ services:
       - minio
     command: python ./rabbitmq_handler.py
     environment:
-            #- MINIO_URL=${MINIO_URL}
+      #- MINIO_URL=${MINIO_URL}
       - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
       - RABBITMQ_HOST=${RABBITMQ_HOST}
       - AWS_ACCESSKEY=${AWS_ACCESSKEY}
@@ -180,7 +214,7 @@ services:
       - minio
     command: python ./screen_name_prompt.py
     environment:
-            #- MINIO_URL=${MINIO_URL}
+      #- MINIO_URL=${MINIO_URL}
       - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
       - RABBITMQ_HOST=${RABBITMQ_HOST}
       - AWS_ACCESSKEY=${AWS_ACCESSKEY}
@@ -196,7 +230,7 @@ services:
       - minio
     command: python ./rabbitmq_handler.py
     environment:
-            #- MINIO_URL=${MINIO_URL}
+      #- MINIO_URL=${MINIO_URL}
       - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
       - RABBITMQ_HOST=${RABBITMQ_HOST}
       - AWS_ACCESSKEY=${AWS_ACCESSKEY}
@@ -216,7 +250,7 @@ services:
       - minio
     command: python3 ./rabbitmq_handler.py
     environment:
-            #- MINIO_URL=${MINIO_URL}
+      #- MINIO_URL=${MINIO_URL}
       - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
       - RABBITMQ_HOST=${RABBITMQ_HOST}
       - AWS_ACCESSKEY=${AWS_ACCESSKEY}
@@ -236,7 +270,7 @@ services:
       - minio
     command: python3 ./rabbitmq_handler.py
     environment:
-            #- MINIO_URL=${MINIO_URL}
+      #- MINIO_URL=${MINIO_URL}
       - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
       - RABBITMQ_HOST=${RABBITMQ_HOST}
       - AWS_ACCESSKEY=${AWS_ACCESSKEY}
@@ -256,7 +290,7 @@ services:
       - minio
     command: python3 ./rabbitmq_handler.py
     environment:
-            #- MINIO_URL=${MINIO_URL}
+      #- MINIO_URL=${MINIO_URL}
       - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
       - RABBITMQ_HOST=${RABBITMQ_HOST}
       - AWS_ACCESSKEY=${AWS_ACCESSKEY}
@@ -276,7 +310,7 @@ services:
       - minio
     command: python3 ./rabbitmq_handler.py
     environment:
-            #- MINIO_URL=${MINIO_URL}
+      #- MINIO_URL=${MINIO_URL}
       - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
       - RABBITMQ_HOST=${RABBITMQ_HOST}
       - REDDIT_CLIENT_ID=${REDDIT_CLIENT_ID}
@@ -292,7 +326,8 @@ services:
     restart: unless-stopped
 
   smile-server:
-    image: socialmediamacroscope/smile_server:0.2.7
+    image: socialmediamacroscope/smile_server:twitter-v2
+    container_name: smile_server
     depends_on:
       - rabbitmq
       - minio
@@ -308,62 +343,76 @@ services:
       - algorithm-name-entity-recognition
       - algorithm-topic-modeling
       - algorithm-screen-name-prompt
-        #- clowder-create-collection
-        #- clowder-create-dataset
-        #- clowder-create-space
-        #- clowder-list
-        #- clowder-upload-file
-    ports:
-    - 8001:8001
+#      - clowder-create-collection
+#      - clowder-create-dataset
+#      - clowder-create-space
+#      - clowder-list
+#      - clowder-upload-file
     command: npm run docker-start
     environment:
-    - HOME=${HOME}
-    - DOCKERIZED=${DOCKERIZED}
-    - LOCAL_ALGORITHM=${LOCAL_ALGORITHM}
-    - MINIO_URL=${MINIO_URL}
-    - MINIO_PUBLIC_ACCESS_URL=${MINIO_PUBLIC_ACCESS_URL}
-    - REDIS_URL=${REDIS_URL}
-    - SMILE_GRAPHQL_URL=${SMILE_GRAPHQL_URL}
-    - RABBITMQ_URL=${RABBITMQ_URL}
-    - BUCKET_NAME=${BUCKET_NAME}
-    - AWS_ACCESSKEY=${AWS_ACCESSKEY}
-    - AWS_ACCESSKEYSECRET=${AWS_ACCESSKEYSECRET}
-    - TWITTER_CONSUMER_KEY=${TWITTER_CONSUMER_KEY}
-    - TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
-    - REDDIT_CLIENT_ID=${REDDIT_CLIENT_ID}
-    - REDDIT_CLIENT_SECRET=${REDDIT_CLIENT_SECRET}
-    - REDDIT_CALLBACK_URL=${REDDIT_CALLBACK_URL}
-    - BOX_CLIENT_ID=${BOX_CLIENT_ID}
-    - BOX_CLIENT_SECRET=${BOX_CLIENT_SECRET}
-    - DROPBOX_CLIENT_ID=${DROPBOX_CLIENT_ID}
-    - DROPBOX_CLIENT_SECRET=${DROPBOX_CLIENT_SECRET}
-    - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-    - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-    - EMAIL_HOST=${EMAIL_HOST}
-    - EMAIL_PORT=${EMAIL_PORT}
-    - EMAIL_FROM_ADDRESS=${EMAIL_FROM_ADDRESS}
-    - EMAIL_PASSWORD=${EMAIL_PASSWORD}
-    - SINGLE_USER=${SINGLE_USER}
-    - CILOGON_CLIENT_ID=${CILOGON_CLIENT_ID}
-    - CILOGON_CLIENT_SECRET=${CILOGON_CLIENT_SECRET}
-    - CILOGON_CALLBACK_URL=${CILOGON_CALLBACK_URL}
+      - HOME=${HOME}
+      - DOCKERIZED=${DOCKERIZED}
+      - LOCAL_ALGORITHM=${LOCAL_ALGORITHM}
+      - MINIO_URL=${MINIO_URL}
+      - MINIO_PUBLIC_ACCESS_URL=${MINIO_URL}
+      - REDIS_URL=${REDIS_URL}
+      - SMILE_GRAPHQL_URL=${SMILE_GRAPHQL_URL}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - BUCKET_NAME=${BUCKET_NAME}
+      - AWS_ACCESSKEY=${MINIO_ROOT_USER}
+      - AWS_ACCESSKEYSECRET=${MINIO_ROOT_PASSWORD}
+      - TWITTER_CONSUMER_KEY=${TWITTER_CONSUMER_KEY}
+      - TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
+      - TWITTER_V2_CLIENT_ID=${TWITTER_V2_CLIENT_ID}
+      - TWITTER_V2_CLIENT_SECRET=${TWITTER_V2_CLIENT_SECRET}
+      - TWITTER_V2_CALLBACK_URL=${TWITTER_V2_CALLBACK_URL}
+      - REDDIT_CLIENT_ID=${REDDIT_CLIENT_ID}
+      - REDDIT_CLIENT_SECRET=${REDDIT_CLIENT_SECRET}
+      - REDDIT_CALLBACK_URL=${REDDIT_CALLBACK_URL}
+      - BOX_CLIENT_ID=${BOX_CLIENT_ID}
+      - BOX_CLIENT_SECRET=${BOX_CLIENT_SECRET}
+      - DROPBOX_CLIENT_ID=${DROPBOX_CLIENT_ID}
+      - DROPBOX_CLIENT_SECRET=${DROPBOX_CLIENT_SECRET}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_FROM_ADDRESS=${EMAIL_FROM_ADDRESS}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - SINGLE_USER=${SINGLE_USER}
+      - CILOGON_CLIENT_ID=${CILOGON_CLIENT_ID}
+      - CILOGON_CLIENT_SECRET=${CILOGON_CLIENT_SECRET}
+      - CILOGON_CALLBACK_URL=${CILOGON_CALLBACK_URL}
     volumes:
-    - "smile_content_data:/tmp"
-    - "smile_tag:${HOME}/smile"
+      - "smile_content_data:/tmp"
+      - "smile_tag:${HOME}/smile"
     restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.smile-server.rule=Host(`${SERVER}`)
+      - traefik.http.routers.smile-server.entrypoints=websecure
+      - traefik.http.routers.smile-server.service=smile-server
+      - traefik.http.services.smile-server.loadbalancer.server.port=8001
+      - traefik.http.routers.smile-server.tls.certresolver=myresolver
 
   smile-graphql:
-    image: socialmediamacroscope/smile_graphql:0.2.7
+    image: socialmediamacroscope/smile_graphql:twitter-v2
+    container_name: graphql
     depends_on:
-    - smile-server
-    ports:
-    - 5050:5050
+      - smile-server
     command: npm run docker-start
     environment:
-    - DOCKERIZED=${DOCKERIZED}
-    - TWITTER_CONSUMER_KEY=${TWITTER_CONSUMER_KEY}
-    - TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
+      - DOCKERIZED=${DOCKERIZED}
+      - TWITTER_CONSUMER_KEY=${TWITTER_CONSUMER_KEY}
+      - TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
     restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.graphql.rule=Host(`graphql.${SERVER}`) && Path(`/graphql`)
+      - traefik.http.routers.graphql.entrypoints=websecure
+      - traefik.http.routers.graphql.service=graphql
+      - traefik.http.services.graphql.loadbalancer.server.port=5050
+      - traefik.http.routers.graphql.tls.certresolver=myresolver
 
 volumes:
   smile_content_data:
@@ -387,3 +436,4 @@ volumes:
       o: bind
       type: none
       device: "${HOME}/smile"
+

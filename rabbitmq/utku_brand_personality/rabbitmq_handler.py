@@ -4,6 +4,10 @@ import traceback
 import pika
 import postToAWSBatch
 
+RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq')
+RABBITMQ_USER = os.getenv('RABBITMQ_USER', 'guest')
+RABBITMQ_PASSWORD = os.getenv('RABBITMQ_PASSWORD', 'guest')
+
 
 def rabbitmq_handler(ch, method, properties, body):
     try:
@@ -23,7 +27,6 @@ def rabbitmq_handler(ch, method, properties, body):
                                         params['jobName'],
                                         params['jobQueue'],
                                         params['command'])
-
 
         elif params['platform'] == 'batch':
             os.system(' '.join(params['command']))
@@ -51,11 +54,14 @@ def rabbitmq_handler(ch, method, properties, body):
 
 
 if __name__ == '__main__':
+    credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASSWORD)
     connection = pika.BlockingConnection(pika.ConnectionParameters(
         port=5672,
-        host="rabbitmq",
+        host=RABBITMQ_HOST,
         heartbeat=600,
-        blocked_connection_timeout=600))
+        blocked_connection_timeout=600,
+        credentials=credentials
+    ))
     channel = connection.channel()
 
     queue = "bae_utku_brand_personality"

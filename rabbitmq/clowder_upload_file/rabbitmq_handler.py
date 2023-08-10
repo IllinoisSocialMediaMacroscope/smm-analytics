@@ -7,6 +7,8 @@ import requests
 import writeToS3 as s3
 
 RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq')
+RABBITMQ_USER = os.getenv('RABBITMQ_HOST', 'guest')
+RABBITMQ_PASSWORD = os.getenv('RABBITMQ_HOST', 'guest')
 
 
 def get_config_json(config_url):
@@ -116,7 +118,9 @@ def rabbitmq_handler(ch, method, properties, body):
 
 
 if __name__ == '__main__':
-    connection = pika.BlockingConnection(pika.ConnectionParameters(port=5672, host=RABBITMQ_HOST))
+    credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASSWORD)
+    parameters = pika.ConnectionParameters(RABBITMQ_HOST, 5672, '/', credentials)
+    connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
 
     # pass the queue name in environment variable
