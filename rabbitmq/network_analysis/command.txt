@@ -1,0 +1,4 @@
+# command to build and run this container
+docker build -t socialmediamacroscope/network_analysis:latest .
+docker build -f extractor.dockerfile -t socialmediamacroscope/network_analysis_extractor:latest .
+docker push socialmediamacroscope/network_analysis_extractor:latest

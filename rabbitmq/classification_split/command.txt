@@ -1,0 +1,2 @@
+# command to build and run this container
+docker build -t socialmediamacroscope/classification_split:latest .

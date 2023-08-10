@@ -1,0 +1,64 @@
+{
+  "@context": "http://clowder.ncsa.illinois.edu/contexts/extractors.jsonld",
+  "name": "smm.preprocessing.analysis",
+  "version": "0.1",
+  "description": "Description on this extractor",
+  "author": "Wang, Chen <cwang138@illinois.edu>",
+  "contributors": [],
+  "contexts": [{}],
+  "repository": [
+    {
+      "repType": "git",
+      "repUrl": "https://github.com/ncsa/standalone-smm-analytics"
+    }
+  ],
+  "process": {
+    "file": [
+      "manual"
+    ]
+  },
+  "external_services": [],
+  "dependencies": [],
+  "bibtex": [],
+  "parameters": {
+    "schema": {
+      "column": {
+        "type": "string",
+        "title": "Text Column Header",
+        "default": "text"
+      },
+      "process": {
+        "type": "string",
+        "title": "Sentiment Analysis Algorithms",
+         "enum": [
+           "lemmatization",
+           "stemming",
+           "both"
+        ],
+        "default": "lemmatization"
+      },
+      "tagger": {
+        "type": "string",
+        "title": "Sentiment Analysis Algorithms",
+         "enum": [
+           "posTag"
+        ],
+        "default": "posTag"
+      }
+    },
+    "form": [
+      {
+        "key": "column",
+        "type": "text"
+      },
+      {
+        "key": "process",
+        "type": "select"
+      },
+      {
+        "key": "tagger",
+        "type": "select"
+      }
+    ]
+  }
+}

@@ -1,0 +1,4 @@
+requests==2.21.0
+pandas==0.24.1
+boto3==1.6.11
+praw>=6.5.1

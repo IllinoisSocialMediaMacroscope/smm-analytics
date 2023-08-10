@@ -1,13 +1,31 @@
-example_dataset.csv
-.DS_Store
-config.json
 .gitignore
 .idea
+
+# secrets
+password.txt
 email_password.txt
-*.csv
-__pycache__
-glove.twitter.27B.*
-numberbatch-en-17.04b.*
+
+# scripts
+bae_docker.sh
 docker-command-smile.sh
 docker-command-bae.sh
+
+# folders
+__pycache__
+.DS_Store
 test_orca
+checkpoint-17315-epoch-5
+
+# data files
+config.json
+example_dataset.csv
+*.csv
+glove.twitter.27B.*
+numberbatch-en-17.04b.*
+
+
+# data folders
+*/smile
+*/smile_data
+*/smile_user
+*/data

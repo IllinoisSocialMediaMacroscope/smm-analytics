@@ -12,4 +12,5 @@ RUN apt-get -y install python3-pip
 
 # install dependency libraries and download required data
 RUN pip3 install -r requirement.txt
-RUN python3 -m nltk.downloader -d /usr/local/share/nltk_data punkt vader_lexicon sentiwordnet
+RUN python3 -m nltk.downloader -d /usr/local/share/nltk_data stopwords wordnet punkt averaged_perceptron_tagger \
+vader_lexicon sentiwordnet

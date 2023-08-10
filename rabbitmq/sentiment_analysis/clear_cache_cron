@@ -1,0 +1,1 @@
+0 * * * *  /bin/bash /scripts/clear_cache.sh

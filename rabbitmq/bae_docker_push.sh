@@ -1,0 +1,9 @@
+docker push socialmediamacroscope/collect_timeline:latest
+docker push socialmediamacroscope/get_sim_score:latest
+docker push socialmediamacroscope/bae-server:latest
+docker push socialmediamacroscope/bulk_comparison:latest
+docker push socialmediamacroscope/get_personality:latest
+docker push socialmediamacroscope/utku_brand_personality:latest
+docker push socialmediamacroscope/botometer_check_bot:latest
+docker push socialmediamacroscope/check_screen_name:latest
+docker push socialmediamacroscope/screen_name_prompt:latest
