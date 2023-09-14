@@ -18,19 +18,19 @@ export CILOGON_CLIENT_ID=<<cilogon id>>
 export CILOGON_CLIENT_SECRET=<<cilogon client secret>>
 export CILOGON_CALLBACK_URL=<<ci logon callback url>>
 
-export MINIO_URL=https://minio-api.${SERVER}
-export MINIO_PUBLIC_ACCESS_URL=https://minio-api.${SERVER}
+export MINIO_URL=http://${SERVER}:9000/
+export MINIO_PUBLIC_ACCESS_URL=http://${SERVER}:9000/
 export BUCKET_NAME=macroscope-smile
-export SMILE_GRAPHQL_URL=https://graphql.${SERVER}/graphql
+export SMILE_GRAPHQL_URL=http://${SERVER}:5050/graphql
 
 # create mounted volumes on host machine
 mkdir -p ${HOME}/smile_data/${BUCKET_NAME}
 mkdir -p ${HOME}/smile_user
 mkdir -p ${HOME}/smile
 
+export RABBITMQ_URL=amqp://${SERVER}:5672
 export RABBITMQ_HOST=${SERVER}
-export RABBITMQ_URL=amqp://${SERVER}
-export REDIS_URL=redis://redis
+export REDIS_URL=redis://redis:6379
 
 # email notification
 #export EMAIL_HOST=<<email host>>
@@ -62,10 +62,10 @@ export GOOGLE_CLIENT_SECRET=<<google client secret>>
 
 export CLOWDER_BASE_URL=https://clowder.server.com/
 export CLOWDER_GLOBAL_KEY=<<clowder global key>>
-export CLOWDER_ON=false
+export CLOWSER_ON=false
 
 # start
-docker-compose -f docker-compose-smile-traefik.yml -d up
+docker-compose -f docker-compose-smile.yml -d up
 
 # stop
 # docker-compose -f docker-compose-smile.yml down -v

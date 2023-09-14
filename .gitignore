@@ -7,7 +7,6 @@ email_password.txt
 
 # scripts
 bae_docker.sh
-docker-command-smile.sh
 docker-command-bae.sh
 
 # folders

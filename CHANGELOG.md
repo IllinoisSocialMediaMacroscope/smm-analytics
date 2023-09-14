@@ -16,5 +16,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Renamed Minio related environment variables [31](https://github.com/ncsa/standalone-smm-analytics/issues/31)
 - Rabbitmq handler's connection with dynamic credentials [41](https://github.com/ncsa/standalone-smm-analytics/issues/41)
 - Docker compose file to work with new settings [42](https://github.com/ncsa/standalone-smm-analytics/issues/42)
+- Updated README with docker compose information [50](https://github.com/ncsa/standalone-smm-analytics/issues/50)
 - Created base image for sentiment analysis with model [55](https://github.com/ncsa/standalone-smm-analytics/issues/55)
 - Created base image for name entity recognition with model [56](https://github.com/ncsa/standalone-smm-analytics/issues/56)
