@@ -1,0 +1,10 @@
+# This should be build with the following files in the same directory as Dockerfile.base
+# models/python3/twitter_ner_wnut_and_hege_model.pkl
+
+FROM ubuntu:18.04
+
+RUN mkdir -p /scripts
+
+WORKDIR /scripts
+
+COPY models models

@@ -1,7 +1,6 @@
-FROM python:3.8.5
+FROM socialmediamacroscope/sentiment_analysis:base
 
-RUN apt-get -qq -y update && apt-get -qq -y install cron \
-&& mkdir -p /scripts
+RUN apt-get -qq -y update && apt-get -qq -y install cron
 
 WORKDIR /scripts
 
