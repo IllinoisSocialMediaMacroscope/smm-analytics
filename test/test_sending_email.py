@@ -4,22 +4,6 @@ from email.mime.text import MIMEText
 import os
 
 
-def reformat_sessionURL(sessionURL):
-    # hubzero tool have sessionURL = https://{host}/session/{sessionID}/originalPath
-    # standalone smile have sessionURL = https://{host}/originalPath
-    # Split the URL by '/' and remove the last part
-    url_parts = sessionURL.split('/')
-    url_parts.pop()
-
-    # Append "/history" to the URL
-    url_parts.append("history")
-
-    # Reconstruct the URL
-    new_sessionURL = '/'.join(url_parts)
-
-    return new_sessionURL
-
-
 def notification(toaddr, case, filename, links, sessionURL):
     # toaddr -- email address to send to
     # text content to send
@@ -95,10 +79,10 @@ def notification(toaddr, case, filename, links, sessionURL):
                    fpath[
                        3] + """</b>. The partial comments we manage to collect and save will be compressed for you in an .zip file named <a href='""" + links + """'>""" + \
                    fpath[3] + """-comments.zip</a> (click)</li>    
-                                    <li>In order to download this file, you need to first locate the original submission in the <b>Past Results</b> page in SMILE.
-                                       <a href=""" + reformat_sessionURL(sessionURL) + """>Go to your session.</a> 
+                                    <li>In order to download this file, you need to first locate the original submission in the <b>HISTORY</b> page in SMILE.
+                                       <a href=""" + sessionURL + """>Go to your session...</a> 
                                     <ul>
-                                        <li>Go to <b>Past Results</b></li> 
+                                        <li>Go to <b>History</b></li> 
                                         <li>--> under <b>""" + fpath[1] + """</b></li> 
                                         <li>--> click <b>""" + fpath[2] + """</b></li> 
                                         <li>--> then find <b>""" + fpath[3] + """</b></li> 
@@ -125,10 +109,10 @@ def notification(toaddr, case, filename, links, sessionURL):
                    fpath[
                        3] + """</b>. It will be compressed for you in an .zip file named <a href='""" + links + """'>""" + \
                    fpath[3] + """-comments.zip</a></li>    
-                                    <li>In order to download this file, you need to first locate the original submission in the <b>Past Results</b> page in SMILE.
-                                    <a href=""" + reformat_sessionURL(sessionURL) + """>Go to your session.</a>
+                                    <li>In order to download this file, you need to first locate the original submission in the <b>HISTORY</b> page in SMILE.
+                                    <a href=""" + sessionURL + """>Go to your session...</a>
                                     <ul>
-                                        <li>Go to <b>Past Results</b></li> 
+                                        <li>Go to <b>History</b></li> 
                                         <li>--> under <b>""" + fpath[1] + """</b></li> 
                                         <li>--> click <b>""" + fpath[2] + """</b></li> 
                                         <li>--> then find <b>""" + fpath[3] + """</b></li>
@@ -155,10 +139,10 @@ def notification(toaddr, case, filename, links, sessionURL):
                                 <p>Dear user (session ID: """ + fpath[0] + """),</p>
                                 <p>Your """ + fpath[2] + """ results are ready for you! (job ID: """ + fpath[3] + """)</p>
                                 <ul>
-                                    <li>You can view the visualization and download the results at <b>Past Results</b> page in SMILE. 
-                                    <a href=""" + reformat_sessionURL(sessionURL) + """>Go to your session.</a>
+                                    <li>You can view the visualization and download the results at <b>HISTORY</b> page in SMILE. 
+                                    <a href=""" + sessionURL + """>Go to your session...</a>
                                     <ul>
-                                        <li>Go to <b>Past Results</b></li>
+                                        <li>Go to <b>History</b></li>
                                         <li>--> under <b>""" + fpath[1] + """</b> tab</li>
                                         <li>--> click <b>""" + fpath[2] + """</b></li>
                                         <li>--> then find <b>""" + fpath[3] + """</b></li>
@@ -191,3 +175,15 @@ def notification(toaddr, case, filename, links, sessionURL):
         server.quit()
     else:
         print("Invalid Email host setting! Skip notification.")
+
+
+if __name__ == '__main__':
+    toaddr = "smm@lists.illinois.edu"
+    case = 3
+    filename = "local/NLP/sentiment/xxxxxxxxxxxxxxxxxxxxxxxx/test_email_sending.txt"
+    links = {
+        "test": "https://smile.smm.illinois.edu",
+        "test2": "https://smile.smm.illinois.edu"
+    }
+    sessionURL = "https://smile.smm.illinois.edu"
+    notification(toaddr, case, filename, links, sessionURL)

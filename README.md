@@ -1,4 +1,5 @@
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 # Social Media Macroscope Analytics
 Welcome to the Social Media Macroscope Analytics repository! 
 Here, you'll find the essential analytics components that power various projects within the Social Media Macroscope 
@@ -37,37 +38,48 @@ It integrates with infrastructure components and configures itself automatically
 - Single user mode vs multiple users mode.
   - SINGLE_USER=false 
 - Settings for CILOGON (this section is not required if running in single user mode)
-  - CILOGON_CLIENT_ID=<<cilogon id>>
-  - CILOGON_CLIENT_SECRET=<<cilogon client secret>>
-  - CILOGON_CALLBACK_URL=<<ci logon callback url>>
+  - CILOGON_CLIENT_ID={{cilogon id}}
+  - CILOGON_CLIENT_SECRET={{cilogon client secret}}
+  - CILOGON_CALLBACK_URL={{ci logon callback url}}
 - Configure email server to enable capability of sending email notifications for long running jobs.
-  - EMAIL_HOST=<<email host>>
+  - EMAIL_HOST={{email host}}
   - EMAIL_PORT=465 
-  - EMAIL_FROM_ADDRESS=<<email from address>>
-  - EMAIL_PASSWORD=<<email password>>
+  - EMAIL_FROM_ADDRESS={{email from address}}
+  - EMAIL_PASSWORD={{email password}}
 - MINIO access keys and secret. Can be set to align with AWS S3 access keys and secret.
-  - AWS_ACCESSKEY=<<aws_accesskey>>
-  - AWS_ACCESSKEYSECRET=<<aws_accesskeysecret>>
+  - AWS_ACCESSKEY={{aws_accesskey}}
+  - AWS_ACCESSKEYSECRET={{aws_accesskeysecret}}
 - Social media platforms configurations.
-  - REDDIT_CLIENT_ID=<<reddit client id>>
-  - REDDIT_CLIENT_SECRET=<<reddit client secret>>
-  - REDDIT_CALLBACK_URL=<<reddit callback url>>
-  - TWITTER_CONSUMER_KEY=<<twitter consumer key>>
-  - TWITTER_CONSUMER_SECRET=<<twitter consumer secret>>
-  - TWITTER_V2_CLIENT_ID=<<twitter v2 client id>>
-  - TWITTER_V2_CLIENT_SECRET=<<twitter v2 client secret>>
-  - TWITTER_V2_CALLBACK_URL=<<twitter v2 callback url>>
+  - REDDIT_CLIENT_ID={{reddit client id}}
+  - REDDIT_CLIENT_SECRET={{reddit client secret}}
+  - REDDIT_CALLBACK_URL={{reddit callback url}}
+  - TWITTER_CONSUMER_KEY={{twitter consumer key}}
+  - TWITTER_CONSUMER_SECRET={{twitter consumer secret}}
+  - TWITTER_V2_CLIENT_ID={{twitter v2 client id}}
+  - TWITTER_V2_CLIENT_SECRET={{twitter v2 client secret}}
+  - TWITTER_V2_CALLBACK_URL={{twitter v2 callback url}}
 - Cloud storage platforms configurations (Optional)
   - BOX_CLIENT_ID=<box client id>
-  - BOX_CLIENT_SECRET=<<box client secret>>
-  - DROPBOX_CLIENT_ID=<<dropbox client id>>
-  - DROPBOX_CLIENT_SECRET=<<dropbox client secret>>
-  - GOOGLE_CLIENT_ID=<<google client id>>
-  - GOOGLE_CLIENT_SECRET=<<google client secret>>
+  - BOX_CLIENT_SECRET={{box client secret}}
+  - DROPBOX_CLIENT_ID={{dropbox client id}}
+  - DROPBOX_CLIENT_SECRET={{dropbox client secret}}
+  - GOOGLE_CLIENT_ID={{google client id}}
+  - GOOGLE_CLIENT_SECRET={{google client secret}}
 - Clowder configurations (Optional)
-  - CLOWDER_BASE_URL=<<clowder instance base url>>
-  - CLOWDER_GLOBAL_KEY=<<clowder global key>>
+  - CLOWDER_BASE_URL={{clowder instance base url}}
+  - CLOWDER_GLOBAL_KEY={{clowder global key}}
   - CLOWDER_ON=false (enable connection to clowder or not)
+
+## Past Version History of major SMM analytics components
+- [AutoPhrase](./rabbitmq/autophrase/version.md)
+- [Classification Spit](./rabbitmq/classification_split/version.md)
+- [Classification Train](./rabbitmq/classification_train/version.md)
+- [Classification Predict](./rabbitmq/classification_predict/version.md)
+- [Named Entity Recognition](./rabbitmq/name_entity_recognition/version.md)
+- [Network Analysis](./rabbitmq/network_analysis/version.md)
+- [Sentiment Analysis](./rabbitmq/sentiment_analysis/version.md)
+- [Topic Modeling](./rabbitmq/topic_modeling/version.md)
+- [Preprocessing](./rabbitmq/preprocessing/version.md)
 
 ## Contributions
 We welcome contributions from the community to enhance and expand our analytics features. Whether you're an experienced
