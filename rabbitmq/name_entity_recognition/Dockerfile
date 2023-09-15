@@ -1,6 +1,4 @@
-FROM ubuntu:18.04
-
-RUN mkdir -p /scripts
+FROM socialmediamacroscope/name_entity_recognition:base
 
 WORKDIR /scripts
 

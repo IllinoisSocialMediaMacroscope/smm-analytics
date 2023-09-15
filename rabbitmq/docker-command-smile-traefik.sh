@@ -62,6 +62,7 @@ export GOOGLE_CLIENT_SECRET=<<google client secret>>
 
 export CLOWDER_BASE_URL=https://clowder.server.com/
 export CLOWDER_GLOBAL_KEY=<<clowder global key>>
+export CLOWDER_ON=false
 
 # start
 docker-compose -f docker-compose-smile-traefik.yml -d up
