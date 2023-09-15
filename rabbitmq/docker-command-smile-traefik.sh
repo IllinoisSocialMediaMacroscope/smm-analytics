@@ -18,9 +18,14 @@ export CILOGON_CLIENT_ID=<<cilogon id>>
 export CILOGON_CLIENT_SECRET=<<cilogon client secret>>
 export CILOGON_CALLBACK_URL=<<ci logon callback url>>
 
+# if the minio-api.server doesn't work, it should ip address and port
+# export MINIO_URL=http://xxx.xxx.xxx.xxx:9000
+# export MINIO_PUBLIC_ACCESS_URL=http://xxx.xxx.xxx.xxx:9000
 export MINIO_URL=https://minio-api.${SERVER}
 export MINIO_PUBLIC_ACCESS_URL=https://minio-api.${SERVER}
 export BUCKET_NAME=macroscope-smile
+# if the graphql.server doesn't work, it should use ip address and port
+#export SMILE_GRAPHQL_URL=http://xxx.xxx.xxx.xxx:5050/graphql
 export SMILE_GRAPHQL_URL=https://graphql.${SERVER}/graphql
 
 # create mounted volumes on host machine
