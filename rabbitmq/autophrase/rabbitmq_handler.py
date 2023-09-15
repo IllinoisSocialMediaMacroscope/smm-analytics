@@ -5,8 +5,8 @@ import pika
 import postToAWSBatch
 
 RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq')
-RABBITMQ_USER = os.getenv('RABBITMQ_HOST', 'guest')
-RABBITMQ_PASSWORD = os.getenv('RABBITMQ_HOST', 'guest')
+RABBITMQ_USER = os.getenv('RABBITMQ_USER', 'guest')
+RABBITMQ_PASSWORD = os.getenv('RABBITMQ_PASSWORD', 'guest')
 
 def rabbitmq_handler(ch, method, properties, body):
     try:
@@ -52,8 +52,13 @@ def rabbitmq_handler(ch, method, properties, body):
 
 if __name__ == '__main__':
     credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASSWORD)
-    parameters = pika.ConnectionParameters(RABBITMQ_HOST, 5672, '/', credentials)
-    connection = pika.BlockingConnection(pika.ConnectionParameters(parameters))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(
+        port=5672,
+        host=RABBITMQ_HOST,
+        heartbeat=600,
+        blocked_connection_timeout=600,
+        credentials=credentials
+    ))
     channel = connection.channel()
 
     # pass the queue name in environment variable
@@ -63,3 +68,4 @@ if __name__ == '__main__':
     channel.basic_qos(prefetch_count=1)
     channel.basic_consume(queue=queue, on_message_callback=rabbitmq_handler, auto_ack=True)
     channel.start_consuming()
+
