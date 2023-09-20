@@ -48,14 +48,17 @@ services:
       - traefik.http.routers.rabbitmq.tls.certresolver=myresolver
 
   minio:
-    image: docker.io/bitnami/minio:2023.1.31-debian-11-r0
+    image: minio/minio
     container_name: minio
     hostname: minio
+    ports:
+      - 9000:9000
     volumes:
-      - "smile_content_data:/tmp"
+      - "smile_content_data:/data"
     environment:
       - MINIO_ROOT_USER=${AWS_ACCESSKEY}
       - MINIO_ROOT_PASSWORD=${AWS_ACCESSKEYSECRET}
+    command: server /data --console-address ":9001"
     restart: unless-stopped
     labels:
       - traefik.enable=true
@@ -64,11 +67,6 @@ services:
       - traefik.http.routers.minio.service=minio
       - traefik.http.services.minio.loadbalancer.server.port=9001
       - traefik.http.routers.minio.tls.certresolver=myresolver
-      - traefik.http.routers.minio-api.rule=Host(`minio-api.${SERVER}`) && PathPrefix(`/`)
-      - traefik.http.routers.minio-api.entrypoints=websecure
-      - traefik.http.routers.minio-api.service=minio-api
-      - traefik.http.services.minio-api.loadbalancer.server.port=9000
-      - traefik.http.routers.minio-api.tls.certresolver=myresolver
 
   redis:
     image: redis
