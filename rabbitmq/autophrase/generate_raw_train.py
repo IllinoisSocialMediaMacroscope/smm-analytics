@@ -46,11 +46,11 @@ if __name__ == '__main__':
 
     params = vars(parser.parse_args())
 
-    if 'HOST_IP' in params.keys():
-        HOST_IP = params['HOST_IP']
-        params.pop('HOST_IP', None)
+    if 'MINIO_PUBLIC_ACCESS_URL' in params.keys():
+        MINIO_PUBLIC_ACCESS_URL = params['MINIO_PUBLIC_ACCESS_URL']
+        params.pop('MINIO_PUBLIC_ACCESS_URL', None)
     else:
-        HOST_IP = None
+        MINIO_PUBLIC_ACCESS_URL = None
 
     if 'AWS_ACCESSKEY' in params.keys():
         AWS_ACCESSKEY = params['AWS_ACCESSKEY']
@@ -70,5 +70,5 @@ if __name__ == '__main__':
     else:
         BUCKET_NAME = None
 
-    s3 = WriteToS3()
+    s3 = WriteToS3(MINIO_PUBLIC_ACCESS_URL, AWS_ACCESSKEY, AWS_ACCESSKEYSECRET, BUCKET_NAME)
     main(s3, params['remoteReadPath'], params['column'])
