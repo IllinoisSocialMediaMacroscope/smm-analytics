@@ -8,8 +8,12 @@ RUN apt-get update \
 # overwrite
 WORKDIR /AutoPhrase
 COPY . ./
-
 ENV RABBITMQ_HOST="rabbitmq"
+
+# set environmet variables to prevent interactive prompt duing installation of openjdk
+ENV DEBIAN_FRONTEND=noninteractive
+ENV REGION=US
+ENV TZ=America/Chicago
 
 # install dependency libraries
 RUN apt-get -y update \
