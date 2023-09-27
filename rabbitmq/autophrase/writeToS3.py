@@ -7,15 +7,15 @@ from botocore.client import Config
 
 class WriteToS3:
 
-    def __init__(self, MINIO_PUBLIC_ACCESS_URL=None, AWS_ACCESSKEY=None, AWS_ACCESSKEYSECRET=None, BUCKET_NAME=None):
+    def __init__(self):
 
         # local minio s3
-        if MINIO_PUBLIC_ACCESS_URL and AWS_ACCESSKEY and AWS_ACCESSKEYSECRET and BUCKET_NAME:
-            self.client = boto3.client('s3', endpoint_url=MINIO_PUBLIC_ACCESS_URL,
-                                       aws_access_key_id=AWS_ACCESSKEY,
-                                       aws_secret_access_key=AWS_ACCESSKEYSECRET,
+        if os.environ['MINIO_PUBLIC_ACCESS_URL'] != "":
+            self.client = boto3.client('s3', endpoint_url=os.environ['MINIO_PUBLIC_ACCESS_URL'],
+                                       aws_access_key_id=os.environ['AWS_ACCESSKEY'],
+                                       aws_secret_access_key=os.environ['AWS_ACCESSKEYSECRET'],
                                        config=Config(signature_version='s3v4'))
-            self.bucket_name = BUCKET_NAME
+            self.bucket_name = os.environ['BUCKET_NAME']
 
         # remote aws s3
         else:
