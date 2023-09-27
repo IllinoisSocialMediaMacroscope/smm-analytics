@@ -3,7 +3,7 @@ import csv
 
 import pandas as pd
 
-from writeToS3 as WriteToS3
+from writeToS3 import WriteToS3
 
 
 def main(s3, remoteReadPath, column):
@@ -70,5 +70,5 @@ if __name__ == '__main__':
     else:
         BUCKET_NAME = None
 
-    s3 = writeToS3()
+    s3 = WriteToS3()
     main(s3, params['remoteReadPath'], params['column'])
