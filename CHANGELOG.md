@@ -20,3 +20,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Created base image for sentiment analysis with model [55](https://github.com/ncsa/standalone-smm-analytics/issues/55)
 - Created base image for name entity recognition with model [56](https://github.com/ncsa/standalone-smm-analytics/issues/56)
 - Docker compose file updated to fix minio default bucket making [63](https://github.com/ncsa/standalone-smm-analytics/issues/63)
+
+### Fixed
+- Autophrase error due to the code updates [65](https://github.com/ncsa/standalone-smm-analytics/issues/65)
